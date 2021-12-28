@@ -106,22 +106,22 @@ static ulong mt[N];     /* the array for the state vector  */
 static int mti = N + 1; /* mti == N + 1 means mt[N] is not initialized */
 
 //Maximum value for an r, g, or b value
-int const MAX_VALUE = 256;
+int const MAX_VAL = 256;
 
 //Iterate through a three dimensional array representing the color histogram.
-//If at least a single color exists (> 0), than increment unique counter and return at end.
-int count_colors_3d_histo(int histogram[MAX_VALUE][MAX_VALUE][MAX_VALUE]) {
-    int unique = 0;
-    for (int i = 0; i < 256; i++) {
-        for (int j = 0; j < 256; j++) {
-            for (int k = 0; k < 256; k++) {
+//If at least a single color exists (> 0), than increment num_colors counter and return at end.
+int count_colors_3d_histo(int histogram[MAX_VAL][MAX_VAL][MAX_VAL]) {
+    int num_colors = 0;
+    for (int i = 0; i < MAX_VAL; i++) {
+        for (int j = 0; j < MAX_VAL; j++) {
+            for (int k = 0; k < MAX_VAL; k++) {
                 if (histogram[i][j][k] != 0) {
-                    unique++;
+                    num_colors++;
                 }
             }
         }
     }
-    return unique;
+    return num_colors;
 }
 
 /* initializes mt[N] with a seed */
@@ -1048,15 +1048,15 @@ int main(int argc, char **argv)
 
   in_img = read_PPM(in_file_name, &mean);
 
-  auto histogram = new int[MAX_VALUE][MAX_VALUE][MAX_VALUE]{};
-  std::cout << "\nImage/Histogram has " << count_colors_3d_histo(histogram) << " unique colors.\n";
+  auto histogram = new int[MAX_VAL][MAX_VAL][MAX_VAL]{};
+  std::cout << "\nImage/Histogram has " << count_colors_3d_histo(histogram) << " different colors.\n";
   for (int i = 0; i < in_img->size; i++){
     int redvalue = in_img->data[i].red;
     int greenvalue = in_img->data[i].green;
     int bluevalue = in_img->data[i].blue;
     histogram[redvalue][greenvalue][bluevalue]++;
   }
-  std::cout << "\nImage/Histogram has " << count_colors_3d_histo(histogram) << " unique colors.\n";
+  std::cout << "\nImage/Histogram has " << count_colors_3d_histo(histogram) << " different colors.\n";
 
   /* STARTHERE
 
@@ -1124,3 +1124,4 @@ int main(int argc, char **argv)
 
   return EXIT_SUCCESS;
 }
+
