@@ -1,0 +1,9 @@
+{
+    "C_Cpp.errorSquiggles": "Disabled",
+    "files.associations": {
+        "iostream": "c",
+        "thread": "c",
+        "chrono": "c",
+        "ostream": "c"
+    }
+}

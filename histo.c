@@ -105,6 +105,25 @@ typedef struct
 static ulong mt[N];     /* the array for the state vector  */
 static int mti = N + 1; /* mti == N + 1 means mt[N] is not initialized */
 
+//Maximum value for an r, g, or b value
+int const MAX_VALUE = 256;
+
+//Iterate through a three dimensional array representing the color histogram.
+//If at least a single color exists (> 0), than increment unique counter and return at end.
+int count_colors_3d_histo(int histogram[MAX_VALUE][MAX_VALUE][MAX_VALUE]) {
+    int unique = 0;
+    for (int i = 0; i < 256; i++) {
+        for (int j = 0; j < 256; j++) {
+            for (int k = 0; k < 256; k++) {
+                if (histogram[i][j][k] != 0) {
+                    unique++;
+                }
+            }
+        }
+    }
+    return unique;
+}
+
 /* initializes mt[N] with a seed */
 void init_genrand(ulong s)
 {
@@ -1029,6 +1048,18 @@ int main(int argc, char **argv)
 
   in_img = read_PPM(in_file_name, &mean);
 
+  auto histogram = new int[MAX_VALUE][MAX_VALUE][MAX_VALUE]{};
+  std::cout << "\nImage/Histogram has " << count_colors_3d_histo(histogram) << " unique colors.\n";
+  for (int i = 0; i < in_img->size; i++){
+    int redvalue = in_img->data[i].red;
+    int greenvalue = in_img->data[i].green;
+    int bluevalue = in_img->data[i].blue;
+    histogram[redvalue][greenvalue][bluevalue]++;
+  }
+  std::cout << "\nImage/Histogram has " << count_colors_3d_histo(histogram) << " unique colors.\n";
+
+  /* STARTHERE
+
   if (pres_order == 1)
   {
     init_genrand(seed < 0 ? time(NULL) : seed);
@@ -1087,6 +1118,7 @@ int main(int argc, char **argv)
   printf("Total time = %g\n", duration.count() / 1e3);
 #endif
 
+  STOPHERE */
   free(in_img->data);
   free(in_img);
 
