@@ -1,8 +1,8 @@
 /* 
   To compile:
-  g++ -O3 -o testsuite testsuite.c -lm
+  g++ -O3 -o bst bst.c -lm
 
-  For a list of command line options: ./testsuite
+  For a list of command line options: ./bst
 */
 
 #include <chrono>
@@ -12,9 +12,6 @@
 #include <string.h>
 
 using namespace std::chrono;
-
-//Maximum value for an r, g, or b value
-int const MAX_VAL = 256;
 
 typedef unsigned char uchar;
 typedef unsigned long ulong;
@@ -193,33 +190,15 @@ RGB_Image * read_PPM(const char *filename, RGB_Pixel *mean)
 
 static void print_usage(char *prog_name)
 {
-  fprintf(stderr, "Color Histogram Test Suite\n\n");
-  fprintf(stderr, "Creates color histograms from input .ppm images with various data structures.\n\n");
-  fprintf(stderr, "Current data strucutres utilized in this suite:\n\n");
-  fprintf(stderr, "\t* 3-D array\n\n");
-  fprintf(stderr, "\t* Binary Search Tree\n\n");
+  fprintf(stderr, "Color Histogram with Binary Search Tree\n\n");
+  fprintf(stderr, "Creates color histograms from input .ppm images with 3-D arrays.\n\n");
   fprintf(stderr, "Usage: %s -i <input image>\n\n", prog_name);
   exit(EXIT_FAILURE);
 }
 
-//Iterate through a three dimensional array representing the color histogram. If at least a single color exists (> 0), than increment num_colors counter and return at end.
-int count_colors_3d_histo(int histogram[MAX_VAL][MAX_VAL][MAX_VAL]) {
-    int num_colors = 0;
-    for (int i = 0; i < MAX_VAL; i++) {
-        for (int j = 0; j < MAX_VAL; j++) {
-            for (int k = 0; k < MAX_VAL; k++) {
-                if (histogram[i][j][k] != 0) {
-                    num_colors++;
-                }
-            }
-        }
-    }
-    return num_colors;
-}
-
 int main(int argc, char **argv)
 {
-  char in_file_name[256];
+    char in_file_name[256];
   RGB_Pixel mean;
   RGB_Image *in_img, *out_img;
 
@@ -240,26 +219,6 @@ int main(int argc, char **argv)
   }
 
   in_img = read_PPM(in_file_name, &mean);
-
-  //3-D array histogram
-  auto histogram = new int[MAX_VAL][MAX_VAL][MAX_VAL]{};
-  auto start = high_resolution_clock::now();
-  for (int i = 0; i < in_img->size; i++){
-    int redvalue = in_img->data[i].red;
-    int greenvalue = in_img->data[i].green;
-    int bluevalue = in_img->data[i].blue;
-    histogram[redvalue][greenvalue][bluevalue]++;
-  }
-
-  auto stop = high_resolution_clock::now();
-  auto duration = duration_cast<microseconds>(stop - start);
-  printf("\nTotal time to add all colors to histogram (3-D array) = %g\n", duration.count() / 1e3);
-  auto start2 = high_resolution_clock::now();
-  int num_cols = count_colors_3d_histo(histogram);
-  auto stop2 = high_resolution_clock::now();
-  auto duration2 = duration_cast<microseconds>(stop2 - start2);
-  printf("\nTotal time to count number of colors in histogram (3-D array) = %g\n", duration2.count() / 1e3);
-  std::cout << "\n" << in_file_name << " has " << num_cols << " different colors.\n\n";
 
   //BST histogram
   auto start3 = high_resolution_clock::now();
@@ -286,4 +245,3 @@ int main(int argc, char **argv)
 
   return EXIT_SUCCESS;
 }
-

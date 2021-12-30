@@ -1,26 +1,26 @@
 {
     "version": "2.0.0",
     "tasks": [
-      {
-        "type": "cppbuild",
-        "label": "C/C++: g++.exe build active file",
-        "command": "C:/msys64/mingw64/bin/g++.exe",
-        "args": ["-g", "${file}", "-o", "${fileDirname}\\${fileBasenameNoExtension}.exe"],
-        "options": {
-          "cwd": "${fileDirname}"
-        },
-        "problemMatcher": ["$gcc"],
-        "group": {
-          "kind": "build",
-          "isDefault": true
-        },
-        "detail": "compiler: C:/msys64/mingw64/bin/g++.exe"
-      },
-      {
-          "label": "SHELLBUILD",
-          "type": "shell",
-          "command": "g++ -O3 -o mkm mkm.c -lm"
-      }
+    {
+        "label": "Build mkm.c",
+        "type": "shell",
+        "command": "g++ -O3 -o mkm mkm.c -lm"
+    },
+    {
+      "label": "Build testsuite.c",
+      "type": "shell",
+      "command": "g++ -O3 -o testsuite testsuite.c -lm"
+    },
+    {
+      "label": "Build bst.c",
+      "type": "shell",
+      "command": "g++ -O3 -o bst bst.c -lm"
+    },
+    {
+      "label": "Build 3darray.c",
+      "type": "shell",
+      "command": "g++ -O3 -o 3darray 3darray.c -lm"
+    },
     ]
     
   }

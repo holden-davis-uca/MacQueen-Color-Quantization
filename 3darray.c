@@ -1,9 +1,9 @@
 /* 
   To compile:
-  g++ -O3 -o testsuite testsuite.c -lm
+  g++ -O3 -o 3darray 3darray.c -lm
 
-  For a list of command line options: ./testsuite
-*/
+  For a list of command line options: ./3darray
+ */
 
 #include <chrono>
 #include <climits>
@@ -37,57 +37,25 @@ typedef struct
   RGB_Pixel *data;
 } RGB_Image;
 
-struct BSTNode
-{
-    int rgbkey;
-    int count;
-    struct BSTNode *left;
-    struct BSTNode *right;
-};
 
-struct BSTNode* newNode(int newkey)
-{
-    struct BSTNode* here = (struct BSTNode*)malloc(sizeof(struct BSTNode));
-    here->rgbkey = newkey;
-    here->count = 1;
-    here->left = NULL;
-    here->right = NULL;
-    return here;
+//Iterate through a three dimensional array representing the color histogram.
+//If at least a single color exists (> 0), than increment num_colors counter and return at end.
+int count_colors_3d_histo(int histogram[MAX_VAL][MAX_VAL][MAX_VAL]) {
+    int num_colors = 0;
+    for (int i = 0; i < MAX_VAL; i++) {
+        for (int j = 0; j < MAX_VAL; j++) {
+            for (int k = 0; k < MAX_VAL; k++) {
+                if (histogram[i][j][k] != 0) {
+                    num_colors++;
+                }
+            }
+        }
+    }
+    return num_colors;
 }
 
-struct BSTNode* insert(struct BSTNode* node, int newrgbkey)
-{
-    if (node == NULL)
-    {
-        return newNode(newrgbkey);
-    }
-    if (newrgbkey == node->rgbkey)
-    {
-        node->count++;
-    }
-    if (newrgbkey > node->rgbkey)
-    {
-        node->right = insert(node->right, newrgbkey);
-    }
-    if (newrgbkey < node->rgbkey)
-    {
-        node->left = insert(node->left, newrgbkey);
-    }
-    return node;
-
-}
-
-void traverse(struct BSTNode* rootnode)
-{
-    if (rootnode != NULL)
-    {
-        traverse(rootnode->left);
-        std::cout<<"RGB Key = " << rootnode->rgbkey << "; Color count = " << rootnode->count << std::endl;
-        traverse(rootnode->right);
-    }
-}
-
-RGB_Image * read_PPM(const char *filename, RGB_Pixel *mean)
+RGB_Image *
+read_PPM(const char *filename, RGB_Pixel *mean)
 {
   uchar byte;
   char buff[16];
@@ -191,30 +159,50 @@ RGB_Image * read_PPM(const char *filename, RGB_Pixel *mean)
   return img;
 }
 
-static void print_usage(char *prog_name)
+void write_PPM(const RGB_Image *img, const char *filename)
 {
-  fprintf(stderr, "Color Histogram Test Suite\n\n");
-  fprintf(stderr, "Creates color histograms from input .ppm images with various data structures.\n\n");
-  fprintf(stderr, "Current data strucutres utilized in this suite:\n\n");
-  fprintf(stderr, "\t* 3-D array\n\n");
-  fprintf(stderr, "\t* Binary Search Tree\n\n");
-  fprintf(stderr, "Usage: %s -i <input image>\n\n", prog_name);
-  exit(EXIT_FAILURE);
+  uchar byte;
+  FILE *fp;
+
+  fp = fopen(filename, "wb");
+  if (!fp)
+  {
+    fprintf(stderr, "Unable to open file '%s'!\n", filename);
+    exit(EXIT_FAILURE);
+  }
+
+  fprintf(fp, "P6\n");
+  fprintf(fp, "%d %d\n", img->width, img->height);
+  fprintf(fp, "%d\n", 255);
+
+  for (int i = 0; i < img->size; i++)
+  {
+    byte = (uchar)img->data[i].red;
+    fwrite(&byte, sizeof(uchar), 1, fp);
+    byte = (uchar)img->data[i].green;
+    fwrite(&byte, sizeof(uchar), 1, fp);
+    byte = (uchar)img->data[i].blue;
+    fwrite(&byte, sizeof(uchar), 1, fp);
+  }
+
+  fclose(fp);
 }
 
-//Iterate through a three dimensional array representing the color histogram. If at least a single color exists (> 0), than increment num_colors counter and return at end.
-int count_colors_3d_histo(int histogram[MAX_VAL][MAX_VAL][MAX_VAL]) {
-    int num_colors = 0;
-    for (int i = 0; i < MAX_VAL; i++) {
-        for (int j = 0; j < MAX_VAL; j++) {
-            for (int k = 0; k < MAX_VAL; k++) {
-                if (histogram[i][j][k] != 0) {
-                    num_colors++;
-                }
-            }
-        }
-    }
-    return num_colors;
+/* Maximin initialization method */
+/* 
+   For a comprehensive survey of k-means initialization methods, see
+   M. E. Celebi, H. Kingravi, and P. A. Vela, 
+   A Comparative Study of Efficient Initialization Methods for the K-Means Clustering Algorithm, 
+   Expert Systems with Applications, vol. 40, no. 1, pp. 200�210, 2013.
+ */
+
+static void
+print_usage(char *prog_name)
+{
+  fprintf(stderr, "Color Histogram with 3-Dimensional Array\n\n");
+  fprintf(stderr, "Creates color histograms from input .ppm images with Binary Search Trees.\n\n");
+  fprintf(stderr, "Usage: %s -i <input image>\n\n", prog_name);
+  exit(EXIT_FAILURE);
 }
 
 int main(int argc, char **argv)
@@ -260,27 +248,8 @@ int main(int argc, char **argv)
   auto duration2 = duration_cast<microseconds>(stop2 - start2);
   printf("\nTotal time to count number of colors in histogram (3-D array) = %g\n", duration2.count() / 1e3);
   std::cout << "\n" << in_file_name << " has " << num_cols << " different colors.\n\n";
-
-  //BST histogram
-  auto start3 = high_resolution_clock::now();
-  int redvalue = in_img->data[0].red;
-  int greenvalue = in_img->data[0].green;
-  int bluevalue = in_img->data[0].blue;
-  int key = (redvalue * 65536) + (greenvalue * 256) + bluevalue;
-  struct BSTNode* root = insert(root, key);
-  for (int i = 1; i < in_img->size; i++)
-  {
-    int redvalue = in_img->data[i].red;
-    int greenvalue = in_img->data[i].green;
-    int bluevalue = in_img->data[i].blue;
-    int newkey = (redvalue * 65536) + (greenvalue * 256) + bluevalue;
-    insert(root, newkey);
-  }
-  auto stop3 = high_resolution_clock::now();
-  auto duration3 = duration_cast<microseconds>(stop3 - start3);
-  printf("\nTotal time to add all colors to histogram (BST) = %g\n", duration3.count() / 1e3);
-  //traverse(root);
   
+
   free(in_img->data);
   free(in_img);
 
