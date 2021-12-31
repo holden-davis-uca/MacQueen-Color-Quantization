@@ -37,53 +37,71 @@ typedef struct
   RGB_Pixel *data;
 } RGB_Image;
 
-struct BSTNode
+struct BST_Node
 {
-    int rgbkey;
+    int key;
     int count;
-    struct BSTNode *left;
-    struct BSTNode *right;
+    struct BST_Node *left;
+    struct BST_Node *right;
 };
 
-struct BSTNode* newNode(int newkey)
+struct BST_Node* alloc_bst_node(const int new_key)
 {
-    struct BSTNode* here = (struct BSTNode*)malloc(sizeof(struct BSTNode));
-    here->rgbkey = newkey;
+    struct BST_Node* here = (struct BST_Node*)malloc(sizeof(struct BST_Node));
+    here->key = new_key;
     here->count = 1;
     here->left = NULL;
     here->right = NULL;
     return here;
 }
 
-struct BSTNode* insert(struct BSTNode* node, int newrgbkey)
+struct BST_Node* insert_bst_node(struct BST_Node* node, const int new_key)
 {
     if (node == NULL)
     {
-        return newNode(newrgbkey);
+        return alloc_bst_node(new_key);
     }
-    if (newrgbkey == node->rgbkey)
+    if (new_key == node->key)
     {
         node->count++;
     }
-    if (newrgbkey > node->rgbkey)
+    else if ( new_key > node->key )
     {
-        node->right = insert(node->right, newrgbkey);
+    node->right = insert_bst_node( node->right, new_key );
     }
-    if (newrgbkey < node->rgbkey)
+    else if ( new_key < node->key )
     {
-        node->left = insert(node->left, newrgbkey);
+    node->left = insert_bst_node ( node->left, new_key );
     }
     return node;
-
 }
 
-void traverse(struct BSTNode* rootnode)
+//Iterate through a three dimensional array representing the color histogram.
+//If at least a single color exists (> 0), than increment num_colors counter and return at end.
+int count_colors_3d_histo(int histogram[MAX_VAL][MAX_VAL][MAX_VAL]) {
+    int num_colors = 0;
+    for (int i = 0; i < MAX_VAL; i++) {
+        for (int j = 0; j < MAX_VAL; j++) {
+            for (int k = 0; k < MAX_VAL; k++) {
+                if (histogram[i][j][k] != 0) {
+                    num_colors++;
+                }
+            }
+        }
+    }
+    return num_colors;
+}
+
+int num_cols_bst = 0;
+
+void traverse_bst(const struct BST_Node* root)
 {
-    if (rootnode != NULL)
+    if (root != NULL)
     {
-        traverse(rootnode->left);
-        std::cout<<"RGB Key = " << rootnode->rgbkey << "; Color count = " << rootnode->count << std::endl;
-        traverse(rootnode->right);
+      num_cols_bst++;
+      traverse_bst(root ->left);
+      //std::cout<<"RGB Key = " << root->key << "; Color count = " << root->count << std::endl;
+      traverse_bst(root->right);
     }
 }
 
@@ -195,31 +213,13 @@ static void print_usage(char *prog_name)
 {
   fprintf(stderr, "Color Histogram Test Suite\n\n");
   fprintf(stderr, "Creates color histograms from input .ppm images with various data structures.\n\n");
-  fprintf(stderr, "Current data strucutres utilized in this suite:\n\n");
-  fprintf(stderr, "\t* 3-D array\n\n");
-  fprintf(stderr, "\t* Binary Search Tree\n\n");
   fprintf(stderr, "Usage: %s -i <input image>\n\n", prog_name);
   exit(EXIT_FAILURE);
 }
 
-//Iterate through a three dimensional array representing the color histogram. If at least a single color exists (> 0), than increment num_colors counter and return at end.
-int count_colors_3d_histo(int histogram[MAX_VAL][MAX_VAL][MAX_VAL]) {
-    int num_colors = 0;
-    for (int i = 0; i < MAX_VAL; i++) {
-        for (int j = 0; j < MAX_VAL; j++) {
-            for (int k = 0; k < MAX_VAL; k++) {
-                if (histogram[i][j][k] != 0) {
-                    num_colors++;
-                }
-            }
-        }
-    }
-    return num_colors;
-}
-
 int main(int argc, char **argv)
 {
-  char in_file_name[256];
+    char in_file_name[256];
   RGB_Pixel mean;
   RGB_Image *in_img, *out_img;
 
@@ -243,7 +243,7 @@ int main(int argc, char **argv)
 
   //3-D array histogram
   auto histogram = new int[MAX_VAL][MAX_VAL][MAX_VAL]{};
-  auto start = high_resolution_clock::now();
+  auto start_3d_time = high_resolution_clock::now();
   for (int i = 0; i < in_img->size; i++){
     int redvalue = in_img->data[i].red;
     int greenvalue = in_img->data[i].green;
@@ -251,39 +251,43 @@ int main(int argc, char **argv)
     histogram[redvalue][greenvalue][bluevalue]++;
   }
 
-  auto stop = high_resolution_clock::now();
-  auto duration = duration_cast<microseconds>(stop - start);
-  printf("\nTotal time to add all colors to histogram (3-D array) = %g\n", duration.count() / 1e3);
-  auto start2 = high_resolution_clock::now();
-  int num_cols = count_colors_3d_histo(histogram);
-  auto stop2 = high_resolution_clock::now();
-  auto duration2 = duration_cast<microseconds>(stop2 - start2);
-  printf("\nTotal time to count number of colors in histogram (3-D array) = %g\n", duration2.count() / 1e3);
-  std::cout << "\n" << in_file_name << " has " << num_cols << " different colors.\n\n";
+  auto stop_3d_time = high_resolution_clock::now();
+  auto array3d_duration = duration_cast<microseconds>(stop_3d_time - start_3d_time);
+  printf("\nTotal time to add all colors to histogram (3-D array) = %g\n", array3d_duration.count() / 1e3);
+  auto start_3d_count_time = high_resolution_clock::now();
+  int num_cols_3darray = count_colors_3d_histo(histogram);
+  auto stop_3d_count_time = high_resolution_clock::now();
+  auto array3d_count_duration = duration_cast<microseconds>(stop_3d_count_time - start_3d_count_time);
+  printf("\nTotal time to count number of colors in histogram (3-D array) = %g\n", array3d_count_duration.count() / 1e3);
+  std::cout<<"\nTotal number of colors in " <<in_file_name << " according to 3d array count: " << num_cols_3darray << "\n";  
 
   //BST histogram
-  auto start3 = high_resolution_clock::now();
-  int redvalue = in_img->data[0].red;
-  int greenvalue = in_img->data[0].green;
-  int bluevalue = in_img->data[0].blue;
-  int key = (redvalue * 65536) + (greenvalue * 256) + bluevalue;
-  struct BSTNode* root = insert(root, key);
+  auto start_bst_time = high_resolution_clock::now();
+  unsigned int red_value = in_img->data[0].red;
+  unsigned int green_value = in_img->data[0].green;
+  unsigned int blue_value = in_img->data[0].blue;
+  int key = (red_value << 16) | (green_value << 8) | blue_value;
+  struct BST_Node* root = insert_bst_node(root, key);
   for (int i = 1; i < in_img->size; i++)
   {
-    int redvalue = in_img->data[i].red;
-    int greenvalue = in_img->data[i].green;
-    int bluevalue = in_img->data[i].blue;
-    int newkey = (redvalue * 65536) + (greenvalue * 256) + bluevalue;
-    insert(root, newkey);
+    red_value = in_img->data[i].red;
+    green_value = in_img->data[i].green;
+    blue_value = in_img->data[i].blue;
+    key = (red_value * 65536) + (green_value * 256) + blue_value;
+    insert_bst_node(root, key);
   }
-  auto stop3 = high_resolution_clock::now();
-  auto duration3 = duration_cast<microseconds>(stop3 - start3);
-  printf("\nTotal time to add all colors to histogram (BST) = %g\n", duration3.count() / 1e3);
-  //traverse(root);
+  auto stop_bst_time = high_resolution_clock::now();
+  auto bst_duration = duration_cast<microseconds>(stop_bst_time - start_bst_time);
+  printf("\nTotal time to add all colors to histogram (BST) = %g\n", bst_duration.count() / 1e3);
+  auto start_bst_count_time = high_resolution_clock::now();
+  traverse_bst(root);
+  auto stop_bst_count_time = high_resolution_clock::now();
+  auto bst_count_duration = duration_cast<microseconds>(stop_bst_count_time - start_bst_count_time);
+  printf("\nTotal time to count number of colors in histogram (BST) = %g\n", bst_count_duration.count() / 1e3);
+  std::cout<<"\nTotal number of colors in " <<in_file_name << " according to bst count: " << num_cols_bst << "\n";
   
   free(in_img->data);
   free(in_img);
 
   return EXIT_SUCCESS;
 }
-

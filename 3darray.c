@@ -231,7 +231,7 @@ int main(int argc, char **argv)
 
   //3-D array histogram
   auto histogram = new int[MAX_VAL][MAX_VAL][MAX_VAL]{};
-  auto start = high_resolution_clock::now();
+  auto start_3d_time = high_resolution_clock::now();
   for (int i = 0; i < in_img->size; i++){
     int redvalue = in_img->data[i].red;
     int greenvalue = in_img->data[i].green;
@@ -239,20 +239,18 @@ int main(int argc, char **argv)
     histogram[redvalue][greenvalue][bluevalue]++;
   }
 
-  auto stop = high_resolution_clock::now();
-  auto duration = duration_cast<microseconds>(stop - start);
-  printf("\nTotal time to add all colors to histogram (3-D array) = %g\n", duration.count() / 1e3);
-  auto start2 = high_resolution_clock::now();
-  int num_cols = count_colors_3d_histo(histogram);
-  auto stop2 = high_resolution_clock::now();
-  auto duration2 = duration_cast<microseconds>(stop2 - start2);
-  printf("\nTotal time to count number of colors in histogram (3-D array) = %g\n", duration2.count() / 1e3);
-  std::cout << "\n" << in_file_name << " has " << num_cols << " different colors.\n\n";
-  
+  auto stop_3d_time = high_resolution_clock::now();
+  auto array3d_duration = duration_cast<microseconds>(stop_3d_time - start_3d_time);
+  printf("\nTotal time to add all colors to histogram (3-D array) = %g\n", array3d_duration.count() / 1e3);
+  auto start_3d_count_time = high_resolution_clock::now();
+  int num_cols_3darray = count_colors_3d_histo(histogram);
+  auto stop_3d_count_time = high_resolution_clock::now();
+  auto array3d_count_duration = duration_cast<microseconds>(stop_3d_count_time - start_3d_count_time);
+  printf("\nTotal time to count number of colors in histogram (3-D array) = %g\n", array3d_count_duration.count() / 1e3);
+  std::cout<<"\nTotal number of colors in " <<in_file_name << " according to 3d array count: " << num_cols_3darray << "\n";  
 
   free(in_img->data);
   free(in_img);
 
   return EXIT_SUCCESS;
 }
-
