@@ -210,93 +210,81 @@ RGB_Image * read_PPM(const char *filename, RGB_Pixel *mean)
   return img;
 }
 
-static void print_usage(char *prog_name)
-{
-  fprintf(stderr, "Color Histogram Test Suite\n\n");
-  fprintf(stderr, "Creates color histograms from input .ppm images with various data structures.\n\n");
-  fprintf(stderr, "Usage: %s -i <input image>\n\n", prog_name);
-  exit(EXIT_FAILURE);
-}
-
 int main(int argc, char **argv)
 {
-  char in_file_name[256];
-  RGB_Pixel mean;
-  RGB_Image *in_img, *out_img;
 
   FILE *results;
-  results = fopen("results.txt", "a");
-  if (argc == 1)
+  results = fopen("results.txt", "w");
+  fprintf(results, "%-25s%-25s%-25s%-25s%-25s%-25s%-25s","IMAGE", "TIME TO ADD (BST)", "TIME TO COUNT(BST)", "NUMBER OF COLORS (BST)", "TIME TO ADD (3-D)", "TIME TO COUNT (3-D)", "NUMER OF COLORS (3-D)");
+  const char *pictures[8];
+  pictures[0] = "./images/baboon.ppm";
+  pictures[1] = "./images/fish.ppm";
+  pictures[2] = "./images/girl.ppm";
+  pictures[3] = "./images/goldhill.ppm";
+  pictures[4] = "./images/kodim05.ppm";
+  pictures[5] = "./images/kodim23.ppm";
+  pictures[6] = "./images/peppers.ppm";
+  pictures[7] = "./images/pills.ppm";
+  for (int z = 0; z < 8; z++)
   {
-    print_usage(argv[0]);
-  }
-  for (int i = 1; i < argc; i++)
-  {
-    if (!strcmp(argv[i], "-i"))
-    {
-      strcpy(in_file_name, argv[++i]);
+    char in_file_name[256];
+    RGB_Pixel mean;
+    RGB_Image *in_img;
+    strcpy(in_file_name, pictures[z]);
+
+    in_img = read_PPM(in_file_name, &mean);
+
+    //3-D array histogram
+    auto histogram = new int[MAX_VAL][MAX_VAL][MAX_VAL]{};
+    auto start_3d_time = high_resolution_clock::now();
+    for (int i = 0; i < in_img->size; i++){
+        int redvalue = in_img->data[i].red;
+        int greenvalue = in_img->data[i].green;
+        int bluevalue = in_img->data[i].blue;
+        histogram[redvalue][greenvalue][bluevalue]++;
     }
-    else
+
+    auto stop_3d_time = high_resolution_clock::now();
+    auto array3d_duration = duration_cast<microseconds>(stop_3d_time - start_3d_time);
+
+    auto start_3d_count_time = high_resolution_clock::now();
+    int num_cols_3darray = count_colors_3d_histo(histogram);
+    auto stop_3d_count_time = high_resolution_clock::now();
+    auto array3d_count_duration = duration_cast<microseconds>(stop_3d_count_time - start_3d_count_time);
+    //BST histogram
+    auto start_bst_time = high_resolution_clock::now();
+    unsigned int red_value = in_img->data[0].red;
+    unsigned int green_value = in_img->data[0].green;
+    unsigned int blue_value = in_img->data[0].blue;
+    int key = (red_value << 16) | (green_value << 8) | blue_value;
+    struct BST_Node* root = insert_bst_node(NULL, key);
+    for (int i = 1; i < in_img->size; i++)
     {
-      print_usage(argv[0]);
+        red_value = in_img->data[i].red;
+        green_value = in_img->data[i].green;
+        blue_value = in_img->data[i].blue;
+        key = (red_value * 65536) + (green_value * 256) + blue_value;
+        insert_bst_node(root, key);
     }
+    
+    auto stop_bst_time = high_resolution_clock::now();
+    auto bst_duration = duration_cast<microseconds>(stop_bst_time - start_bst_time);
+    auto start_bst_count_time = high_resolution_clock::now();
+    traverse_bst(root);
+    auto stop_bst_count_time = high_resolution_clock::now();
+    auto bst_count_duration = duration_cast<microseconds>(stop_bst_count_time - start_bst_count_time);
+
+    fprintf(results, "\n");
+    fprintf(results, "%-25s%-25g%-25g%-25d%-25g%-25g%-25d",in_file_name, bst_duration.count() / 1e3, bst_count_duration.count() / 1e3, num_cols_bst, array3d_duration.count() / 1e3, array3d_count_duration.count() / 1e3, num_cols_3darray);
+    
+    num_cols_bst = 0;
+    free(root->left);
+    free(root->right);
+    free(root);
+    free(in_img->data);
+    free(in_img);
+    
   }
-
-  in_img = read_PPM(in_file_name, &mean);
-
-  //3-D array histogram
-  auto histogram = new int[MAX_VAL][MAX_VAL][MAX_VAL]{};
-  auto start_3d_time = high_resolution_clock::now();
-  for (int i = 0; i < in_img->size; i++){
-    int redvalue = in_img->data[i].red;
-    int greenvalue = in_img->data[i].green;
-    int bluevalue = in_img->data[i].blue;
-    histogram[redvalue][greenvalue][bluevalue]++;
-  }
-
-  auto stop_3d_time = high_resolution_clock::now();
-  auto array3d_duration = duration_cast<microseconds>(stop_3d_time - start_3d_time);
-  //printf("\nTotal time to add all colors to histogram (3-D array) = %g\n", array3d_duration.count() / 1e3);
-
-  auto start_3d_count_time = high_resolution_clock::now();
-  int num_cols_3darray = count_colors_3d_histo(histogram);
-  auto stop_3d_count_time = high_resolution_clock::now();
-  auto array3d_count_duration = duration_cast<microseconds>(stop_3d_count_time - start_3d_count_time);
-  //printf("\nTotal time to count number of colors in histogram (3-D array) = %g\n", array3d_count_duration.count() / 1e3);
-  //std::cout<<"\nTotal number of colors in " <<in_file_name << " according to 3d array count: " << num_cols_3darray << "\n";  
-
-  //BST histogram
-  auto start_bst_time = high_resolution_clock::now();
-  unsigned int red_value = in_img->data[0].red;
-  unsigned int green_value = in_img->data[0].green;
-  unsigned int blue_value = in_img->data[0].blue;
-  int key = (red_value << 16) | (green_value << 8) | blue_value;
-  struct BST_Node* root = insert_bst_node(root, key);
-  for (int i = 1; i < in_img->size; i++)
-  {
-    red_value = in_img->data[i].red;
-    green_value = in_img->data[i].green;
-    blue_value = in_img->data[i].blue;
-    key = (red_value * 65536) + (green_value * 256) + blue_value;
-    insert_bst_node(root, key);
-  }
-  auto stop_bst_time = high_resolution_clock::now();
-  auto bst_duration = duration_cast<microseconds>(stop_bst_time - start_bst_time);
-  //printf("\nTotal time to add all colors to histogram (BST) = %g\n", bst_duration.count() / 1e3);
-  auto start_bst_count_time = high_resolution_clock::now();
-  traverse_bst(root);
-  auto stop_bst_count_time = high_resolution_clock::now();
-  auto bst_count_duration = duration_cast<microseconds>(stop_bst_count_time - start_bst_count_time);
-  //printf("\nTotal time to count number of colors in histogram (BST) = %g\n", bst_count_duration.count() / 1e3);
-  //std::cout<<"\nTotal number of colors in " <<in_file_name << " according to bst count: " << num_cols_bst << "\n";
-  
-  free(in_img->data);
-  free(in_img);
-
-  fprintf(results, "%-30s%-30s%-30s%-30s%-30s%-30s%-30s","IMAGE", "TIME TO ADD (BST)", "TIME TO COUNT(BST)", "NUMBER OF COLORS (BST)", "TIME TO ADD (3-D)", "TIME TO COUNT (3-D)", "NUMER OF COLORS (3-D)");
-  fprintf(results, "\n");
-  fprintf(results, "%-30s%-30g%-30g%-30d%-30g%-30g%-30d",in_file_name, bst_duration.count() / 1e3, bst_count_duration.count() / 1e3, num_cols_bst, array3d_duration.count() / 1e3, array3d_count_duration.count() / 1e3, num_cols_3darray);
   fclose(results);
-
   return EXIT_SUCCESS;
 }

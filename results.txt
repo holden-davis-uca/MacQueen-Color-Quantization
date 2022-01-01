@@ -1,0 +1,9 @@
+IMAGE                    TIME TO ADD (BST)        TIME TO COUNT(BST)       NUMBER OF COLORS (BST)   TIME TO ADD (3-D)        TIME TO COUNT (3-D)      NUMER OF COLORS (3-D)    
+./images/baboon.ppm      78.324                   4.937                    230427                   4.148                    5.478                    230427                   
+./images/fish.ppm        11.472                   0.276                    28170                    0.79                     5.5                      28170                    
+./images/girl.ppm        56.633                   1.756                    148279                   2.055                    4.76                     148279                   
+./images/goldhill.ppm    71.929                   1.085                    90966                    3.313                    4.651                    90966                    
+./images/kodim05.ppm     55.227                   1.013                    63558                    2.785                    4.628                    63558                    
+./images/kodim23.ppm     70.464                   0.824                    72079                    2.562                    4.851                    72079                    
+./images/peppers.ppm     58.136                   2.745                    183525                   2.446                    5.186                    183525                   
+./images/pills.ppm       98.569                   3.051                    206609                   3.852                    5.028                    206609                   
