@@ -66,7 +66,7 @@ struct BST_Node* insert_bst_node(struct BST_Node* node, const int new_key)
     {
     node->right = insert_bst_node( node->right, new_key );
     }
-    else if ( new_key < node->key )
+    else
     {
     node->left = insert_bst_node ( node->left, new_key );
     }
@@ -234,7 +234,7 @@ int main(int argc, char **argv)
     red_value = in_img->data[i].red;
     green_value = in_img->data[i].green;
     blue_value = in_img->data[i].blue;
-    key = (red_value * 65536) + (green_value * 256) + blue_value;
+    key = (red_value << 16) | (green_value << 8) | blue_value;
     insert_bst_node(root, key);
   }
   auto stop_bst_time = high_resolution_clock::now();

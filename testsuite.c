@@ -1,8 +1,6 @@
 /* 
   To compile:
   g++ -O3 -o testsuite testsuite.c -lm
-
-  For a list of command line options: ./testsuite
 */
 
 #include <chrono>
@@ -70,7 +68,7 @@ struct BST_Node* insert_bst_node(struct BST_Node* node, const int new_key)
     {
     node->right = insert_bst_node( node->right, new_key );
     }
-    else if ( new_key < node->key )
+    else
     {
     node->left = insert_bst_node ( node->left, new_key );
     }
@@ -212,7 +210,6 @@ RGB_Image * read_PPM(const char *filename, RGB_Pixel *mean)
 
 int main(int argc, char **argv)
 {
-
   FILE *results;
   results = fopen("results.txt", "w");
   fprintf(results, "%-25s%-25s%-25s%-25s%-25s%-25s%-25s","IMAGE", "TIME TO ADD (BST)", "TIME TO COUNT(BST)", "NUMBER OF COLORS (BST)", "TIME TO ADD (3-D)", "TIME TO COUNT (3-D)", "NUMER OF COLORS (3-D)");
@@ -263,7 +260,7 @@ int main(int argc, char **argv)
         red_value = in_img->data[i].red;
         green_value = in_img->data[i].green;
         blue_value = in_img->data[i].blue;
-        key = (red_value * 65536) + (green_value * 256) + blue_value;
+        key = (red_value << 16) | (green_value << 8) | blue_value;
         insert_bst_node(root, key);
     }
     

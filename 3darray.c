@@ -159,43 +159,6 @@ read_PPM(const char *filename, RGB_Pixel *mean)
   return img;
 }
 
-void write_PPM(const RGB_Image *img, const char *filename)
-{
-  uchar byte;
-  FILE *fp;
-
-  fp = fopen(filename, "wb");
-  if (!fp)
-  {
-    fprintf(stderr, "Unable to open file '%s'!\n", filename);
-    exit(EXIT_FAILURE);
-  }
-
-  fprintf(fp, "P6\n");
-  fprintf(fp, "%d %d\n", img->width, img->height);
-  fprintf(fp, "%d\n", 255);
-
-  for (int i = 0; i < img->size; i++)
-  {
-    byte = (uchar)img->data[i].red;
-    fwrite(&byte, sizeof(uchar), 1, fp);
-    byte = (uchar)img->data[i].green;
-    fwrite(&byte, sizeof(uchar), 1, fp);
-    byte = (uchar)img->data[i].blue;
-    fwrite(&byte, sizeof(uchar), 1, fp);
-  }
-
-  fclose(fp);
-}
-
-/* Maximin initialization method */
-/* 
-   For a comprehensive survey of k-means initialization methods, see
-   M. E. Celebi, H. Kingravi, and P. A. Vela, 
-   A Comparative Study of Efficient Initialization Methods for the K-Means Clustering Algorithm, 
-   Expert Systems with Applications, vol. 40, no. 1, pp. 200�210, 2013.
- */
-
 static void
 print_usage(char *prog_name)
 {
