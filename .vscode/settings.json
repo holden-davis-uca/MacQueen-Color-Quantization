@@ -4,6 +4,7 @@
         "iostream": "c",
         "thread": "c",
         "chrono": "c",
-        "ostream": "c"
+        "ostream": "c",
+        "cstdio": "c"
     }
 }

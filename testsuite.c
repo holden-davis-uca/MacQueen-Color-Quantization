@@ -15,6 +15,9 @@ using namespace std::chrono;
 //Maximum value for an r, g, or b value
 int const MAX_VAL = 256;
 
+//Maximum value for an any (r * 65536 + g * 256 + b) value
+int const MAX_VAL_COMBINED = ((256 * 65536) + (256 * 256) + (256));
+
 typedef unsigned char uchar;
 typedef unsigned long ulong;
 
@@ -73,6 +76,20 @@ struct BST_Node* insert_bst_node(struct BST_Node* node, const int new_key)
     node->left = insert_bst_node ( node->left, new_key );
     }
     return node;
+}
+
+//Iterate through a one dimensional array representing the color histogram.
+//If at least a single color exists (> 0), than increment num_colors counter and return at end.
+int count_colors_1d_histo(int histogram[MAX_VAL_COMBINED]) {
+    int num_colors = 0;
+    for (int i = 0; i < MAX_VAL_COMBINED; i++)
+    {
+      if (histogram[i] != 0)
+      {
+        num_colors++;
+      }
+    }
+    return num_colors;
 }
 
 //Iterate through a three dimensional array representing the color histogram.
@@ -212,7 +229,7 @@ int main(int argc, char **argv)
 {
   FILE *results;
   results = fopen("results.txt", "w");
-  fprintf(results, "%-25s%-25s%-25s%-25s%-25s%-25s%-25s","IMAGE", "TIME TO ADD (BST)", "TIME TO COUNT(BST)", "NUMBER OF COLORS (BST)", "TIME TO ADD (3-D)", "TIME TO COUNT (3-D)", "NUMER OF COLORS (3-D)");
+  fprintf(results, "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s","IMAGE", "TIME TO ADD (BST)", "TIME TO COUNT(BST)", "NUMBER OF COLORS (BST)", "TIME TO ADD (3-D)", "TIME TO COUNT (3-D)", "NUMBER OF COLORS (3-D)", "TIME TO ADD (1-D)", "TIME TO COUNT (1-D)", "NUMBER OF COLORS (1-D)");
   const char *pictures[8];
   pictures[0] = "./images/baboon.ppm";
   pictures[1] = "./images/fish.ppm";
@@ -231,21 +248,40 @@ int main(int argc, char **argv)
 
     in_img = read_PPM(in_file_name, &mean);
 
+     //1-D array histogram
+    auto histogram1d = new int[MAX_VAL_COMBINED]{};
+    auto start_1d_time = high_resolution_clock::now();
+    for (int i = 0; i < in_img->size; i++)
+    {
+      unsigned int red_value = in_img->data[i].red;
+      unsigned int green_value = in_img->data[i].green;
+      unsigned int blue_value = in_img->data[i].blue;
+      int key = (red_value << 16) | (green_value << 8) | blue_value;
+      histogram1d[key]++;
+    }
+    auto stop_1d_time = high_resolution_clock::now();
+    auto array1d_duration = duration_cast<microseconds>(stop_1d_time - start_1d_time);
+
+    auto start_1d_count_time = high_resolution_clock::now();
+    int num_cols_1darray = count_colors_1d_histo(histogram1d);
+    auto stop_1d_count_time = high_resolution_clock::now();
+    auto array1d_count_duration = duration_cast<microseconds>(stop_1d_count_time - start_1d_count_time);
+
     //3-D array histogram
-    auto histogram = new int[MAX_VAL][MAX_VAL][MAX_VAL]{};
+    auto histogram3d = new int[MAX_VAL][MAX_VAL][MAX_VAL]{};
     auto start_3d_time = high_resolution_clock::now();
     for (int i = 0; i < in_img->size; i++){
         int redvalue = in_img->data[i].red;
         int greenvalue = in_img->data[i].green;
         int bluevalue = in_img->data[i].blue;
-        histogram[redvalue][greenvalue][bluevalue]++;
+        histogram3d[redvalue][greenvalue][bluevalue]++;
     }
 
     auto stop_3d_time = high_resolution_clock::now();
     auto array3d_duration = duration_cast<microseconds>(stop_3d_time - start_3d_time);
 
     auto start_3d_count_time = high_resolution_clock::now();
-    int num_cols_3darray = count_colors_3d_histo(histogram);
+    int num_cols_3darray = count_colors_3d_histo(histogram3d);
     auto stop_3d_count_time = high_resolution_clock::now();
     auto array3d_count_duration = duration_cast<microseconds>(stop_3d_count_time - start_3d_count_time);
     //BST histogram
@@ -272,7 +308,7 @@ int main(int argc, char **argv)
     auto bst_count_duration = duration_cast<microseconds>(stop_bst_count_time - start_bst_count_time);
 
     fprintf(results, "\n");
-    fprintf(results, "%-25s%-25g%-25g%-25d%-25g%-25g%-25d",in_file_name, bst_duration.count() / 1e3, bst_count_duration.count() / 1e3, num_cols_bst, array3d_duration.count() / 1e3, array3d_count_duration.count() / 1e3, num_cols_3darray);
+    fprintf(results, "%-25s%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d",in_file_name, bst_duration.count() / 1e3, bst_count_duration.count() / 1e3, num_cols_bst, array3d_duration.count() / 1e3, array3d_count_duration.count() / 1e3, num_cols_3darray, array1d_duration.count() / 1e3, array1d_count_duration.count() / 1e3, num_cols_1darray);
     
     num_cols_bst = 0;
     free(root->left);
