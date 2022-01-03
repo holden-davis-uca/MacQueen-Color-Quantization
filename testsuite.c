@@ -114,10 +114,28 @@ void traverse_bst(const struct BST_Node* root)
 {
     if (root != NULL)
     {
-      num_cols_bst++;
+      if (root->count != 0)
+      {
+        num_cols_bst++;
+      }
       traverse_bst(root ->left);
       //std::cout<<"RGB Key = " << root->key << "; Color count = " << root->count << std::endl;
       traverse_bst(root->right);
+    }
+}
+
+int num_cols_2d_bst = 0;
+void traverse_2d_bst(const struct BST_Node* root)
+{
+    if (root != NULL)
+    {
+      if (root->count != 0)
+      {
+        num_cols_2d_bst++;
+      }
+      traverse_2d_bst(root ->left);
+      //std::cout<<"RGB Key = " << root->key << "; Color count = " << root->count << std::endl;
+      traverse_2d_bst(root->right);
     }
 }
 
@@ -229,7 +247,7 @@ int main(int argc, char **argv)
 {
   FILE *results;
   results = fopen("results.txt", "w");
-  fprintf(results, "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s","IMAGE", "TIME TO ADD (BST)", "TIME TO COUNT(BST)", "NUMBER OF COLORS (BST)", "TIME TO ADD (3-D)", "TIME TO COUNT (3-D)", "NUMBER OF COLORS (3-D)", "TIME TO ADD (1-D)", "TIME TO COUNT (1-D)", "NUMBER OF COLORS (1-D)");
+  fprintf(results, "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s","IMAGE", "TIME TO ADD (2-D BST)","TIME TO COUNT(2-D BST)","NUMBER OF COLORS (2-D BST)","TIME TO ADD (BST)", "TIME TO COUNT(BST)", "NUMBER OF COLORS (BST)", "TIME TO ADD (3-D)", "TIME TO COUNT (3-D)", "NUMBER OF COLORS (3-D)", "TIME TO ADD (1-D)", "TIME TO COUNT (1-D)", "NUMBER OF COLORS (1-D)");
   const char *pictures[8];
   pictures[0] = "./images/baboon.ppm";
   pictures[1] = "./images/fish.ppm";
@@ -306,10 +324,33 @@ int main(int argc, char **argv)
     traverse_bst(root);
     auto stop_bst_count_time = high_resolution_clock::now();
     auto bst_count_duration = duration_cast<microseconds>(stop_bst_count_time - start_bst_count_time);
+  
+    //2-D BST
+    auto start_2d_bst_time = high_resolution_clock::now();
+    auto bst2darray = new struct BST_Node[MAX_VAL][MAX_VAL]{};
+    for (int i = 0; i < in_img->size; i++)
+    {
+        int red_value = in_img->data[i].red;
+        int green_value = in_img->data[i].green;
+        int blue_value = in_img->data[i].blue;
+        struct BST_Node* root = insert_bst_node(&bst2darray[red_value][green_value], blue_value);
+    }
+    auto stop_2d_bst_time = high_resolution_clock::now();
+    auto bst_2d_duration = duration_cast<microseconds>(stop_2d_bst_time - start_2d_bst_time);
+    auto start_2d_bst_count_time = high_resolution_clock::now();
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+      for (int j = 0; j < MAX_VAL; j++)
+      {
+        traverse_2d_bst(&bst2darray[i][j]);
+      }
+    }
+    auto stop_2d_bst_count_time = high_resolution_clock::now();
+    auto bst_2d_count_duration = duration_cast<microseconds>(stop_2d_bst_count_time - start_2d_bst_count_time);
 
     fprintf(results, "\n");
-    fprintf(results, "%-25s%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d",in_file_name, bst_duration.count() / 1e3, bst_count_duration.count() / 1e3, num_cols_bst, array3d_duration.count() / 1e3, array3d_count_duration.count() / 1e3, num_cols_3darray, array1d_duration.count() / 1e3, array1d_count_duration.count() / 1e3, num_cols_1darray);
-    
+    fprintf(results, "%-25s%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d",in_file_name, bst_2d_duration.count() / 1e3, bst_2d_count_duration.count() / 1e3, num_cols_2d_bst, bst_duration.count() / 1e3, bst_count_duration.count() / 1e3, num_cols_bst, array3d_duration.count() / 1e3, array3d_count_duration.count() / 1e3, num_cols_3darray, array1d_duration.count() / 1e3, array1d_count_duration.count() / 1e3, num_cols_1darray);
+    num_cols_2d_bst = 0;
     num_cols_bst = 0;
     free(root->left);
     free(root->right);

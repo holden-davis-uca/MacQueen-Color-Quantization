@@ -79,7 +79,10 @@ void traverse_bst(const struct BST_Node* root)
 {
     if (root != NULL)
     {
-      num_cols_bst++;
+      if (root->count != 0)
+      {
+        num_cols_bst++;
+      }
       traverse_bst(root ->left);
       //std::cout<<"RGB Key = " << root->key << "; Color count = " << root->count << std::endl;
       traverse_bst(root->right);

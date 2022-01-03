@@ -76,19 +76,6 @@ struct BST_Node* insert_bst_node(struct BST_Node* node, const int new_key)
     return node;
 }
 
-int num_cols_bst = 0;
-
-void traverse_bst(const struct BST_Node* root)
-{
-    if (root != NULL)
-    {
-      num_cols_bst++;
-      traverse_bst(root ->left);
-      //std::cout<<"RGB Key = " << root->key << "; Color count = " << root->count << std::endl;
-      traverse_bst(root->right);
-    }
-}
-
 RGB_Image * read_PPM(const char *filename, RGB_Pixel *mean)
 {
   uchar byte;
@@ -200,11 +187,17 @@ static void print_usage(char *prog_name)
   fprintf(stderr, "Usage: %s -i <input image>\n\n", prog_name);
   exit(EXIT_FAILURE);
 }
+
+int num_cols_bst = 0;
+
 void traverse_bst(const struct BST_Node* root)
 {
     if (root != NULL)
     {
-      num_cols_bst++;
+      if (root->count != 0)
+      {
+        num_cols_bst++;
+      }
       traverse_bst(root ->left);
       //std::cout<<"RGB Key = " << root->key << "; Color count = " << root->count << std::endl;
       traverse_bst(root->right);
@@ -235,16 +228,30 @@ int main(int argc, char **argv)
     in_img = read_PPM(in_file_name, &mean);
 
     //2-D BST histogram
-    auto bst2darray = new BST_Node[MAX_VAL][MAX_VAL]{};
+    auto start_2d_bst_time = high_resolution_clock::now();
+    auto bst2darray = new struct BST_Node[MAX_VAL][MAX_VAL]{};
     for (int i = 0; i < in_img->size; i++)
     {
         int red_value = in_img->data[i].red;
         int green_value = in_img->data[i].green;
         int blue_value = in_img->data[i].blue;
-        struct BST_Node* root = insert_bst_node(root, blue_value);
-        bst2darray[red_value][green_value] = *root;
+        struct BST_Node* root = insert_bst_node(&bst2darray[red_value][green_value], blue_value);
     }
-
+    auto stop_2d_bst_time = high_resolution_clock::now();
+    auto bst_2d_duration = duration_cast<microseconds>(stop_2d_bst_time - start_2d_bst_time);
+    printf("\nTotal time to add all colors to histogram (BST) = %g\n", bst_2d_duration.count() / 1e3);
+    auto start_2d_bst_count_time = high_resolution_clock::now();
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+      for (int j = 0; j < MAX_VAL; j++)
+      {
+        traverse_bst(&bst2darray[i][j]);
+      }
+    }
+    auto stop_2d_bst_count_time = high_resolution_clock::now();
+    auto bst_2d_count_duration = duration_cast<microseconds>(stop_2d_bst_count_time - start_2d_bst_count_time);
+    printf("\nTotal time to count number of colors in histogram (2-D BST) = %g\n", bst_2d_count_duration.count() / 1e3);
+    std::cout<<"\nTotal number of colors in " <<in_file_name << " according to bst count: " << num_cols_bst << "\n";
     free(in_img->data);
     free(in_img);
 
