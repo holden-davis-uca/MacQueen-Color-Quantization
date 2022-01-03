@@ -3,6 +3,14 @@
 # Current codebase:
 
 - **images**, a folder containing various .ppm images to test on.
+    - baboon.ppm
+    - fish.ppm
+    - girl.ppm
+    - goldhill.ppm
+    - kodim05.ppm
+    - kodim23.ppm
+    - peppers.ppm
+    - pills.ppm
 - **mkm.c**, the original work from the above repository (used for image input/output functions).
 - **1darray.c**, the implementation of a color histogram using a flattened 1-D array.
 - **3darray.c**, the implementation of a color histogram using a 3-D array.
