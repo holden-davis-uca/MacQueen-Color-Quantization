@@ -47,6 +47,53 @@ struct BST_Node
     struct BST_Node *right;
 };
 
+struct SLL_Node
+{
+  int key;
+  int count;
+  struct SLL_Node *next;
+};
+
+struct SLL_Node *alloc_sll_node(const int new_key)
+{
+  struct SLL_Node *here = (struct SLL_Node *)malloc(sizeof(struct SLL_Node));
+  here->key = new_key;
+  here->count = 1;
+  here->next = NULL;
+  return here;
+}
+
+struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
+{
+  if (node == NULL)
+  {
+    return alloc_sll_node(new_key);
+  }
+  if (new_key == node->key)
+  {
+    node->count++;
+  }
+  else
+  {
+    node->next = insert_sll_node(node->next, new_key);
+  }
+  return node;
+}
+
+int num_cols_2dsll = 0;
+
+void traverse_2dsll(const struct SLL_Node *head)
+{
+  if (head != NULL)
+  {
+    if (head->count != 0)
+    {
+      num_cols_2dsll++;
+    }
+    traverse_2dsll(head->next);
+  }
+}
+
 struct BST_Node* alloc_bst_node(const int new_key)
 {
     struct BST_Node* here = (struct BST_Node*)malloc(sizeof(struct BST_Node));
@@ -247,7 +294,7 @@ int main(int argc, char **argv)
 {
   FILE *results;
   results = fopen("results.txt", "w");
-  fprintf(results, "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s","IMAGE", "TIME TO ADD (2-D BST)","TIME TO COUNT(2-D BST)","NUMBER OF COLORS (2-D BST)","TIME TO ADD (BST)", "TIME TO COUNT(BST)", "NUMBER OF COLORS (BST)", "TIME TO ADD (3-D)", "TIME TO COUNT (3-D)", "NUMBER OF COLORS (3-D)", "TIME TO ADD (1-D)", "TIME TO COUNT (1-D)", "NUMBER OF COLORS (1-D)");
+  fprintf(results, "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s","IMAGE", "TIME TO ADD (2-D SLL)","TIME TO COUNT (2-D SLL)","NUMBER OF COLORS (2-D SLL)","TIME TO ADD (2-D BST)","TIME TO COUNT(2-D BST)","NUMBER OF COLORS (2-D BST)","TIME TO ADD (BST)", "TIME TO COUNT(BST)", "NUMBER OF COLORS (BST)", "TIME TO ADD (3-D)", "TIME TO COUNT (3-D)", "NUMBER OF COLORS (3-D)", "TIME TO ADD (1-D)", "TIME TO COUNT (1-D)", "NUMBER OF COLORS (1-D)");
   const char *pictures[8];
   pictures[0] = "./images/baboon.ppm";
   pictures[1] = "./images/fish.ppm";
@@ -348,10 +395,35 @@ int main(int argc, char **argv)
     auto stop_2d_bst_count_time = high_resolution_clock::now();
     auto bst_2d_count_duration = duration_cast<microseconds>(stop_2d_bst_count_time - start_2d_bst_count_time);
 
+    //2-D SLL
+    auto start_2d_sll_time = high_resolution_clock::now();
+    auto sll2darray = new struct SLL_Node[MAX_VAL][MAX_VAL]{};
+
+    for (int i = 0; i < in_img->size; i++)
+    {
+      int red_value = in_img->data[i].red;
+      int green_value = in_img->data[i].green;
+      int blue_value = in_img->data[i].blue;
+      struct SLL_Node* head = insert_sll_node(&sll2darray[red_value][green_value], blue_value);
+    }
+    auto stop_2d_sll_time = high_resolution_clock::now();
+    auto sll_2d_duration = duration_cast<microseconds>(stop_2d_sll_time - start_2d_sll_time);
+    auto start_2d_sll_count_time = high_resolution_clock::now();
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+      for (int j = 0; j < MAX_VAL; j++)
+      {
+        traverse_2dsll(&sll2darray[i][j]);
+      }
+    }
+    auto stop_2d_sll_count_time = high_resolution_clock::now();
+    auto sll_2d_count_duration = duration_cast<microseconds>(stop_2d_sll_count_time - start_2d_sll_count_time);
+  
     fprintf(results, "\n");
-    fprintf(results, "%-25s%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d",in_file_name, bst_2d_duration.count() / 1e3, bst_2d_count_duration.count() / 1e3, num_cols_2d_bst, bst_duration.count() / 1e3, bst_count_duration.count() / 1e3, num_cols_bst, array3d_duration.count() / 1e3, array3d_count_duration.count() / 1e3, num_cols_3darray, array1d_duration.count() / 1e3, array1d_count_duration.count() / 1e3, num_cols_1darray);
+    fprintf(results, "%-25s%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d",in_file_name, sll_2d_duration.count() / 1e3, sll_2d_count_duration.count() / 1e3, num_cols_2dsll, bst_2d_duration.count() / 1e3, bst_2d_count_duration.count() / 1e3, num_cols_2d_bst, bst_duration.count() / 1e3, bst_count_duration.count() / 1e3, num_cols_bst, array3d_duration.count() / 1e3, array3d_count_duration.count() / 1e3, num_cols_3darray, array1d_duration.count() / 1e3, array1d_count_duration.count() / 1e3, num_cols_1darray);
     num_cols_2d_bst = 0;
     num_cols_bst = 0;
+    num_cols_2dsll = 0;
     free(root->left);
     free(root->right);
     free(root);

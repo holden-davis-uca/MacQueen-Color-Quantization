@@ -1,8 +1,8 @@
 /* 
   To compile:
-  g++ -O3 -o 2dbst 2dbst.c -lm
+  g++ -O3 -o 2dsll 2dsll.c -lm
 
-  For a list of command line options: ./2dbst
+  For a list of command line options: ./2dsll
 */
 
 #include <chrono>
@@ -37,62 +37,54 @@ typedef struct
   RGB_Pixel *data;
 } RGB_Image;
 
-struct BST_Node
+struct SLL_Node
 {
-    int key;
-    int count;
-    struct BST_Node *left;
-    struct BST_Node *right;
+  int key;
+  int count;
+  struct SLL_Node *next;
 };
 
-struct BST_Node* alloc_bst_node(const int new_key)
+struct SLL_Node *alloc_sll_node(const int new_key)
 {
-    struct BST_Node* here = (struct BST_Node*)malloc(sizeof(struct BST_Node));
-    here->key = new_key;
-    here->count = 1;
-    here->left = NULL;
-    here->right = NULL;
-    return here;
+  struct SLL_Node *here = (struct SLL_Node *)malloc(sizeof(struct SLL_Node));
+  here->key = new_key;
+  here->count = 1;
+  here->next = NULL;
+  return here;
 }
 
-struct BST_Node* insert_bst_node(struct BST_Node* node, const int new_key)
+struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
 {
-    if (node == NULL)
-    {
-        return alloc_bst_node(new_key);
-    }
-    if (new_key == node->key)
-    {
-        node->count++;
-    }
-    else if ( new_key > node->key )
-    {
-    node->right = insert_bst_node( node->right, new_key );
-    }
-    else
-    {
-    node->left = insert_bst_node ( node->left, new_key );
-    }
-    return node;
+  if (node == NULL)
+  {
+    return alloc_sll_node(new_key);
+  }
+  if (new_key == node->key)
+  {
+    node->count++;
+  }
+  else
+  {
+    node->next = insert_sll_node(node->next, new_key);
+  }
+  return node;
 }
 
-int num_cols_bst = 0;
+int num_cols_2dsll = 0;
 
-void traverse_bst(const struct BST_Node* root)
+void traverse_2dsll(const struct SLL_Node *head)
 {
-    if (root != NULL)
+  if (head != NULL)
+  {
+    if (head->count != 0)
     {
-      if (root->count != 0)
-      {
-        num_cols_bst++;
-      }
-      traverse_bst(root ->left);
-      //std::cout<<"RGB Key = " << root->key << "; Color count = " << root->count << std::endl;
-      traverse_bst(root->right);
+      num_cols_2dsll++;
     }
+    traverse_2dsll(head->next);
+  }
 }
 
-RGB_Image * read_PPM(const char *filename, RGB_Pixel *mean)
+RGB_Image *read_PPM(const char *filename, RGB_Pixel *mean)
 {
   uchar byte;
   char buff[16];
@@ -206,55 +198,57 @@ static void print_usage(char *prog_name)
 
 int main(int argc, char **argv)
 {
-    char in_file_name[256];
-    RGB_Pixel mean;
-    RGB_Image *in_img, *out_img;
+  char in_file_name[256];
+  RGB_Pixel mean;
+  RGB_Image *in_img, *out_img;
 
-    if (argc == 1)
-    {
+  if (argc == 1)
+  {
     print_usage(argv[0]);
-    }
-    for (int i = 1; i < argc; i++)
-    {
+  }
+  for (int i = 1; i < argc; i++)
+  {
     if (!strcmp(argv[i], "-i"))
     {
-        strcpy(in_file_name, argv[++i]);
+      strcpy(in_file_name, argv[++i]);
     }
     else
     {
-        print_usage(argv[0]);
+      print_usage(argv[0]);
     }
-    }
+  }
 
-    in_img = read_PPM(in_file_name, &mean);
+  in_img = read_PPM(in_file_name, &mean);
 
-    //2-D BST histogram
-    auto start_2d_bst_time = high_resolution_clock::now();
-    auto bst2darray = new struct BST_Node[MAX_VAL][MAX_VAL]{};
-    for (int i = 0; i < in_img->size; i++)
+  //2-D sll histogram
+  auto start_2d_sll_time = high_resolution_clock::now();
+  auto sll2darray = new struct SLL_Node[MAX_VAL][MAX_VAL]{};
+
+  for (int i = 0; i < in_img->size; i++)
+  {
+    int red_value = in_img->data[i].red;
+    int green_value = in_img->data[i].green;
+    int blue_value = in_img->data[i].blue;
+    struct SLL_Node* head = insert_sll_node(&sll2darray[red_value][green_value], blue_value);
+  }
+  auto stop_2d_sll_time = high_resolution_clock::now();
+  auto sll_2d_duration = duration_cast<microseconds>(stop_2d_sll_time - start_2d_sll_time);
+  printf("\nTotal time to add all colors to histogram (2-D SLL) = %g\n", sll_2d_duration.count() / 1e3);
+  auto start_2d_sll_count_time = high_resolution_clock::now();
+  for (int i = 0; i < MAX_VAL; i++)
+  {
+    for (int j = 0; j < MAX_VAL; j++)
     {
-        int red_value = in_img->data[i].red;
-        int green_value = in_img->data[i].green;
-        int blue_value = in_img->data[i].blue;
-        struct BST_Node* root = insert_bst_node(&bst2darray[red_value][green_value], blue_value);
+      traverse_2dsll(&sll2darray[i][j]);
     }
-    auto stop_2d_bst_time = high_resolution_clock::now();
-    auto bst_2d_duration = duration_cast<microseconds>(stop_2d_bst_time - start_2d_bst_time);
-    printf("\nTotal time to add all colors to histogram (BST) = %g\n", bst_2d_duration.count() / 1e3);
-    auto start_2d_bst_count_time = high_resolution_clock::now();
-    for (int i = 0; i < MAX_VAL; i++)
-    {
-      for (int j = 0; j < MAX_VAL; j++)
-      {
-        traverse_bst(&bst2darray[i][j]);
-      }
-    }
-    auto stop_2d_bst_count_time = high_resolution_clock::now();
-    auto bst_2d_count_duration = duration_cast<microseconds>(stop_2d_bst_count_time - start_2d_bst_count_time);
-    printf("\nTotal time to count number of colors in histogram (2-D BST) = %g\n", bst_2d_count_duration.count() / 1e3);
-    std::cout<<"\nTotal number of colors in " <<in_file_name << " according to bst count: " << num_cols_bst << "\n";
-    free(in_img->data);
-    free(in_img);
+  }
+  auto stop_2d_sll_count_time = high_resolution_clock::now();
+  auto sll_2d_count_duration = duration_cast<microseconds>(stop_2d_sll_count_time - start_2d_sll_count_time);
+  printf("\nTotal time to count number of colors in histogram (2-D SLL) = %g\n", sll_2d_count_duration.count() / 1e3);
+  std::cout << "\nTotal number of colors in " << in_file_name << " according to 2-D SLL count: " << num_cols_2dsll << "\n";
 
-    return EXIT_SUCCESS;
+  free(in_img->data);
+  free(in_img);
+
+  return EXIT_SUCCESS;
 }

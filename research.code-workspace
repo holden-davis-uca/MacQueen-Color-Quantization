@@ -12,7 +12,10 @@
 			"thread": "c",
 			"chrono": "c",
 			"ostream": "c",
-			"cstdio": "c"
+			"cstdio": "c",
+			"iterator": "c",
+			"xmemory": "c",
+			"xtree": "c"
 		}
 	}
 }
