@@ -14,6 +14,7 @@
 - **mkm.c**, the original work from the above repository (used for image input/output functions).
 - **1darray.c**, the implementation of a color histogram using a flattened 1-D array.
 - **3darray.c**, the implementation of a color histogram using a 3-D array.
+- **2dsll.c**, the implementation of a color histogram using a 2-D array whose elements are singly linked lists.
 - **2dbst.c**, the implementation of a color histogram using a 2-D array whose elements are binary search trees.
 - **bst.c**, the implementation of a color histogram using a binary search tree.
 - **testsuite.c**, a file combining all previous methods (used for testing timing and comparing methods against each other).
