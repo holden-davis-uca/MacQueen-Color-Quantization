@@ -10,32 +10,13 @@
 #include <iostream>
 #include <math.h>
 #include <string.h>
+#include <stdio.h>
+#include "util.c"
 
 using namespace std::chrono;
 
 //Maximum value for an r, g, or b value
 int const MAX_VAL = 256;
-
-typedef unsigned char uchar;
-typedef unsigned long ulong;
-
-typedef struct
-{
-  double red, green, blue;
-} RGB_Pixel;
-
-typedef struct
-{
-  int size;
-  RGB_Pixel center;
-} RGB_Cluster;
-
-typedef struct
-{
-  int width, height;
-  int size;
-  RGB_Pixel *data;
-} RGB_Image;
 
 struct SLL_Node
 {
@@ -70,136 +51,26 @@ struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
   return node;
 }
 
-int num_cols_2dsll = 0;
-
-void traverse_2dsll(const struct SLL_Node *head)
+int traverse_2dsll(const struct SLL_Node *head)
 {
-  if (head != NULL)
+  if (head == NULL)
   {
-    if (head->count != 0)
+    return 0;
+  }
+  else
+  {
+    if (head->count == 0)
     {
-      num_cols_2dsll++;
+      return (0 + traverse_2dsll(head->next));
     }
-    traverse_2dsll(head->next);
+    else
+      return (1 + traverse_2dsll(head->next));
   }
-}
-
-RGB_Image *read_PPM(const char *filename, RGB_Pixel *mean)
-{
-  uchar byte;
-  char buff[16];
-  int c, max_rgb_val, i = 0;
-  FILE *fp;
-  RGB_Pixel *pixel;
-  RGB_Image *img;
-
-  fp = fopen(filename, "rb");
-  if (!fp)
-  {
-    fprintf(stderr, "Unable to open file '%s'!\n", filename);
-    exit(EXIT_FAILURE);
-  }
-
-  /* read image format */
-  if (!fgets(buff, sizeof(buff), fp))
-  {
-    perror(filename);
-    exit(EXIT_FAILURE);
-  }
-
-  /*check the image format to make sure that it is binary */
-  if (buff[0] != 'P' || buff[1] != '6')
-  {
-    fprintf(stderr, "Invalid image format (must be 'P6')!\n");
-    exit(EXIT_FAILURE);
-  }
-
-  img = (RGB_Image *)malloc(sizeof(RGB_Image));
-  if (!img)
-  {
-    fprintf(stderr, "Unable to allocate memory!\n");
-    exit(EXIT_FAILURE);
-  }
-
-  /* skip comments */
-  c = getc(fp);
-  while (c == '#')
-  {
-    while (getc(fp) != '\n')
-      ;
-    c = getc(fp);
-  }
-
-  ungetc(c, fp);
-
-  /* read image dimensions */
-  if (fscanf(fp, "%u %u", &img->width, &img->height) != 2)
-  {
-    fprintf(stderr, "Invalid image dimensions ('%s')!\n", filename);
-    exit(EXIT_FAILURE);
-  }
-
-  /* read maximum component value */
-  if (fscanf(fp, "%d", &max_rgb_val) != 1)
-  {
-    fprintf(stderr, "Invalid maximum R, G, B value ('%s')!\n", filename);
-    exit(EXIT_FAILURE);
-  }
-
-  /* validate maximum component value */
-  if (max_rgb_val != 255)
-  {
-    fprintf(stderr, "'%s' is not a 24-bit image!\n", filename);
-    exit(EXIT_FAILURE);
-  }
-
-  while (fgetc(fp) != '\n')
-    ;
-
-  /* allocate memory for pixel data */
-  img->size = img->height * img->width;
-  img->data = (RGB_Pixel *)malloc(img->size * sizeof(RGB_Pixel));
-
-  if (!img)
-  {
-    fprintf(stderr, "Unable to allocate memory!\n");
-    exit(EXIT_FAILURE);
-  }
-
-  /* Read in pixels using buffer and calculate center of mass */
-  mean->red = mean->green = mean->blue = 0.0;
-  while (fread(&byte, 1, 1, fp) && i < img->size)
-  {
-    pixel = &img->data[i];
-    mean->red += (pixel->red = byte);
-    fread(&byte, 1, 1, fp);
-    mean->green += (pixel->green = byte);
-    fread(&byte, 1, 1, fp);
-    mean->blue += (pixel->blue = byte);
-    i++;
-  }
-
-  mean->red /= img->size;
-  mean->green /= img->size;
-  mean->blue /= img->size;
-
-  fclose(fp);
-
-  return img;
-}
-
-static void print_usage(char *prog_name)
-{
-  fprintf(stderr, "Color Histogram with Binary Search Tree\n\n");
-  fprintf(stderr, "Creates color histograms from input .ppm images with 3-D arrays.\n\n");
-  fprintf(stderr, "Usage: %s -i <input image>\n\n", prog_name);
-  exit(EXIT_FAILURE);
 }
 
 int main(int argc, char **argv)
 {
   char in_file_name[256];
-  RGB_Pixel mean;
   RGB_Image *in_img, *out_img;
 
   if (argc == 1)
@@ -218,28 +89,28 @@ int main(int argc, char **argv)
     }
   }
 
-  in_img = read_PPM(in_file_name, &mean);
+  in_img = read_PPM(in_file_name);
 
   //2-D sll histogram
   auto start_2d_sll_time = high_resolution_clock::now();
   auto sll2darray = new struct SLL_Node[MAX_VAL][MAX_VAL]{};
-
   for (int i = 0; i < in_img->size; i++)
   {
     int red_value = in_img->data[i].red;
     int green_value = in_img->data[i].green;
     int blue_value = in_img->data[i].blue;
-    struct SLL_Node* head = insert_sll_node(&sll2darray[red_value][green_value], blue_value);
+    struct SLL_Node *head = insert_sll_node(&sll2darray[red_value][green_value], blue_value);
   }
   auto stop_2d_sll_time = high_resolution_clock::now();
   auto sll_2d_duration = duration_cast<microseconds>(stop_2d_sll_time - start_2d_sll_time);
   printf("\nTotal time to add all colors to histogram (2-D SLL) = %g\n", sll_2d_duration.count() / 1e3);
   auto start_2d_sll_count_time = high_resolution_clock::now();
+  int num_cols_2dsll = 0;
   for (int i = 0; i < MAX_VAL; i++)
   {
     for (int j = 0; j < MAX_VAL; j++)
     {
-      traverse_2dsll(&sll2darray[i][j]);
+      num_cols_2dsll += traverse_2dsll(&sll2darray[i][j]);
     }
   }
   auto stop_2d_sll_count_time = high_resolution_clock::now();
