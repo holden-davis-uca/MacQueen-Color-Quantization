@@ -63,14 +63,14 @@ int main(int argc, char **argv)
   in_img = read_PPM(in_file_name);
 
   //3-D array histogram
-  auto histogram = new int[MAX_VAL][MAX_VAL][MAX_VAL]{};
+  RGB_Pixel *pixel;
+
   auto start_3d_time = high_resolution_clock::now();
+  auto histogram = new int[MAX_VAL][MAX_VAL][MAX_VAL]{};
   for (int i = 0; i < in_img->size; i++)
   {
-    int redvalue = in_img->data[i].red;
-    int greenvalue = in_img->data[i].green;
-    int bluevalue = in_img->data[i].blue;
-    histogram[redvalue][greenvalue][bluevalue]++;
+  pixel = &in_img->data[i];
+  histogram[pixel->red][pixel->green][pixel->blue]++;
   }
   auto stop_3d_time = high_resolution_clock::now();
   auto array3d_duration = duration_cast<microseconds>(stop_3d_time - start_3d_time);

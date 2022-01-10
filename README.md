@@ -20,3 +20,5 @@
 - **testsuite.c**, a file combining all previous methods (used for testing timing and comparing methods against each other).
 
 All files except testsuite require at least a .ppm image as an argument.
+
+REMINDER TO FIX MEMORY LEAKS

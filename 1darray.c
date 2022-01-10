@@ -16,14 +16,14 @@
 using namespace std::chrono;
 
 //Maximum value for an any (r * 65536 + g * 256 + b) value
-int const MAX_VAL_COMBINED = ((256 * 65536) + (256 * 256) + (256));
+#define MAX_VAL_PACKED 16777216
 
 //Iterate through a one dimensional array representing the color histogram.
 //If at least a single color exists (> 0), than increment num_colors counter and return at end.
-int count_colors_1d_histo(int histogram[MAX_VAL_COMBINED])
+int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
 {
   int num_colors = 0;
-  for (int i = 0; i < MAX_VAL_COMBINED; i++)
+  for (int i = 0; i < MAX_VAL_PACKED; i++)
   {
     if (histogram[i] != 0)
     {
@@ -58,14 +58,12 @@ int main(int argc, char **argv)
 
   //1-D array histogram
   auto start_3d_time = high_resolution_clock::now();
-  auto histogram = new int[MAX_VAL_COMBINED]{};
+  auto histogram = new int[MAX_VAL_PACKED]{};
+  RGB_Pixel *pixel;
   for (int i = 0; i < in_img->size; i++)
   {
-    unsigned int red_value = in_img->data[i].red;
-    unsigned int green_value = in_img->data[i].green;
-    unsigned int blue_value = in_img->data[i].blue;
-    int key = (red_value << 16) | (green_value << 8) | blue_value;
-    histogram[key]++;
+    pixel = &in_img->data[i];
+    histogram[(pixel->red << 16) | (pixel->green << 8) | pixel->blue]++;
   }
   auto stop_3d_time = high_resolution_clock::now();
   auto array3d_duration = duration_cast<microseconds>(stop_3d_time - start_3d_time);

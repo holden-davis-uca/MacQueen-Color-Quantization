@@ -19,7 +19,7 @@ using namespace std::chrono;
 int const MAX_VAL = 256;
 
 //Maximum value for an any (r * 65536 + g * 256 + b) value
-int const MAX_VAL_COMBINED = ((256 * 65536) + (256 * 256) + (256));
+#define MAX_VAL_PACKED 16777216
 
 struct BST_Node
 {
@@ -112,10 +112,10 @@ struct BST_Node *insert_bst_node(struct BST_Node *node, const int new_key)
 
 //Iterate through a one dimensional array representing the color histogram.
 //If at least a single color exists (> 0), than increment num_colors counter and return at end.
-int count_colors_1d_histo(int histogram[MAX_VAL_COMBINED])
+int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
 {
   int num_colors = 0;
-  for (int i = 0; i < MAX_VAL_COMBINED; i++)
+  for (int i = 0; i < MAX_VAL_PACKED; i++)
   {
     if (histogram[i] != 0)
     {
@@ -160,6 +160,32 @@ int traverse_bst(const struct BST_Node *root)
     return 1 + traverse_bst(root->right) + traverse_bst(root->left);
 }
 
+int count_colors_2dbst(struct BST_Node bst2darray[MAX_VAL][MAX_VAL])
+{
+  int num_cols_2dbst = 0;
+  for (int i = 0; i < MAX_VAL; i++)
+  {
+    for (int j = 0; j < MAX_VAL; j++)
+    {
+      num_cols_2dbst += traverse_bst(&bst2darray[i][j]);
+    }
+  }
+  return num_cols_2dbst;
+}
+
+int count_colors_2dsll(struct SLL_Node sll2darray[MAX_VAL][MAX_VAL])
+{
+  int num_cols_2dsll = 0;
+  for (int i = 0; i < MAX_VAL; i++)
+  {
+    for (int j = 0; j < MAX_VAL; j++)
+    {
+      num_cols_2dsll += traverse_2dsll(&sll2darray[i][j]);
+    }
+  }
+  return num_cols_2dsll;
+}
+
 int main(int argc, char **argv)
 {
   FILE *results;
@@ -183,15 +209,13 @@ int main(int argc, char **argv)
     in_img = read_PPM(in_file_name);
 
     //1-D array histogram
-    auto histogram1d = new int[MAX_VAL_COMBINED]{};
+    auto histogram1d = new int[MAX_VAL_PACKED]{};
     auto start_1d_time = high_resolution_clock::now();
+    RGB_Pixel *pixel;
     for (int i = 0; i < in_img->size; i++)
     {
-      unsigned int red_value = in_img->data[i].red;
-      unsigned int green_value = in_img->data[i].green;
-      unsigned int blue_value = in_img->data[i].blue;
-      int key = (red_value << 16) | (green_value << 8) | blue_value;
-      histogram1d[key]++;
+      pixel = &in_img->data[i];
+      histogram1d[(pixel->red << 16) | (pixel->green << 8) | pixel->blue]++;
     }
     auto stop_1d_time = high_resolution_clock::now();
     auto array1d_duration = duration_cast<microseconds>(stop_1d_time - start_1d_time);
@@ -206,12 +230,9 @@ int main(int argc, char **argv)
     auto start_3d_time = high_resolution_clock::now();
     for (int i = 0; i < in_img->size; i++)
     {
-      int redvalue = in_img->data[i].red;
-      int greenvalue = in_img->data[i].green;
-      int bluevalue = in_img->data[i].blue;
-      histogram3d[redvalue][greenvalue][bluevalue]++;
+      pixel = &in_img->data[i];
+      histogram3d[pixel->red][pixel->green][pixel->blue]++;
     }
-
     auto stop_3d_time = high_resolution_clock::now();
     auto array3d_duration = duration_cast<microseconds>(stop_3d_time - start_3d_time);
 
@@ -219,6 +240,7 @@ int main(int argc, char **argv)
     int num_cols_3darray = count_colors_3d_histo(histogram3d);
     auto stop_3d_count_time = high_resolution_clock::now();
     auto array3d_count_duration = duration_cast<microseconds>(stop_3d_count_time - start_3d_count_time);
+
     //BST histogram
     auto start_bst_time = high_resolution_clock::now();
     unsigned int red_value = in_img->data[0].red;
@@ -234,7 +256,6 @@ int main(int argc, char **argv)
       key = (red_value << 16) | (green_value << 8) | blue_value;
       insert_bst_node(root, key);
     }
-
     auto stop_bst_time = high_resolution_clock::now();
     auto bst_duration = duration_cast<microseconds>(stop_bst_time - start_bst_time);
     auto start_bst_count_time = high_resolution_clock::now();
@@ -249,22 +270,13 @@ int main(int argc, char **argv)
     };
     for (int i = 0; i < in_img->size; i++)
     {
-      int red_value = in_img->data[i].red;
-      int green_value = in_img->data[i].green;
-      int blue_value = in_img->data[i].blue;
-      struct BST_Node *root = insert_bst_node(&bst2darray[red_value][green_value], blue_value);
+      pixel = &in_img->data[i];
+      struct BST_Node *root = insert_bst_node(&bst2darray[pixel->red][pixel->green], pixel->blue);
     }
     auto stop_2d_bst_time = high_resolution_clock::now();
     auto bst_2d_duration = duration_cast<microseconds>(stop_2d_bst_time - start_2d_bst_time);
     auto start_2d_bst_count_time = high_resolution_clock::now();
-    int num_cols_bst2d = 0;
-    for (int i = 0; i < MAX_VAL; i++)
-    {
-      for (int j = 0; j < MAX_VAL; j++)
-      {
-        num_cols_bst2d += traverse_bst(&bst2darray[i][j]);
-      }
-    }
+    int num_cols_bst2d = count_colors_2dbst(bst2darray);
     auto stop_2d_bst_count_time = high_resolution_clock::now();
     auto bst_2d_count_duration = duration_cast<microseconds>(stop_2d_bst_count_time - start_2d_bst_count_time);
 
@@ -276,22 +288,13 @@ int main(int argc, char **argv)
 
     for (int i = 0; i < in_img->size; i++)
     {
-      int red_value = in_img->data[i].red;
-      int green_value = in_img->data[i].green;
-      int blue_value = in_img->data[i].blue;
-      struct SLL_Node *head = insert_sll_node(&sll2darray[red_value][green_value], blue_value);
+      pixel = &in_img->data[i];
+      struct SLL_Node *head = insert_sll_node(&sll2darray[pixel->red][pixel->green], pixel->blue);
     }
     auto stop_2d_sll_time = high_resolution_clock::now();
     auto sll_2d_duration = duration_cast<microseconds>(stop_2d_sll_time - start_2d_sll_time);
     auto start_2d_sll_count_time = high_resolution_clock::now();
-    int num_cols_2dsll = 0;
-    for (int i = 0; i < MAX_VAL; i++)
-    {
-      for (int j = 0; j < MAX_VAL; j++)
-      {
-        num_cols_2dsll += traverse_2dsll(&sll2darray[i][j]);
-      }
-    }
+    int num_cols_2dsll = count_colors_2dsll(sll2darray);
     auto stop_2d_sll_count_time = high_resolution_clock::now();
     auto sll_2d_count_duration = duration_cast<microseconds>(stop_2d_sll_count_time - start_2d_sll_count_time);
 

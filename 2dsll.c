@@ -68,6 +68,19 @@ int traverse_2dsll(const struct SLL_Node *head)
   }
 }
 
+int count_colors_2dsll(struct SLL_Node sll2darray[MAX_VAL][MAX_VAL])
+{
+  int num_cols_2dsll = 0;
+  for (int i = 0; i < MAX_VAL; i++)
+  {
+    for (int j = 0; j < MAX_VAL; j++)
+    {
+      num_cols_2dsll += traverse_2dsll(&sll2darray[i][j]);
+    }
+  }
+  return num_cols_2dsll;
+}
+
 int main(int argc, char **argv)
 {
   char in_file_name[256];
@@ -93,26 +106,21 @@ int main(int argc, char **argv)
 
   //2-D sll histogram
   auto start_2d_sll_time = high_resolution_clock::now();
-  auto sll2darray = new struct SLL_Node[MAX_VAL][MAX_VAL]{};
+  auto sll2darray = new struct SLL_Node[MAX_VAL][MAX_VAL]
+  {
+  };
+
+  RGB_Pixel *pixel;
   for (int i = 0; i < in_img->size; i++)
   {
-    int red_value = in_img->data[i].red;
-    int green_value = in_img->data[i].green;
-    int blue_value = in_img->data[i].blue;
-    struct SLL_Node *head = insert_sll_node(&sll2darray[red_value][green_value], blue_value);
+    pixel = &in_img->data[i];
+    struct SLL_Node *head = insert_sll_node(&sll2darray[pixel->red][pixel->green], pixel->blue);
   }
   auto stop_2d_sll_time = high_resolution_clock::now();
   auto sll_2d_duration = duration_cast<microseconds>(stop_2d_sll_time - start_2d_sll_time);
   printf("\nTotal time to add all colors to histogram (2-D SLL) = %g\n", sll_2d_duration.count() / 1e3);
   auto start_2d_sll_count_time = high_resolution_clock::now();
-  int num_cols_2dsll = 0;
-  for (int i = 0; i < MAX_VAL; i++)
-  {
-    for (int j = 0; j < MAX_VAL; j++)
-    {
-      num_cols_2dsll += traverse_2dsll(&sll2darray[i][j]);
-    }
-  }
+  int num_cols_2dsll = count_colors_2dsll(sll2darray);
   auto stop_2d_sll_count_time = high_resolution_clock::now();
   auto sll_2d_count_duration = duration_cast<microseconds>(stop_2d_sll_count_time - start_2d_sll_count_time);
   printf("\nTotal time to count number of colors in histogram (2-D SLL) = %g\n", sll_2d_count_duration.count() / 1e3);

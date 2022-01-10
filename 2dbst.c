@@ -71,6 +71,19 @@ int traverse_bst(const struct BST_Node *root)
     return 1 + traverse_bst(root->right) + traverse_bst(root->left);
 }
 
+int count_colors_2dbst(struct BST_Node bst2darray[MAX_VAL][MAX_VAL])
+{
+  int num_cols_2dbst = 0;
+  for (int i = 0; i < MAX_VAL; i++)
+  {
+    for (int j = 0; j < MAX_VAL; j++)
+    {
+      num_cols_2dbst += traverse_bst(&bst2darray[i][j]);
+    }
+  }
+  return num_cols_2dbst;
+}
+
 int main(int argc, char **argv)
 {
   char in_file_name[256];
@@ -97,25 +110,17 @@ int main(int argc, char **argv)
   //2-D BST histogram
   auto start_2d_bst_time = high_resolution_clock::now();
   auto bst2darray = new struct BST_Node[MAX_VAL][MAX_VAL]{};
+  RGB_Pixel *pixel;
   for (int i = 0; i < in_img->size; i++)
   {
-    int red_value = in_img->data[i].red;
-    int green_value = in_img->data[i].green;
-    int blue_value = in_img->data[i].blue;
-    struct BST_Node *root = insert_bst_node(&bst2darray[red_value][green_value], blue_value);
+  pixel = &in_img->data[i];
+  struct BST_Node *root = insert_bst_node(&bst2darray[pixel->red][pixel->green], pixel->blue);
   }
   auto stop_2d_bst_time = high_resolution_clock::now();
   auto bst_2d_duration = duration_cast<microseconds>(stop_2d_bst_time - start_2d_bst_time);
   printf("\nTotal time to add all colors to histogram (BST) = %g\n", bst_2d_duration.count() / 1e3);
   auto start_2d_bst_count_time = high_resolution_clock::now();
-  int num_cols_2dbst = 0;
-  for (int i = 0; i < MAX_VAL; i++)
-  {
-    for (int j = 0; j < MAX_VAL; j++)
-    {
-      num_cols_2dbst += traverse_bst(&bst2darray[i][j]);
-    }
-  }
+  int num_cols_2dbst = count_colors_2dbst(bst2darray);
   auto stop_2d_bst_count_time = high_resolution_clock::now();
   auto bst_2d_count_duration = duration_cast<microseconds>(stop_2d_bst_count_time - start_2d_bst_count_time);
   printf("\nTotal time to count number of colors in histogram (2-D BST) = %g\n", bst_2d_count_duration.count() / 1e3);
