@@ -65,10 +65,9 @@ int traverse_bst(const struct BST_Node *root)
   }
   else if (root->count == 0)
   {
-    return 0 + traverse_bst(root->right) + traverse_bst(root->left);
+    return traverse_bst(root->right) + traverse_bst(root->left);
   }
-  else
-    return 1 + traverse_bst(root->right) + traverse_bst(root->left);
+  return 1 + traverse_bst(root->right) + traverse_bst(root->left);
 }
 
 int count_colors_2dbst(struct BST_Node bst2darray[MAX_VAL][MAX_VAL])

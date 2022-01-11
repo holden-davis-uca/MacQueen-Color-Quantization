@@ -87,19 +87,16 @@ struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
 
 int traverse_2dsll(const struct SLL_Node *head)
 {
-  if (head == NULL)
+ if (head == NULL)
   {
     return 0;
   }
-  else
+ else if (head->count == 0)
   {
-    if (head->count == 0)
-    {
-      return (0 + traverse_2dsll(head->next));
-    }
-    else
-      return (1 + traverse_2dsll(head->next));
+   return traverse_2dsll(head->next);
   }
+
+ return 1 + traverse_2dsll(head->next);
 }
 
 struct BST_Node *alloc_bst_node(const int new_key)
@@ -177,10 +174,9 @@ int traverse_bst(const struct BST_Node *root)
   }
   else if (root->count == 0)
   {
-    return 0 + traverse_bst(root->right) + traverse_bst(root->left);
+    return traverse_bst(root->right) + traverse_bst(root->left);
   }
-  else
-    return 1 + traverse_bst(root->right) + traverse_bst(root->left);
+  return 1 + traverse_bst(root->right) + traverse_bst(root->left);
 }
 
 int count_colors_2dbst(struct BST_Node bst2darray[MAX_VAL][MAX_VAL])

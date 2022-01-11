@@ -53,19 +53,17 @@ struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
 
 int traverse_2dsll(const struct SLL_Node *head)
 {
-  if (head == NULL)
+ if (head == NULL)
   {
     return 0;
   }
-  else
+ else if (head->count == 0)
   {
-    if (head->count == 0)
-    {
-      return (0 + traverse_2dsll(head->next));
-    }
-    else
-      return (1 + traverse_2dsll(head->next));
+   return traverse_2dsll(head->next);
   }
+   
+
+ return 1 + traverse_2dsll(head->next);
 }
 
 int count_colors_2dsll(struct SLL_Node sll2darray[MAX_VAL][MAX_VAL])
