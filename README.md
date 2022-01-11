@@ -22,3 +22,5 @@
 All files except testsuite require at least a .ppm image as an argument.
 
 REMINDER TO FIX MEMORY LEAKS
+
+REMINDER TO FIX 2-D TRAVERSAL
