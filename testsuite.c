@@ -213,7 +213,7 @@ int main(int argc, char **argv)
 {
   FILE *results;
   results = fopen("results.txt", "w");
-  fprintf(results, "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s", "IMAGE", "TIME (Hash Table)","COLORS (Hash Table)","ADD (2-D SLL)", "COUNT (2-D SLL)", "COLORS (2-D SLL)", "ADD (2-D BST)", "COUNT(2-D BST)", "COLORS (2-D BST)", "ADD (BST)", "COUNT(BST)", "COLORS (BST)", "ADD (3-D)", "COUNT (3-D)", "COLORS (3-D)", "ADD (1-D)", "COUNT (1-D)", "COLORS (1-D)");
+  fprintf(results, "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s", "IMAGE", "ADD (Hash Table)","COUNT (Hash Table)","COLORS (Hash Table)","ADD (2-D SLL)", "COUNT (2-D SLL)", "COLORS (2-D SLL)", "ADD (2-D BST)", "COUNT(2-D BST)", "COLORS (2-D BST)", "ADD (BST)", "COUNT(BST)", "COLORS (BST)", "ADD (3-D)", "COUNT (3-D)", "COLORS (3-D)", "ADD (1-D)", "COUNT (1-D)", "COLORS (1-D)");
   const char *pictures[8];
   pictures[0] = "./images/baboon.ppm";
   pictures[1] = "./images/fish.ppm";
@@ -383,7 +383,7 @@ int main(int argc, char **argv)
     auto hashtable_duration = duration_cast<microseconds>(stop_hashtable_time - start_hashtable_time);
 
     fprintf(results, "\n");
-    fprintf(results, "%-25s%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d", in_file_name, hashtable_duration.count() / 1e3, num_cols_hashtable, sll_2d_duration.count() / 1e3, sll_2d_count_duration.count() / 1e3, num_cols_2dsll, bst_2d_duration.count() / 1e3, bst_2d_count_duration.count() / 1e3, num_cols_bst2d, bst_duration.count() / 1e3, bst_count_duration.count() / 1e3, num_cols_bst, array3d_duration.count() / 1e3, array3d_count_duration.count() / 1e3, num_cols_3darray, array1d_duration.count() / 1e3, array1d_count_duration.count() / 1e3, num_cols_1darray);
+    fprintf(results, "%-25s%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d", in_file_name, 0, hashtable_duration.count() / 1e3, num_cols_hashtable, sll_2d_duration.count() / 1e3, sll_2d_count_duration.count() / 1e3, num_cols_2dsll, bst_2d_duration.count() / 1e3, bst_2d_count_duration.count() / 1e3, num_cols_bst2d, bst_duration.count() / 1e3, bst_count_duration.count() / 1e3, num_cols_bst, array3d_duration.count() / 1e3, array3d_count_duration.count() / 1e3, num_cols_3darray, array1d_duration.count() / 1e3, array1d_count_duration.count() / 1e3, num_cols_1darray);
     num_cols_bst2d = 0;
     num_cols_bst = 0;
     num_cols_2dsll = 0;
