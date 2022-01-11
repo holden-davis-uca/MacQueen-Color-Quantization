@@ -36,6 +36,11 @@
       "type": "shell",
       "command": "g++ -O3 -o 2dsll 2dsll.c -lm"
     },
+    {
+      "label": "Build hashtable.c",
+      "type": "shell",
+      "command": "g++ -O3 -o hashtable hashtable.c -lm"
+    },
     ]
     
   }

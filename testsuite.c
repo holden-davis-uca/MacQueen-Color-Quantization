@@ -21,6 +21,29 @@ int const MAX_VAL = 256;
 //Maximum value for an any (r * 65536 + g * 256 + b) value
 #define MAX_VAL_PACKED 16777216
 
+#define HASH_SIZE 20023
+
+/* TODO: Do we need bitmasking in the HASH function? */
+
+#define HASH(R, G, B) ((((long)(R)*33023 +  \
+                         (long)(G)*30013 +  \
+                         (long)(B)*27011) & \
+                        0x7fffffff) %       \
+                       HASH_SIZE)
+
+typedef struct Bucket_Entry *Bucket;
+
+struct Bucket_Entry
+{
+    uint red;
+    uint green;
+    uint blue;
+    uint count;
+    Bucket next;
+};
+
+typedef Bucket *Hash_Table;
+
 struct BST_Node
 {
   int key;
@@ -190,7 +213,7 @@ int main(int argc, char **argv)
 {
   FILE *results;
   results = fopen("results.txt", "w");
-  fprintf(results, "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s", "IMAGE", "TIME TO ADD (2-D SLL)", "TIME TO COUNT (2-D SLL)", "NUMBER OF COLORS (2-D SLL)", "TIME TO ADD (2-D BST)", "TIME TO COUNT(2-D BST)", "NUMBER OF COLORS (2-D BST)", "TIME TO ADD (BST)", "TIME TO COUNT(BST)", "NUMBER OF COLORS (BST)", "TIME TO ADD (3-D)", "TIME TO COUNT (3-D)", "NUMBER OF COLORS (3-D)", "TIME TO ADD (1-D)", "TIME TO COUNT (1-D)", "NUMBER OF COLORS (1-D)");
+  fprintf(results, "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s", "IMAGE", "TIME (Hash Table)","COLORS (Hash Table)","ADD (2-D SLL)", "COUNT (2-D SLL)", "COLORS (2-D SLL)", "ADD (2-D BST)", "COUNT(2-D BST)", "COLORS (2-D BST)", "ADD (BST)", "COUNT(BST)", "COLORS (BST)", "ADD (3-D)", "COUNT (3-D)", "COLORS (3-D)", "ADD (1-D)", "COUNT (1-D)", "COLORS (1-D)");
   const char *pictures[8];
   pictures[0] = "./images/baboon.ppm";
   pictures[1] = "./images/fish.ppm";
@@ -298,11 +321,76 @@ int main(int argc, char **argv)
     auto stop_2d_sll_count_time = high_resolution_clock::now();
     auto sll_2d_count_duration = duration_cast<microseconds>(stop_2d_sll_count_time - start_2d_sll_count_time);
 
+    //Hash table
+    auto start_hashtable_time = high_resolution_clock::now();
+
+    int ih;
+    uint hash;
+    int index;
+    uint red, green, blue;
+    Bucket bucket;
+    Hash_Table hash_table;
+
+    int num_cols_hashtable = 0;
+    hash_table = (Hash_Table)malloc(HASH_SIZE * sizeof(Bucket));
+
+    for (ih = 0; ih < HASH_SIZE; ih++)
+    {
+        hash_table[ih] = NULL;
+    }
+
+    for (int i = 0; i < in_img->size; i++)
+    {
+
+        red = in_img->data[i].red;
+        green = in_img->data[i].green;
+        blue = in_img->data[i].blue;
+
+        /* Determine the bucket */
+        hash = HASH(red, green, blue);
+
+        /* Search for the color in the bucket chain */
+        for (bucket = hash_table[hash]; bucket != NULL; bucket = bucket->next)
+        {
+
+            if (bucket->red == red && bucket->green == green && bucket->blue == blue)
+            {
+                /* This color exists in the hash table */
+                break;
+            }
+        }
+        if (bucket != NULL)
+        {
+            /* This color exists in the hash table */
+            bucket->count++;
+        }
+        else
+        {
+            num_cols_hashtable++;
+            /* Create a new bucket entry for this color */
+            bucket = (Bucket)malloc(sizeof(struct Bucket_Entry));
+
+            bucket->red = red;
+            bucket->green = green;
+            bucket->blue = blue;
+            bucket->count = 1;
+            bucket->next = hash_table[hash];
+            hash_table[hash] = bucket;
+        }
+    }
+
+    auto stop_hashtable_time = high_resolution_clock::now();
+    auto hashtable_duration = duration_cast<microseconds>(stop_hashtable_time - start_hashtable_time);
+
     fprintf(results, "\n");
-    fprintf(results, "%-25s%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d", in_file_name, sll_2d_duration.count() / 1e3, sll_2d_count_duration.count() / 1e3, num_cols_2dsll, bst_2d_duration.count() / 1e3, bst_2d_count_duration.count() / 1e3, num_cols_bst2d, bst_duration.count() / 1e3, bst_count_duration.count() / 1e3, num_cols_bst, array3d_duration.count() / 1e3, array3d_count_duration.count() / 1e3, num_cols_3darray, array1d_duration.count() / 1e3, array1d_count_duration.count() / 1e3, num_cols_1darray);
+    fprintf(results, "%-25s%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d", in_file_name, hashtable_duration.count() / 1e3, num_cols_hashtable, sll_2d_duration.count() / 1e3, sll_2d_count_duration.count() / 1e3, num_cols_2dsll, bst_2d_duration.count() / 1e3, bst_2d_count_duration.count() / 1e3, num_cols_bst2d, bst_duration.count() / 1e3, bst_count_duration.count() / 1e3, num_cols_bst, array3d_duration.count() / 1e3, array3d_count_duration.count() / 1e3, num_cols_3darray, array1d_duration.count() / 1e3, array1d_count_duration.count() / 1e3, num_cols_1darray);
     num_cols_bst2d = 0;
     num_cols_bst = 0;
     num_cols_2dsll = 0;
+    num_cols_hashtable = 0;
+    num_cols_1darray = 0;
+
+    free(hash_table);
     free(root->left);
     free(root->right);
     free(root);
