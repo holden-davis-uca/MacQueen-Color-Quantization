@@ -5,6 +5,8 @@
   For a list of command line options: ./1darray
 */
 
+// TODO: Fix/Check Memory Leaks
+
 #include <chrono>
 #include <climits>
 #include <iostream>

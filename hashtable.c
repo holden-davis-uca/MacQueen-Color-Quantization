@@ -5,6 +5,8 @@
   For a list of command line options: ./hashtable
 */
 
+// TODO: Fix/Check Memory Leaks
+
 #include <chrono>
 #include <climits>
 #include <iostream>

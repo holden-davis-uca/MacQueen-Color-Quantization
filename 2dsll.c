@@ -5,6 +5,8 @@
   For a list of command line options: ./2dsll
 */
 
+// TODO: Fix/Check Memory Leaks
+
 #include <chrono>
 #include <climits>
 #include <iostream>
@@ -51,6 +53,7 @@ struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
   return node;
 }
 
+//TODO: Fix counting logic
 int traverse_2dsll(const struct SLL_Node *head)
 {
  if (head == NULL)

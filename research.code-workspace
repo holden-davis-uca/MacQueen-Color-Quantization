@@ -15,7 +15,8 @@
 			"cstdio": "c",
 			"iterator": "c",
 			"xmemory": "c",
-			"xtree": "c"
+			"xtree": "c",
+			"climits": "c"
 		}
 	}
 }

@@ -5,6 +5,8 @@
   For a list of command line options: ./2dbst
 */
 
+// TODO: Fix/Check Memory Leaks
+
 #include <chrono>
 #include <climits>
 #include <iostream>
@@ -57,6 +59,7 @@ struct BST_Node *insert_bst_node(struct BST_Node *node, const int new_key)
   return node;
 }
 
+// TODO: Fix counting logic
 int traverse_bst(const struct BST_Node *root)
 {
   if (root == NULL)
