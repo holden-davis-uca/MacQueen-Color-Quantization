@@ -1,8 +1,7 @@
 /* 
   To compile:
-  g++ -O3 -o t t.c -lm
+  make avl_base
 
-  For a list of command line options: ./t
 */
 
 // TODO: Fix/Check Memory Leaks
