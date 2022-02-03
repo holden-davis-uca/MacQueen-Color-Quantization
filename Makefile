@@ -1,1 +1,1 @@
-avl_base: avl_base.c
+avl_base: avl_base
