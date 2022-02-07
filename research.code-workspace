@@ -16,7 +16,8 @@
 			"iterator": "c",
 			"xmemory": "c",
 			"xtree": "c",
-			"climits": "c"
+			"climits": "c",
+			"atomic": "c"
 		}
 	}
 }
