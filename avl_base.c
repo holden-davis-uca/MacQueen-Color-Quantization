@@ -14,23 +14,20 @@
 #include <stdlib.h>
 #include "util.c"
 #include "avl.c"
-
-//Need a node definition; basically just a key comprised from rgb value and a count index to track duplicates
-struct AVL_Node
-{
-  uint key;
-  int count;
-};
+#include "avl-test.c"
 
 //Need a method to compare nodes
-int compare_nodes (const void *pa, const void *pb)
+/* Comparison function for pointers to |int|s.
+   |param| is not used. */
+int
+compare_ints (const void *pa, const void *pb, void *param)
 {
-  const struct AVL_Node *a = pa;
-  const struct AVL_Node *b = pb;
+  const int *a = pa;
+  const int *b = pb;
 
-  if (a->key < b->key)
+  if (*a < *b)
     return -1;
-  else if (a->key > b->key)
+  else if (*a > *b)
     return +1;
   else
     return 0;
@@ -63,8 +60,7 @@ int main(int argc, char **argv)
   in_img = read_PPM(in_file_name);
 
   //AVL histogram
-  struct avl_table *tree = avl_create(compare_nodes,NULL,&avl_allocator_default);
-
+  struct avl_table *tree = avl_create(compare_ints,NULL,&avl_allocator_default);
   start = clock();
   for (int i = 0; i < in_img->size; i++)
   {
@@ -72,18 +68,12 @@ int main(int argc, char **argv)
     uint green_value = in_img->data[i].green;
     uint blue_value = in_img->data[i].blue;
     uint key = (red_value << 16) | (green_value << 8) | blue_value;
-    //Make avl node with key
-    //Query tree for node key; if not found, avl_insert, otherwise access and increment count by 1
-    // if (avl_find(tree, node))
-    // {
-    //   //Node = avl_find(tree, key);
-    //   //Node->count++;
-    // }
-    // else
-    // {
-    //   //avl_insert(tree, node)
-    // }
+    //printf("%u\n", key);
+    avl_probe(tree, &key);
   }
+  // print_whole_tree(tree, "Tree after all insertions");
+  print_tree_structure(tree->avl_root, 0);
+  printf("\nNumber of elements: %zu\n", tree->avl_count);
   stop = clock();
   addtime = ((double) (stop - start)) / CLOCKS_PER_SEC;
   printf("\nTotal time to add all colors to histogram (AVL) = %g\n", addtime);
