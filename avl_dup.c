@@ -1,6 +1,6 @@
 /* 
   To compile:
-  make avl_base
+  make avl_dup
 */
 
 // TODO: Fix/Check Memory Leaks
@@ -33,6 +33,15 @@ compare_ints (const void *pa, const void *pb, void *param)
   else
     return 0;
 }
+
+/* An AVL tree node. */
+struct avl_node_dup
+  {
+    struct avl_node_dup *avl_link[2];  /* Subtrees. */
+    uint *avl_data;                /* Pointer to data. */
+    int count;
+    signed char avl_balance;       /* Balance factor. */
+  };
 
 int main(int argc, char **argv)
 {
@@ -68,20 +77,21 @@ int main(int argc, char **argv)
   {
     printf("Something went wrong\n");
   }
-  uint *insertions;
-  insertions = malloc(sizeof *insertions * 999999);
   for (int i = 0; i < in_img->size; i++)
   {
     uint red_value = in_img->data[i].red;
     uint green_value = in_img->data[i].green;
     uint blue_value = in_img->data[i].blue;
     uint key = (red_value << 16) | (green_value << 8) | blue_value;
-    insertions[i] = key;
-    void **p = avl_probe(tree, &insertions[i]);
-    if (p == NULL)
-    {
-      printf("Problem\n");
-    }
+    struct avl_node_dup* new;
+    new->avl_data=key;
+    void **p = avl_probe(tree, new);
+    // insertions[i] = key;
+    // void **p = avl_probe(tree, &insertions[i]);
+    // if (p == NULL)
+    // {
+    //   printf("Problem\n");
+    // }
 
   }
   stop = clock();
@@ -89,7 +99,6 @@ int main(int argc, char **argv)
   printf("\nTotal time to add all colors to histogram (AVL) = %g\n", addtime);
   printf("\nTotal number of colors in %s according to AVL count: %zu", in_file_name, tree->avl_count);
 
-  free(insertions);
   free(in_img->data);
   free(in_img);
   return EXIT_SUCCESS;
