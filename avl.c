@@ -103,7 +103,10 @@ avl_probe (struct avl_table *tree, void *item)
     {
       int cmp = tree->avl_compare (item, p->avl_data, tree->avl_param);
       if (cmp == 0)
+      {
+        p->count++;
         return &p->avl_data;
+      }
 
       if (p->avl_balance != 0)
         z = q, y = p, k = 0;
@@ -119,6 +122,7 @@ avl_probe (struct avl_table *tree, void *item)
   n->avl_data = item;
   n->avl_link[0] = n->avl_link[1] = NULL;
   n->avl_balance = 0;
+  n->count = 1;
   if (y == NULL)
     return &n->avl_data;
 

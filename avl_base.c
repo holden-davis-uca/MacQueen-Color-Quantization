@@ -64,10 +64,6 @@ int main(int argc, char **argv)
   start = clock();
   struct libavl_allocator allocator = avl_allocator_default;
   struct avl_table *tree = avl_create(compare_ints, NULL, &allocator);
-  if (tree == NULL)
-  {
-    printf("Something went wrong\n");
-  }
   uint *insertions;
   insertions = malloc(sizeof *insertions * 999999);
   for (int i = 0; i < in_img->size; i++)
@@ -77,12 +73,7 @@ int main(int argc, char **argv)
     uint blue_value = in_img->data[i].blue;
     uint key = (red_value << 16) | (green_value << 8) | blue_value;
     insertions[i] = key;
-    void **p = avl_probe(tree, &insertions[i]);
-    if (p == NULL)
-    {
-      printf("Problem\n");
-    }
-
+    avl_probe(tree, &insertions[i]);
   }
   stop = clock();
   addtime = ((double) (stop - start)) / CLOCKS_PER_SEC;

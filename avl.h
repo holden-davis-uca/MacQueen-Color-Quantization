@@ -68,6 +68,7 @@ struct avl_node
     struct avl_node *avl_link[2];  /* Subtrees. */
     void *avl_data;                /* Pointer to data. */
     signed char avl_balance;       /* Balance factor. */
+    int count;
   };
 
 /* AVL traverser structure. */
