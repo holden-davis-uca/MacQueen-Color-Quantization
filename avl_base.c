@@ -4,9 +4,6 @@
 */
 
 // TODO: Fix/Check Memory Leaks
-//Currently:
-//  Elements are pointers to integers
-//  Does not account for duplicates
 
 #include <stdlib.h>
 #include <time.h>
@@ -65,7 +62,7 @@ int main(int argc, char **argv)
   struct libavl_allocator allocator = avl_allocator_default;
   struct avl_table *tree = avl_create(compare_ints, NULL, &allocator);
   uint *insertions;
-  insertions = malloc(sizeof *insertions * 999999);
+  insertions = malloc(sizeof *insertions * in_img->size);
   for (int i = 0; i < in_img->size; i++)
   {
     uint red_value = in_img->data[i].red;
