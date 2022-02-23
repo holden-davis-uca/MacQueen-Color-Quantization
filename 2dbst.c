@@ -7,15 +7,12 @@
 
 // TODO: Fix/Check Memory Leaks
 
-#include <chrono>
-#include <climits>
-#include <iostream>
+#include <time.h>
+#include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
 #include "util.c"
-
-using namespace std::chrono;
 
 //Maximum value for an r, g, or b value
 int const MAX_VAL = 256;
@@ -88,6 +85,9 @@ int count_colors_2dbst(struct BST_Node bst2darray[MAX_VAL][MAX_VAL])
 
 int main(int argc, char **argv)
 {
+  clock_t start, stop;
+  double addtime, counttime;
+
   char in_file_name[256];
   RGB_Image *in_img, *out_img;
 
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
   in_img = read_PPM(in_file_name);
 
   //2-D BST histogram
-  auto start_2d_bst_time = high_resolution_clock::now();
+  start = clock();
   auto bst2darray = new struct BST_Node[MAX_VAL][MAX_VAL]{};
   RGB_Pixel *pixel;
   for (int i = 0; i < in_img->size; i++)
@@ -118,15 +118,15 @@ int main(int argc, char **argv)
   pixel = &in_img->data[i];
   struct BST_Node *root = insert_bst_node(&bst2darray[pixel->red][pixel->green], pixel->blue);
   }
-  auto stop_2d_bst_time = high_resolution_clock::now();
-  auto bst_2d_duration = duration_cast<microseconds>(stop_2d_bst_time - start_2d_bst_time);
-  printf("\nTotal time to add all colors to histogram (BST) = %g\n", bst_2d_duration.count() / 1e3);
-  auto start_2d_bst_count_time = high_resolution_clock::now();
+  stop = clock();
+  addtime = ((double) (stop - start)) / CLOCKS_PER_SEC;
+  printf("\nTotal time to add all colors to histogram (BST) = %g\n", addtime);
+  start = clock();
   int num_cols_2dbst = count_colors_2dbst(bst2darray);
-  auto stop_2d_bst_count_time = high_resolution_clock::now();
-  auto bst_2d_count_duration = duration_cast<microseconds>(stop_2d_bst_count_time - start_2d_bst_count_time);
-  printf("\nTotal time to count number of colors in histogram (2-D BST) = %g\n", bst_2d_count_duration.count() / 1e3);
-  std::cout << "\nTotal number of colors in " << in_file_name << " according to bst count: " << num_cols_2dbst << "\n";
+  stop = clock();
+  counttime = ((double) (stop - start)) / CLOCKS_PER_SEC;
+  printf("\nTotal time to count number of colors in histogram (2-D BST) = %g\n", counttime);
+  printf("\nTotal number of colors in %s according to 1d array count: %d\n", in_file_name, num_cols_2dbst);
   free(in_img->data);
   free(in_img);
 

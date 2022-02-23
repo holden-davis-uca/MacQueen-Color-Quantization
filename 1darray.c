@@ -7,15 +7,13 @@
 
 // TODO: Fix/Check Memory Leaks
 
-#include <chrono>
-#include <climits>
-#include <iostream>
+#include <stdlib.h>
+#include <time.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
 #include "util.c"
 
-using namespace std::chrono;
 
 //Maximum value for an any (r * 65536 + g * 256 + b) value
 #define MAX_VAL_PACKED 16777216
@@ -37,6 +35,9 @@ int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
 
 int main(int argc, char **argv)
 {
+  clock_t start, stop;
+  double addtime, counttime;
+
   char in_file_name[256];
   RGB_Image *in_img, *out_img;
 
@@ -59,24 +60,27 @@ int main(int argc, char **argv)
   in_img = read_PPM(in_file_name);
 
   //1-D array histogram
-  auto start_3d_time = high_resolution_clock::now();
-  auto histogram = new int[MAX_VAL_PACKED]{};
+  start = clock();
+  // auto histogram = new int[MAX_VAL_PACKED]{};
+  int *histogram;
+  histogram = malloc(sizeof *histogram * MAX_VAL_PACKED);
   RGB_Pixel *pixel;
   for (int i = 0; i < in_img->size; i++)
   {
     pixel = &in_img->data[i];
     histogram[(pixel->red << 16) | (pixel->green << 8) | pixel->blue]++;
   }
-  auto stop_3d_time = high_resolution_clock::now();
-  auto array3d_duration = duration_cast<microseconds>(stop_3d_time - start_3d_time);
-  printf("\nTotal time to add all colors to histogram (1-D array) = %g\n", array3d_duration.count() / 1e3);
-  auto start_3d_count_time = high_resolution_clock::now();
+  stop = clock();
+  addtime = ((double) (stop - start)) / CLOCKS_PER_SEC;
+  printf("\nTotal time to add all colors to histogram (1-D array) = %g\n", addtime);
+  start = clock();
   int num_cols_3darray = count_colors_1d_histo(histogram);
-  auto stop_3d_count_time = high_resolution_clock::now();
-  auto array3d_count_duration = duration_cast<microseconds>(stop_3d_count_time - start_3d_count_time);
-  printf("\nTotal time to count number of colors in histogram (1-D array) = %g\n", array3d_count_duration.count() / 1e3);
-  std::cout << "\nTotal number of colors in " << in_file_name << " according to 1d array count: " << num_cols_3darray << "\n";
+  stop = clock();
+  counttime = ((double) (stop - start)) / CLOCKS_PER_SEC;
+  printf("\nTotal time to count number of colors in histogram (1-D array) = %g\n", counttime);
+  printf("\nTotal number of colors in %s according to 1d array count: %d\n", in_file_name, num_cols_3darray);
 
+  free(histogram);
   free(in_img->data);
   free(in_img);
 

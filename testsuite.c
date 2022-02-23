@@ -7,15 +7,14 @@
 
 // TODO: Fix/Check Memory Leaks
 
-#include <chrono>
-#include <climits>
-#include <iostream>
+#include <time.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "util.c"
-
-using namespace std::chrono;
+#include "avl.c"
+#include "avl-test.c"
 
 //Maximum value for an r, g, or b value
 int const MAX_VAL = 256;
@@ -209,10 +208,29 @@ int count_colors_2dsll(struct SLL_Node sll2darray[MAX_VAL][MAX_VAL])
 
 int main(int argc, char **argv)
 {
+  clock_t start, stop;
+  double 
+  addtime1d, counttime1d, 
+  addtime2dbst, counttime2dbst, 
+  addtime2dsll, counttime2dsll, 
+  addtime3d, counttime3d, 
+  addtimebst, counttimebst,
+  addtimeht;
+
   FILE *results;
   results = fopen("results.txt", "w");
-  fprintf(results, "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s", "IMAGE", "ADD (Hash Table)","COUNT (Hash Table)","COLORS (Hash Table)","ADD (2-D SLL)", "COUNT (2-D SLL)", "COLORS (2-D SLL)", "ADD (2-D BST)", "COUNT(2-D BST)", "COLORS (2-D BST)", "ADD (BST)", "COUNT(BST)", "COLORS (BST)", "ADD (3-D)", "COUNT (3-D)", "COLORS (3-D)", "ADD (1-D)", "COUNT (1-D)", "COLORS (1-D)");
-  const char *pictures[8];
+
+  fprintf(results, 
+  "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s", 
+  "IMAGE",
+  "ADD (Hash Table)","COUNT (Hash Table)","COLORS (Hash Table)",
+  "ADD (2-D SLL)", "COUNT (2-D SLL)", "COLORS (2-D SLL)",
+  "ADD (2-D BST)", "COUNT(2-D BST)", "COLORS (2-D BST)",
+  "ADD (BST)", "COUNT(BST)", "COLORS (BST)",
+  "ADD (3-D)", "COUNT (3-D)", "COLORS (3-D)",
+  "ADD (1-D)", "COUNT (1-D)", "COLORS (1-D)");
+  
+  const char *pictures[8];  
   pictures[0] = "./images/baboon.ppm";
   pictures[1] = "./images/fish.ppm";
   pictures[2] = "./images/girl.ppm";
@@ -231,39 +249,39 @@ int main(int argc, char **argv)
 
     //1-D array histogram
     auto histogram1d = new int[MAX_VAL_PACKED]{};
-    auto start_1d_time = high_resolution_clock::now();
+    start = clock();
     RGB_Pixel *pixel;
     for (int i = 0; i < in_img->size; i++)
     {
       pixel = &in_img->data[i];
       histogram1d[(pixel->red << 16) | (pixel->green << 8) | pixel->blue]++;
     }
-    auto stop_1d_time = high_resolution_clock::now();
-    auto array1d_duration = duration_cast<microseconds>(stop_1d_time - start_1d_time);
+    stop = clock();
+    addtime1d = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
-    auto start_1d_count_time = high_resolution_clock::now();
+    start = clock();
     int num_cols_1darray = count_colors_1d_histo(histogram1d);
-    auto stop_1d_count_time = high_resolution_clock::now();
-    auto array1d_count_duration = duration_cast<microseconds>(stop_1d_count_time - start_1d_count_time);
+    stop = clock();
+    counttime1d = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
     //3-D array histogram
     auto histogram3d = new int[MAX_VAL][MAX_VAL][MAX_VAL]{};
-    auto start_3d_time = high_resolution_clock::now();
+    start = clock();
     for (int i = 0; i < in_img->size; i++)
     {
       pixel = &in_img->data[i];
       histogram3d[pixel->red][pixel->green][pixel->blue]++;
     }
-    auto stop_3d_time = high_resolution_clock::now();
-    auto array3d_duration = duration_cast<microseconds>(stop_3d_time - start_3d_time);
+    stop = clock();
+    addtime3d = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
-    auto start_3d_count_time = high_resolution_clock::now();
+    start = clock();
     int num_cols_3darray = count_colors_3d_histo(histogram3d);
-    auto stop_3d_count_time = high_resolution_clock::now();
-    auto array3d_count_duration = duration_cast<microseconds>(stop_3d_count_time - start_3d_count_time);
+    stop = clock();
+    counttime3d = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
     //BST histogram
-    auto start_bst_time = high_resolution_clock::now();
+    start = clock();
     unsigned int red_value = in_img->data[0].red;
     unsigned int green_value = in_img->data[0].green;
     unsigned int blue_value = in_img->data[0].blue;
@@ -277,50 +295,46 @@ int main(int argc, char **argv)
       key = (red_value << 16) | (green_value << 8) | blue_value;
       insert_bst_node(root, key);
     }
-    auto stop_bst_time = high_resolution_clock::now();
-    auto bst_duration = duration_cast<microseconds>(stop_bst_time - start_bst_time);
-    auto start_bst_count_time = high_resolution_clock::now();
+    stop = clock();
+    addtimebst = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    start = clock();
     int num_cols_bst = traverse_bst(root);
-    auto stop_bst_count_time = high_resolution_clock::now();
-    auto bst_count_duration = duration_cast<microseconds>(stop_bst_count_time - start_bst_count_time);
+    stop = clock();
+    counttimebst = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
     //2-D BST
-    auto start_2d_bst_time = high_resolution_clock::now();
-    auto bst2darray = new struct BST_Node[MAX_VAL][MAX_VAL]
-    {
-    };
+    start = clock();
+    auto bst2darray = new struct BST_Node[MAX_VAL][MAX_VAL]{};
     for (int i = 0; i < in_img->size; i++)
     {
       pixel = &in_img->data[i];
       struct BST_Node *root = insert_bst_node(&bst2darray[pixel->red][pixel->green], pixel->blue);
     }
-    auto stop_2d_bst_time = high_resolution_clock::now();
-    auto bst_2d_duration = duration_cast<microseconds>(stop_2d_bst_time - start_2d_bst_time);
-    auto start_2d_bst_count_time = high_resolution_clock::now();
+    stop = clock();
+    addtime2dbst = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    start = clock();
     int num_cols_bst2d = count_colors_2dbst(bst2darray);
-    auto stop_2d_bst_count_time = high_resolution_clock::now();
-    auto bst_2d_count_duration = duration_cast<microseconds>(stop_2d_bst_count_time - start_2d_bst_count_time);
+    stop = clock();
+    counttime2dbst = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
     //2-D SLL
-    auto start_2d_sll_time = high_resolution_clock::now();
-    auto sll2darray = new struct SLL_Node[MAX_VAL][MAX_VAL]
-    {
-    };
+    start = clock();
+    auto sll2darray = new struct SLL_Node[MAX_VAL][MAX_VAL]{};
 
     for (int i = 0; i < in_img->size; i++)
     {
       pixel = &in_img->data[i];
       struct SLL_Node *head = insert_sll_node(&sll2darray[pixel->red][pixel->green], pixel->blue);
     }
-    auto stop_2d_sll_time = high_resolution_clock::now();
-    auto sll_2d_duration = duration_cast<microseconds>(stop_2d_sll_time - start_2d_sll_time);
-    auto start_2d_sll_count_time = high_resolution_clock::now();
+    stop = clock();
+    addtime2dsll = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    start = clock();
     int num_cols_2dsll = count_colors_2dsll(sll2darray);
-    auto stop_2d_sll_count_time = high_resolution_clock::now();
-    auto sll_2d_count_duration = duration_cast<microseconds>(stop_2d_sll_count_time - start_2d_sll_count_time);
+    stop = clock();
+    counttime2dsll = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
     //Hash table
-    auto start_hashtable_time = high_resolution_clock::now();
+    start = clock();
 
     int ih;
     uint hash;
@@ -377,11 +391,48 @@ int main(int argc, char **argv)
         }
     }
 
-    auto stop_hashtable_time = high_resolution_clock::now();
-    auto hashtable_duration = duration_cast<microseconds>(stop_hashtable_time - start_hashtable_time);
+    stop = clock();
+    addtimeht = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
+    /*
+    Filename (String)
+
+    Hash table add (double)
+    Hash table count (double) - 0 
+    Hash table colors (int)
+
+    2dsll add (double)
+    2dsll count (double)
+    2dsll colors (int)
+
+    2dbst add (double)
+    2dbst count (double)
+    2dbst colors (int)
+
+    bst add (double)
+    bst count (double)
+    bst colors (int)
+
+    3d add (double)
+    3d count (double)
+    3d colors (int)
+
+    1d add (double)
+    1d count (double)
+    1d colors (int)
+
+    */
     fprintf(results, "\n");
-    fprintf(results, "%-25s%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d", in_file_name, 0, hashtable_duration.count() / 1e3, num_cols_hashtable, sll_2d_duration.count() / 1e3, sll_2d_count_duration.count() / 1e3, num_cols_2dsll, bst_2d_duration.count() / 1e3, bst_2d_count_duration.count() / 1e3, num_cols_bst2d, bst_duration.count() / 1e3, bst_count_duration.count() / 1e3, num_cols_bst, array3d_duration.count() / 1e3, array3d_count_duration.count() / 1e3, num_cols_3darray, array1d_duration.count() / 1e3, array1d_count_duration.count() / 1e3, num_cols_1darray);
+    fprintf(results, 
+    "%-25s%-25g%-25d%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d", 
+    in_file_name, 
+    addtimeht, 0, num_cols_hashtable, 
+    addtime2dsll, counttime2dsll, num_cols_2dsll, 
+    addtime2dbst, counttime2dbst, num_cols_bst2d,
+    addtimebst, counttimebst, num_cols_bst,
+    addtime1d, counttime1d, num_cols_1darray,
+    addtime3d, counttime3d, num_cols_3darray);
+    
     num_cols_bst2d = 0;
     num_cols_bst = 0;
     num_cols_2dsll = 0;
