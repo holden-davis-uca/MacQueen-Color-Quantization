@@ -7,15 +7,12 @@
 
 // TODO: Fix/Check Memory Leaks
 
-#include <chrono>
-#include <climits>
-#include <iostream>
+#include <time.h>
+#include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
 #include "util.c"
-
-using namespace std::chrono;
 
 #define HASH_SIZE 20023
 
@@ -42,6 +39,9 @@ typedef Bucket *Hash_Table;
 
 int main(int argc, char **argv)
 {
+    clock_t start, stop;
+    double addtime, counttime;
+
     char in_file_name[256];
     RGB_Image *in_img, *out_img;
 
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
     in_img = read_PPM(in_file_name);
 
     //Hash table histogram
-    auto start_hashtable_time = high_resolution_clock::now();
+    start = clock();
 
     int ih;
     uint hash;
@@ -121,10 +121,10 @@ int main(int argc, char **argv)
         }
     }
 
-    auto stop_hashtable_time = high_resolution_clock::now();
-    auto hashtable_duration = duration_cast<microseconds>(stop_hashtable_time - start_hashtable_time);
-    printf("\nTotal time to add and count all colors to histogram (hash table) = %g\n", hashtable_duration.count() / 1e3);
-    std::cout << "\nTotal number of colors in " << in_file_name << " according to hash table count: " << num_colors << "\n";
+    stop = clock();
+    addtime = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    printf("\nTotal time to add and count all colors to histogram (hash table) = %g\n", addtime);
+    printf("\nTotal number of colors in %s according to hash table count: %d\n", in_file_name, num_colors);
 
     free(hash_table);
     free(in_img->data);

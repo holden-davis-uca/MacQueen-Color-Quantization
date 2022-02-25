@@ -111,12 +111,12 @@ int main(int argc, char **argv)
 
   //2-D BST histogram
   start = clock();
-  auto bst2darray = new struct BST_Node[MAX_VAL][MAX_VAL]{};
+  struct BST_Node (*bst2darray)[MAX_VAL] = malloc(sizeof(struct BST_Node[MAX_VAL][MAX_VAL]));
   RGB_Pixel *pixel;
   for (int i = 0; i < in_img->size; i++)
   {
-  pixel = &in_img->data[i];
-  struct BST_Node *root = insert_bst_node(&bst2darray[pixel->red][pixel->green], pixel->blue);
+    pixel = &in_img->data[i];
+    struct BST_Node *root = insert_bst_node(&bst2darray[pixel->red][pixel->green], pixel->blue);
   }
   stop = clock();
   addtime = ((double) (stop - start)) / CLOCKS_PER_SEC;

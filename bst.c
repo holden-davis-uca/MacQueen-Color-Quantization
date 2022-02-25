@@ -6,16 +6,14 @@
 */
 
 // TODO: Fix/Check Memory Leaks
+//NOTE: ONLY WORKS WITH G++/GCC, DOES NOT WORK WITH MAKE
 
-#include <chrono>
-#include <climits>
-#include <iostream>
+#include <time.h>
+#include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
 #include "util.c"
-
-using namespace std::chrono;
 
 struct BST_Node
 {
@@ -72,6 +70,9 @@ int traverse_bst(const struct BST_Node *root)
 
 int main(int argc, char **argv)
 {
+  clock_t start, stop;
+  double addtime, counttime;
+
   char in_file_name[256];
   RGB_Image *in_img, *out_img;
 
@@ -94,7 +95,8 @@ int main(int argc, char **argv)
   in_img = read_PPM(in_file_name);
 
   //BST histogram
-  auto start_bst_time = high_resolution_clock::now();
+  
+  start = clock();
   unsigned int red_value = in_img->data[0].red;
   unsigned int green_value = in_img->data[0].green;
   unsigned int blue_value = in_img->data[0].blue;
@@ -108,15 +110,16 @@ int main(int argc, char **argv)
     key = (red_value << 16) | (green_value << 8) | blue_value;
     insert_bst_node(root, key);
   }
-  auto stop_bst_time = high_resolution_clock::now();
-  auto bst_duration = duration_cast<microseconds>(stop_bst_time - start_bst_time);
-  printf("\nTotal time to add all colors to histogram (BST) = %g\n", bst_duration.count() / 1e3);
-  auto start_bst_count_time = high_resolution_clock::now();
+ 
+  stop = clock();
+  addtime = ((double) (stop - start)) / CLOCKS_PER_SEC;
+  printf("\nTotal time to add all colors to histogram (BST) = %g\n", addtime);
+  start = clock();
   int num_cols_bst = traverse_bst(root);
-  auto stop_bst_count_time = high_resolution_clock::now();
-  auto bst_count_duration = duration_cast<microseconds>(stop_bst_count_time - start_bst_count_time);
-  printf("\nTotal time to count number of colors in histogram (BST) = %g\n", bst_count_duration.count() / 1e3);
-  std::cout << "\nTotal number of colors in " << in_file_name << " according to bst count: " << num_cols_bst << "\n";
+  stop = clock();
+  counttime = ((double) (stop - start)) / CLOCKS_PER_SEC;
+  printf("\nTotal time to count number of colors in histogram (BST) = %g\n", counttime);
+  printf("\nTotal number of colors in %s according to bst count: %d\n", in_file_name, num_cols_bst);
 
   free(root);
   free(in_img->data);
