@@ -40,4 +40,4 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 
 **All files except testsuite require at least a .ppm image as an argument.**
 
-**Currently, testsuite.c compares all methods except avl_base, and all files implementations except bst.c are to be compiled with GNU Make.**
+**Currently, testsuite.c compares all methods except avl_base, and all files implementations are to be compiled with GNU Make.**

@@ -62,10 +62,9 @@ int traverse_bst(const struct BST_Node *root)
   }
   else if (root->count == 0)
   {
-    return 0 + traverse_bst(root->right) + traverse_bst(root->left);
+    return traverse_bst(root->right) + traverse_bst(root->left);
   }
-  else
-    return 1 + traverse_bst(root->right) + traverse_bst(root->left);
+  return 1 + traverse_bst(root->right) + traverse_bst(root->left);
 }
 
 int main(int argc, char **argv)
@@ -101,7 +100,7 @@ int main(int argc, char **argv)
   unsigned int green_value = in_img->data[0].green;
   unsigned int blue_value = in_img->data[0].blue;
   int key = (red_value << 16) | (green_value << 8) | blue_value;
-  struct BST_Node *root = insert_bst_node(root, key);
+  struct BST_Node *root = insert_bst_node(NULL, key);
   for (int i = 1; i < in_img->size; i++)
   {
     red_value = in_img->data[i].red;
