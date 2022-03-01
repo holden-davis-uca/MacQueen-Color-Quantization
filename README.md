@@ -36,8 +36,8 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 - **test.h**: LibAVL testing library.
 - **util.c**: Utility functions (such as image input).
 - **mkm.c**: The original work from the above repository (used for image input/output functions).
-- **testsuite.c**: a file combining all previous methods (used for testing timing and comparing methods against each other).
+- **tester.c**: a file combining all previous methods (used for testing timing and comparing methods against each other).
 
-**All files except testsuite require at least a .ppm image as an argument.**
+**All files except tester require at least a .ppm image as an argument.**
 
-**Currently, testsuite.c compares all methods except avl_base, and all files implementations are to be compiled with GNU Make.**
+**Currently, all implementations are to be compiled with GNU Make.**

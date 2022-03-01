@@ -1,11 +1,19 @@
 /* 
   To compile:
-  g++ -O3 -o testsuite testsuite.c -lm
+  make tester
 
-  For a list of command line options: ./testsuite
+  For a list of command line options: ./tester
 */
 
 // TODO: Fix/Check Memory Leaks
+//Correct GNU Make implementation for
+//hashmap - DONE
+//1d array - DONE
+//2dbst - DONE
+//2dsll - DONE
+//3d array - DONE
+//bst - DONE
+//avl 
 
 #include <time.h>
 #include <math.h>
@@ -84,6 +92,21 @@ struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
     node->next = insert_sll_node(node->next, new_key);
   }
   return node;
+}
+/* Comparison function for pointers to |int|s.
+   |param| is not used. */
+int
+compare_ints (const void *pa, const void *pb, void *param)
+{
+  const int *a = pa;
+  const int *b = pb;
+
+  if (*a < *b)
+    return -1;
+  else if (*a > *b)
+    return +1;
+  else
+    return 0;
 }
 
 int traverse_2dsll(const struct SLL_Node *head)
@@ -215,14 +238,16 @@ int main(int argc, char **argv)
   addtime2dsll, counttime2dsll, 
   addtime3d, counttime3d, 
   addtimebst, counttimebst,
-  addtimeht;
+  addtimeht,
+  addtimeavl;
 
   FILE *results;
   results = fopen("results.txt", "w");
 
   fprintf(results, 
-  "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s", 
+  "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s", 
   "IMAGE",
+  "ADD (AVL)", "COUNT (AVL)","COLORS (AVL)",
   "ADD (Hash Table)","COUNT (Hash Table)","COLORS (Hash Table)",
   "ADD (2-D SLL)", "COUNT (2-D SLL)", "COLORS (2-D SLL)",
   "ADD (2-D BST)", "COUNT(2-D BST)", "COLORS (2-D BST)",
@@ -248,8 +273,8 @@ int main(int argc, char **argv)
     in_img = read_PPM(in_file_name);
 
     //1-D array histogram
-    auto histogram1d = new int[MAX_VAL_PACKED]{};
-    start = clock();
+    int *histogram1d;
+    histogram1d = malloc(sizeof *histogram1d * MAX_VAL_PACKED);    start = clock();
     RGB_Pixel *pixel;
     for (int i = 0; i < in_img->size; i++)
     {
@@ -265,7 +290,7 @@ int main(int argc, char **argv)
     counttime1d = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
     //3-D array histogram
-    auto histogram3d = new int[MAX_VAL][MAX_VAL][MAX_VAL]{};
+    int (*histogram3d)[MAX_VAL][MAX_VAL] = malloc(sizeof(int[MAX_VAL][MAX_VAL][MAX_VAL]));
     start = clock();
     for (int i = 0; i < in_img->size; i++)
     {
@@ -304,7 +329,7 @@ int main(int argc, char **argv)
 
     //2-D BST
     start = clock();
-    auto bst2darray = new struct BST_Node[MAX_VAL][MAX_VAL]{};
+    struct BST_Node (*bst2darray)[MAX_VAL] = malloc(sizeof(struct BST_Node[MAX_VAL][MAX_VAL]));
     for (int i = 0; i < in_img->size; i++)
     {
       pixel = &in_img->data[i];
@@ -319,7 +344,7 @@ int main(int argc, char **argv)
 
     //2-D SLL
     start = clock();
-    auto sll2darray = new struct SLL_Node[MAX_VAL][MAX_VAL]{};
+    struct SLL_Node (*sll2darray)[MAX_VAL] = malloc(sizeof(struct SLL_Node[MAX_VAL][MAX_VAL]));
 
     for (int i = 0; i < in_img->size; i++)
     {
@@ -394,8 +419,27 @@ int main(int argc, char **argv)
     stop = clock();
     addtimeht = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
+    //AVL histogram
+    struct libavl_allocator allocator = avl_allocator_default;
+    struct avl_table *tree = avl_create(compare_ints, NULL, &allocator);
+    uint *insertions;
+    insertions = malloc(sizeof *insertions * in_img->size);
+    for (int i = 0; i < in_img->size; i++)
+    {
+      uint red_value = in_img->data[i].red;
+      uint green_value = in_img->data[i].green;
+      uint blue_value = in_img->data[i].blue;
+      uint key = (red_value << 16) | (green_value << 8) | blue_value;
+      insertions[i] = key;
+      avl_probe(tree, &insertions[i]);
+    }
+    stop = clock();
+    addtimeavl = ((double) (stop - start)) / CLOCKS_PER_SEC;
     /*
     Filename (String)
+
+    AVL add (double)
+    AVL colors (%zu)
 
     Hash table add (double)
     Hash table count (double) - 0 
@@ -424,8 +468,9 @@ int main(int argc, char **argv)
     */
     fprintf(results, "\n");
     fprintf(results, 
-    "%-25s%-25g%-25d%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d", 
+    "%-25s%-25g%-25d%-25zu%-25g%-25d%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d", 
     in_file_name, 
+    addtimeavl, 0, tree->avl_count,
     addtimeht, 0, num_cols_hashtable, 
     addtime2dsll, counttime2dsll, num_cols_2dsll, 
     addtime2dbst, counttime2dbst, num_cols_bst2d,
@@ -439,6 +484,7 @@ int main(int argc, char **argv)
     num_cols_hashtable = 0;
     num_cols_1darray = 0;
 
+    free(tree);
     free(hash_table);
     free(root->left);
     free(root->right);
