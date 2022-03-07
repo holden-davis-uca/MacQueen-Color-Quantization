@@ -1,46 +1,7 @@
 {
     "version": "2.0.0",
     "tasks": [
-    {
-        "label": "Build mkm.c",
-        "type": "shell",
-        "command": "g++ -O3 -o mkm mkm.c -lm"
-    },
-    {
-      "label": "Build testsuite.c",
-      "type": "shell",
-      "command": "g++ -O3 -o testsuite testsuite.c -lm"
-    },
-    {
-      "label": "Build bst.c",
-      "type": "shell",
-      "command": "g++ -O3 -o bst bst.c -lm"
-    },
-    {
-      "label": "Build 3darray.c",
-      "type": "shell",
-      "command": "g++ -O3 -o 3darray 3darray.c -lm"
-    },
-    {
-      "label": "Build 1darray.c",
-      "type": "shell",
-      "command": "g++ -O3 -o 1darray 1darray.c -lm"
-    },
-    {
-      "label": "Build 2dbst.c",
-      "type": "shell",
-      "command": "g++ -O3 -o 2dbst 2dbst.c -lm"
-    },
-    {
-      "label": "Build 2dsll.c",
-      "type": "shell",
-      "command": "g++ -O3 -o 2dsll 2dsll.c -lm"
-    },
-    {
-      "label": "Build hashtable.c",
-      "type": "shell",
-      "command": "g++ -O3 -o hashtable hashtable.c -lm"
-    },
+      
     ]
     
   }

@@ -60,14 +60,12 @@ int main(int argc, char **argv)
   start = clock();
   struct libavl_allocator allocator = avl_allocator_default;
   struct avl_table *tree = avl_create(compare_ints, NULL, &allocator);
-  uint *insertions;
-  insertions = malloc(sizeof *insertions * in_img->size);
+  uint *insertions = malloc(sizeof *insertions * in_img->size);
+  RGB_Pixel *pixel;
   for (int i = 0; i < in_img->size; i++)
   {
-    uint red_value = in_img->data[i].red;
-    uint green_value = in_img->data[i].green;
-    uint blue_value = in_img->data[i].blue;
-    uint key = (red_value << 16) | (green_value << 8) | blue_value;
+    pixel = &in_img->data[i];
+    uint key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
     insertions[i] = key;
     avl_probe(tree, &insertions[i]);
   }

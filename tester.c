@@ -2,18 +2,10 @@
   To compile:
   make tester
 
-  For a list of command line options: ./tester
+  Example usage: ./tester
 */
 
 // TODO: Fix/Check Memory Leaks
-//Correct GNU Make implementation for
-//hashmap - DONE
-//1d array - DONE
-//2dbst - DONE
-//2dsll - DONE
-//3d array - DONE
-//bst - DONE
-//avl 
 
 #include <time.h>
 #include <math.h>
@@ -273,6 +265,8 @@ int main(int argc, char **argv)
     in_img = read_PPM(in_file_name);
 
     //1-D array histogram
+    printf("Processing %s with 1-D array histogram\n", pictures[z]);
+    start = clock();
     int *histogram1d;
     histogram1d = malloc(sizeof *histogram1d * MAX_VAL_PACKED);    start = clock();
     RGB_Pixel *pixel;
@@ -290,6 +284,7 @@ int main(int argc, char **argv)
     counttime1d = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
     //3-D array histogram
+    printf("Processing %s with 3-D array histogram\n", pictures[z]);
     int (*histogram3d)[MAX_VAL][MAX_VAL] = malloc(sizeof(int[MAX_VAL][MAX_VAL][MAX_VAL]));
     start = clock();
     for (int i = 0; i < in_img->size; i++)
@@ -306,18 +301,15 @@ int main(int argc, char **argv)
     counttime3d = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
     //BST histogram
+    printf("Processing %s with BST histogram\n", pictures[z]);
     start = clock();
-    unsigned int red_value = in_img->data[0].red;
-    unsigned int green_value = in_img->data[0].green;
-    unsigned int blue_value = in_img->data[0].blue;
-    int key = (red_value << 16) | (green_value << 8) | blue_value;
+    pixel = &in_img->data[0];
+    int key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
     struct BST_Node *root = insert_bst_node(NULL, key);
     for (int i = 1; i < in_img->size; i++)
     {
-      red_value = in_img->data[i].red;
-      green_value = in_img->data[i].green;
-      blue_value = in_img->data[i].blue;
-      key = (red_value << 16) | (green_value << 8) | blue_value;
+      pixel = &in_img->data[i];
+      key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
       insert_bst_node(root, key);
     }
     stop = clock();
@@ -328,6 +320,7 @@ int main(int argc, char **argv)
     counttimebst = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
     //2-D BST
+    printf("Processing %s with 2-D BST histogram\n", pictures[z]);
     start = clock();
     struct BST_Node (*bst2darray)[MAX_VAL] = malloc(sizeof(struct BST_Node[MAX_VAL][MAX_VAL]));
     for (int i = 0; i < in_img->size; i++)
@@ -343,6 +336,7 @@ int main(int argc, char **argv)
     counttime2dbst = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
     //2-D SLL
+    printf("Processing %s with 2-D SLL histogram\n", pictures[z]);
     start = clock();
     struct SLL_Node (*sll2darray)[MAX_VAL] = malloc(sizeof(struct SLL_Node[MAX_VAL][MAX_VAL]));
 
@@ -359,6 +353,7 @@ int main(int argc, char **argv)
     counttime2dsll = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
     //Hash table
+    printf("Processing %s with hash table histogram\n", pictures[z]);
     start = clock();
 
     int ih;
@@ -420,16 +415,15 @@ int main(int argc, char **argv)
     addtimeht = ((double) (stop - start)) / CLOCKS_PER_SEC;
 
     //AVL histogram
+    printf("Processing %s with AVL histogram\n", pictures[z]);
     struct libavl_allocator allocator = avl_allocator_default;
     struct avl_table *tree = avl_create(compare_ints, NULL, &allocator);
     uint *insertions;
     insertions = malloc(sizeof *insertions * in_img->size);
     for (int i = 0; i < in_img->size; i++)
     {
-      uint red_value = in_img->data[i].red;
-      uint green_value = in_img->data[i].green;
-      uint blue_value = in_img->data[i].blue;
-      uint key = (red_value << 16) | (green_value << 8) | blue_value;
+      pixel = &in_img->data[i];
+      uint key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
       insertions[i] = key;
       avl_probe(tree, &insertions[i]);
     }
@@ -493,5 +487,6 @@ int main(int argc, char **argv)
     free(in_img);
   }
   fclose(results);
+  printf("\nCheck results.txt for stats!\n\n");
   return EXIT_SUCCESS;
 }

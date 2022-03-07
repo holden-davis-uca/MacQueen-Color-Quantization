@@ -1,8 +1,10 @@
 /* 
   To compile:
-  g++ -O3 -o 2dsll 2dsll.c -lm
+  make 2dsll
 
   For a list of command line options: ./2dsll
+
+  Example usage: ./2dsll -i ./images/myimage.ppm
 */
 
 // TODO: Fix/Check Memory Leaks
@@ -85,7 +87,7 @@ int main(int argc, char **argv)
   double addtime, counttime;
 
   char in_file_name[256];
-  RGB_Image *in_img, *out_img;
+  RGB_Image *in_img;
 
   if (argc == 1)
   {
@@ -125,6 +127,8 @@ int main(int argc, char **argv)
   printf("\nTotal time to count number of colors in histogram (2-D SLL) = %g\n", counttime);
   printf("\nTotal number of colors in %s according to 2d SLL count: %d\n", in_file_name, num_cols_2dsll);
 
+  free(pixel);
+  free(sll2darray);
   free(in_img->data);
   free(in_img);
 

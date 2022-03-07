@@ -1,8 +1,10 @@
 /* 
   To compile:
-  g++ -O3 -o 1darray 1darray.c -lm
+  make 1darray
 
   For a list of command line options: ./1darray
+
+  Example usage: ./1darray -i ./images/myimage.ppm
 */
 
 // TODO: Fix/Check Memory Leaks
@@ -13,7 +15,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "util.c"
-
 
 //Maximum value for an any (r * 65536 + g * 256 + b) value
 #define MAX_VAL_PACKED 16777216
@@ -39,7 +40,7 @@ int main(int argc, char **argv)
   double addtime, counttime;
 
   char in_file_name[256];
-  RGB_Image *in_img, *out_img;
+  RGB_Image *in_img;
 
   if (argc == 1)
   {
@@ -61,7 +62,6 @@ int main(int argc, char **argv)
 
   //1-D array histogram
   start = clock();
-  // auto histogram = new int[MAX_VAL_PACKED]{};
   int *histogram;
   histogram = malloc(sizeof *histogram * MAX_VAL_PACKED);
   RGB_Pixel *pixel;
@@ -80,6 +80,7 @@ int main(int argc, char **argv)
   printf("\nTotal time to count number of colors in histogram (1-D array) = %g\n", counttime);
   printf("\nTotal number of colors in %s according to 1d array count: %d\n", in_file_name, num_cols_3darray);
 
+  free(pixel);
   free(histogram);
   free(in_img->data);
   free(in_img);

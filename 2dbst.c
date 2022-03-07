@@ -1,8 +1,10 @@
 /* 
   To compile:
-  g++ -O3 -o 2dbst 2dbst.c -lm
+  make 2dbst
 
   For a list of command line options: ./2dbst
+
+  Example usage: ./2dbst -i ./images/myimage.ppm
 */
 
 // TODO: Fix/Check Memory Leaks
@@ -89,7 +91,7 @@ int main(int argc, char **argv)
   double addtime, counttime;
 
   char in_file_name[256];
-  RGB_Image *in_img, *out_img;
+  RGB_Image *in_img;
 
   if (argc == 1)
   {
@@ -127,6 +129,9 @@ int main(int argc, char **argv)
   counttime = ((double) (stop - start)) / CLOCKS_PER_SEC;
   printf("\nTotal time to count number of colors in histogram (2-D BST) = %g\n", counttime);
   printf("\nTotal number of colors in %s according to 1d array count: %d\n", in_file_name, num_cols_2dbst);
+
+  free(pixel);
+  free(bst2darray);
   free(in_img->data);
   free(in_img);
 

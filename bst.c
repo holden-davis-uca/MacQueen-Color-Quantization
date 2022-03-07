@@ -1,12 +1,13 @@
 /* 
   To compile:
-  g++ -O3 -o bst bst.c -lm
+  make bst
 
   For a list of command line options: ./bst
+
+  Example usage: ./bst -i ./images/myimage.ppm
 */
 
 // TODO: Fix/Check Memory Leaks
-//NOTE: ONLY WORKS WITH G++/GCC, DOES NOT WORK WITH MAKE
 
 #include <time.h>
 #include <stdlib.h>
@@ -73,7 +74,7 @@ int main(int argc, char **argv)
   double addtime, counttime;
 
   char in_file_name[256];
-  RGB_Image *in_img, *out_img;
+  RGB_Image *in_img;
 
   if (argc == 1)
   {
@@ -96,17 +97,14 @@ int main(int argc, char **argv)
   //BST histogram
   
   start = clock();
-  unsigned int red_value = in_img->data[0].red;
-  unsigned int green_value = in_img->data[0].green;
-  unsigned int blue_value = in_img->data[0].blue;
-  int key = (red_value << 16) | (green_value << 8) | blue_value;
+  RGB_Pixel *pixel;
+  pixel = &in_img->data[0];
+  int key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
   struct BST_Node *root = insert_bst_node(NULL, key);
   for (int i = 1; i < in_img->size; i++)
   {
-    red_value = in_img->data[i].red;
-    green_value = in_img->data[i].green;
-    blue_value = in_img->data[i].blue;
-    key = (red_value << 16) | (green_value << 8) | blue_value;
+    pixel = &in_img->data[i];
+    key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
     insert_bst_node(root, key);
   }
  

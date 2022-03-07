@@ -1,8 +1,10 @@
 /* 
   To compile:
-  g++ -O3 -o 3darray 3darray.c -lm
+  make 3darray
 
   For a list of command line options: ./3darray
+
+  Example usage: ./3darray -i ./images/myimage.ppm
 */
 
 // TODO: Fix/Check Memory Leaks
@@ -66,14 +68,13 @@ int main(int argc, char **argv)
 
   //3-D array histogram
   RGB_Pixel *pixel;
-
   start = clock();
   int (*histogram)[MAX_VAL][MAX_VAL] = malloc(sizeof(int[MAX_VAL][MAX_VAL][MAX_VAL]));
 
   for (int i = 0; i < in_img->size; i++)
   {
-  pixel = &in_img->data[i];
-  histogram[pixel->red][pixel->green][pixel->blue]++;
+    pixel = &in_img->data[i];
+    histogram[pixel->red][pixel->green][pixel->blue]++;
   }
   stop = clock();
   addtime = ((double) (stop - start)) / CLOCKS_PER_SEC;
@@ -85,6 +86,8 @@ int main(int argc, char **argv)
   printf("\nTotal time to count number of colors in histogram (3-D array) = %g\n", counttime);
   printf("\nTotal number of colors in %s according to 3D array count: %d\n", in_file_name, num_cols_3darray);
 
+  free(histogram);
+  free(pixel);
   free(in_img->data);
   free(in_img);
 

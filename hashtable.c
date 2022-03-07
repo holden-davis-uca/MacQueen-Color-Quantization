@@ -1,8 +1,10 @@
 /* 
   To compile:
-  g++ -O3 -o hashtable hashtable.c -lm
+  make hashtable
 
   For a list of command line options: ./hashtable
+
+  Example usage: ./hashtable -i ./images/myimage.ppm
 */
 
 // TODO: Fix/Check Memory Leaks
@@ -43,7 +45,7 @@ int main(int argc, char **argv)
     double addtime, counttime;
 
     char in_file_name[256];
-    RGB_Image *in_img, *out_img;
+    RGB_Image *in_img;
 
     if (argc == 1)
     {
@@ -126,6 +128,7 @@ int main(int argc, char **argv)
     printf("\nTotal time to add and count all colors to histogram (hash table) = %g\n", addtime);
     printf("\nTotal number of colors in %s according to hash table count: %d\n", in_file_name, num_colors);
 
+    free(bucket);
     free(hash_table);
     free(in_img->data);
     free(in_img);

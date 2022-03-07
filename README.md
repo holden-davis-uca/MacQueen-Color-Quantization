@@ -38,6 +38,12 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 - **mkm.c**: The original work from the above repository (used for image input/output functions).
 - **tester.c**: a file combining all previous methods (used for testing timing and comparing methods against each other).
 
-**All files except tester require at least a .ppm image as an argument.**
+# Notes:
 
-**Currently, all implementations are to be compiled with GNU Make.**
+- All files except tester require at least a .ppm image as an argument.
+
+- Currently, all implementations are to be compiled with GNU Make.
+
+- All implementations print a short message to the console indicating image, time performance and counted colors.
+
+- The one exception to this is tester, which instead creates a file called results.txt, which contains a comparison table of all implementations executed on all files.
