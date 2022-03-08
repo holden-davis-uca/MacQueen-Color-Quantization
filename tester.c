@@ -247,7 +247,7 @@ int main(int argc, char **argv)
   "ADD (3-D)", "COUNT (3-D)", "COLORS (3-D)",
   "ADD (1-D)", "COUNT (1-D)", "COLORS (1-D)");
   
-  const char *pictures[8];  
+  const char *pictures[10];  
   pictures[0] = "./images/baboon.ppm";
   pictures[1] = "./images/fish.ppm";
   pictures[2] = "./images/girl.ppm";
@@ -256,7 +256,9 @@ int main(int argc, char **argv)
   pictures[5] = "./images/kodim23.ppm";
   pictures[6] = "./images/peppers.ppm";
   pictures[7] = "./images/pills.ppm";
-  for (int z = 0; z < 8; z++)
+  pictures[8] = "./images/frymire.ppm";
+  pictures[9] = "./images/kiss.ppm";
+  for (int z = 0; z < 10; z++)
   {
     char in_file_name[256];
     RGB_Image *in_img;
