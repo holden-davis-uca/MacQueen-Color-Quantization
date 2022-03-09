@@ -427,7 +427,7 @@ rb_delete (struct rb_table *tree, const void *item)
 /* Refreshes the stack of parent pointers in |trav|
    and updates its generation number. */
 static void
-trav_refresh (struct rb_traverser *trav)
+rb_trav_refresh (struct rb_traverser *trav)
 {
   assert (trav != NULL);
 
@@ -618,7 +618,7 @@ rb_t_next (struct rb_traverser *trav)
   assert (trav != NULL);
 
   if (trav->rb_generation != trav->rb_table->rb_generation)
-    trav_refresh (trav);
+    rb_trav_refresh (trav);
 
   x = trav->rb_node;
   if (x == NULL)
@@ -671,7 +671,7 @@ rb_t_prev (struct rb_traverser *trav)
   assert (trav != NULL);
 
   if (trav->rb_generation != trav->rb_table->rb_generation)
-    trav_refresh (trav);
+    rb_trav_refresh (trav);
 
   x = trav->rb_node;
   if (x == NULL)
@@ -740,7 +740,7 @@ rb_t_replace (struct rb_traverser *trav, void *new)
    first setting right links of nodes in |stack| within |new|
    to null pointers to avoid touching uninitialized data. */
 static void
-copy_error_recovery (struct rb_node **stack, int height,
+rb_copy_error_recovery (struct rb_node **stack, int height,
                      struct rb_table *new, rb_item_func *destroy)
 {
   assert (stack != NULL && height >= 0 && new != NULL);
@@ -798,7 +798,7 @@ rb_copy (const struct rb_table *org, rb_copy_func *copy,
                   y->rb_link[1] = NULL;
                 }
 
-              copy_error_recovery (stack, height, new, destroy);
+              rb_copy_error_recovery (stack, height, new, destroy);
               return NULL;
             }
 
@@ -820,7 +820,7 @@ rb_copy (const struct rb_table *org, rb_copy_func *copy,
               if (y->rb_data == NULL)
                 {
                   y->rb_link[1] = NULL;
-                  copy_error_recovery (stack, height, new, destroy);
+                  rb_copy_error_recovery (stack, height, new, destroy);
                   return NULL;
                 }
             }
@@ -832,7 +832,7 @@ rb_copy (const struct rb_table *org, rb_copy_func *copy,
                                                sizeof *y->rb_link[1]);
               if (y->rb_link[1] == NULL)
                 {
-                  copy_error_recovery (stack, height, new, destroy);
+                  rb_copy_error_recovery (stack, height, new, destroy);
                   return NULL;
                 }
 

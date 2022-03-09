@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include "util.c"
 #include "rb.c"
-#include "rb-test.c"
 
 /* Comparison function for pointers to |int|s.
    |param| is not used. */

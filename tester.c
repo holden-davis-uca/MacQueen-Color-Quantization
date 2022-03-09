@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include "util.c"
 #include "avl.c"
-#include "avl-test.c"
+#include "rb.c"
 
 //Maximum value for an r, g, or b value
 int const MAX_VAL = 256;
@@ -231,14 +231,16 @@ int main(int argc, char **argv)
   addtime3d, counttime3d, 
   addtimebst, counttimebst,
   addtimeht,
-  addtimeavl;
+  addtimeavl,
+  addtimerb;
 
   FILE *results;
   results = fopen("results.txt", "w");
 
   fprintf(results, 
-  "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s", 
+  "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s", 
   "IMAGE",
+  "ADD (RB)", "COUNT (RB)","COLORS (RB)",
   "ADD (AVL)", "COUNT (AVL)","COLORS (AVL)",
   "ADD (Hash Table)","COUNT (Hash Table)","COLORS (Hash Table)",
   "ADD (2-D SLL)", "COUNT (2-D SLL)", "COLORS (2-D SLL)",
@@ -418,23 +420,45 @@ int main(int argc, char **argv)
 
     //AVL histogram
     printf("Processing %s with AVL histogram\n", pictures[z]);
-    struct libavl_allocator allocator = avl_allocator_default;
-    struct avl_table *tree = avl_create(compare_ints, NULL, &allocator);
-    uint *insertions;
-    insertions = malloc(sizeof *insertions * in_img->size);
+    struct libavl_allocator avlallocator = avl_allocator_default;
+    struct avl_table *avltree = avl_create(compare_ints, NULL, &avlallocator);
+    uint *avlinsertions;
+    avlinsertions = malloc(sizeof *avlinsertions * in_img->size);
     for (int i = 0; i < in_img->size; i++)
     {
       pixel = &in_img->data[i];
       uint key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
-      insertions[i] = key;
-      avl_probe(tree, &insertions[i]);
+      avlinsertions[i] = key;
+      avl_probe(avltree, &avlinsertions[i]);
     }
     stop = clock();
     addtimeavl = ((double) (stop - start)) / CLOCKS_PER_SEC;
+
+    //RB histogram
+    printf("Processing %s with RB histogram\n", pictures[z]);
+    struct libavl_allocator rballocator = rb_allocator_default;
+    struct rb_table *rbtree = rb_create(compare_ints, NULL, &rballocator);
+    uint *rbinsertions;
+    rbinsertions = malloc(sizeof *rbinsertions * in_img->size);
+    for (int i = 0; i < in_img->size; i++)
+    {
+      pixel = &in_img->data[i];
+      uint key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
+      rbinsertions[i] = key;
+      rb_probe(rbtree, &rbinsertions[i]);
+    }
+    stop = clock();
+    addtimerb = ((double) (stop - start)) / CLOCKS_PER_SEC;
+
     /*
     Filename (String)
 
+    RB add (double)
+    RB count (double) - 0
+    RB colors (%zu)
+
     AVL add (double)
+    AVL count (double) - 0
     AVL colors (%zu)
 
     Hash table add (double)
@@ -464,9 +488,10 @@ int main(int argc, char **argv)
     */
     fprintf(results, "\n");
     fprintf(results, 
-    "%-25s%-25g%-25d%-25zu%-25g%-25d%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d", 
+    "%-25s%-25g%-25d%-25zu%-25g%-25d%-25zu%-25g%-25d%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d", 
     in_file_name, 
-    addtimeavl, 0, tree->avl_count,
+    addtimerb, 0, rbtree->rb_count,
+    addtimeavl, 0, avltree->avl_count,
     addtimeht, 0, num_cols_hashtable, 
     addtime2dsll, counttime2dsll, num_cols_2dsll, 
     addtime2dbst, counttime2dbst, num_cols_bst2d,
@@ -480,7 +505,10 @@ int main(int argc, char **argv)
     num_cols_hashtable = 0;
     num_cols_1darray = 0;
 
-    free(tree);
+    free(avlinsertions);
+    free(rbinsertions);
+    free(rbtree);
+    free(avltree);
     free(hash_table);
     free(root->left);
     free(root->right);

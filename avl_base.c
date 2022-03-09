@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include "util.c"
 #include "avl.c"
-#include "avl-test.c"
 
 /* Comparison function for pointers to |int|s.
    |param| is not used. */

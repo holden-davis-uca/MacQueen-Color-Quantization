@@ -395,7 +395,7 @@ avl_delete (struct avl_table *tree, const void *item)
 /* Refreshes the stack of parent pointers in |trav|
    and updates its generation number. */
 static void
-trav_refresh (struct avl_traverser *trav)
+avl_trav_refresh (struct avl_traverser *trav)
 {
   assert (trav != NULL);
 
@@ -586,7 +586,7 @@ avl_t_next (struct avl_traverser *trav)
   assert (trav != NULL);
 
   if (trav->avl_generation != trav->avl_table->avl_generation)
-    trav_refresh (trav);
+    avl_trav_refresh (trav);
 
   x = trav->avl_node;
   if (x == NULL)
@@ -639,7 +639,7 @@ avl_t_prev (struct avl_traverser *trav)
   assert (trav != NULL);
 
   if (trav->avl_generation != trav->avl_table->avl_generation)
-    trav_refresh (trav);
+    avl_trav_refresh (trav);
 
   x = trav->avl_node;
   if (x == NULL)
@@ -708,7 +708,7 @@ avl_t_replace (struct avl_traverser *trav, void *new)
    first setting right links of nodes in |stack| within |new|
    to null pointers to avoid touching uninitialized data. */
 static void
-copy_error_recovery (struct avl_node **stack, int height,
+avl_copy_error_recovery (struct avl_node **stack, int height,
                      struct avl_table *new, avl_item_func *destroy)
 {
   assert (stack != NULL && height >= 0 && new != NULL);
@@ -766,7 +766,7 @@ avl_copy (const struct avl_table *org, avl_copy_func *copy,
                   y->avl_link[1] = NULL;
                 }
 
-              copy_error_recovery (stack, height, new, destroy);
+              avl_copy_error_recovery (stack, height, new, destroy);
               return NULL;
             }
 
@@ -788,7 +788,7 @@ avl_copy (const struct avl_table *org, avl_copy_func *copy,
               if (y->avl_data == NULL)
                 {
                   y->avl_link[1] = NULL;
-                  copy_error_recovery (stack, height, new, destroy);
+                  avl_copy_error_recovery (stack, height, new, destroy);
                   return NULL;
                 }
             }
@@ -800,7 +800,7 @@ avl_copy (const struct avl_table *org, avl_copy_func *copy,
                                                sizeof *y->avl_link[1]);
               if (y->avl_link[1] == NULL)
                 {
-                  copy_error_recovery (stack, height, new, destroy);
+                  avl_copy_error_recovery (stack, height, new, destroy);
                   return NULL;
                 }
 
