@@ -1,4 +1,4 @@
-/* 
+/*
   To compile:
   make tester
 
@@ -16,10 +16,10 @@
 #include "avl.c"
 #include "rb.c"
 
-//Maximum value for an r, g, or b value
+// Maximum value for an r, g, or b value
 int const MAX_VAL = 256;
 
-//Maximum value for an any (r * 65536 + g * 256 + b) value
+// Maximum value for an any (r * 65536 + g * 256 + b) value
 #define MAX_VAL_PACKED 16777216
 
 #define HASH_SIZE 20023
@@ -36,11 +36,11 @@ typedef struct Bucket_Entry *Bucket;
 
 struct Bucket_Entry
 {
-    uint red;
-    uint green;
-    uint blue;
-    uint count;
-    Bucket next;
+  uint red;
+  uint green;
+  uint blue;
+  uint count;
+  Bucket next;
 };
 
 typedef Bucket *Hash_Table;
@@ -87,8 +87,7 @@ struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
 }
 /* Comparison function for pointers to |int|s.
    |param| is not used. */
-int
-compare_ints (const void *pa, const void *pb, void *param)
+int compare_ints(const void *pa, const void *pb, void *param)
 {
   const int *a = pa;
   const int *b = pb;
@@ -103,16 +102,16 @@ compare_ints (const void *pa, const void *pb, void *param)
 
 int traverse_2dsll(const struct SLL_Node *head)
 {
- if (head == NULL)
+  if (head == NULL)
   {
     return 0;
   }
- else if (head->count == 0)
+  else if (head->count == 0)
   {
-   return traverse_2dsll(head->next);
+    return traverse_2dsll(head->next);
   }
 
- return 1 + traverse_2dsll(head->next);
+  return 1 + traverse_2dsll(head->next);
 }
 
 struct BST_Node *alloc_bst_node(const int new_key)
@@ -146,8 +145,8 @@ struct BST_Node *insert_bst_node(struct BST_Node *node, const int new_key)
   return node;
 }
 
-//Iterate through a one dimensional array representing the color histogram.
-//If at least a single color exists (> 0), than increment num_colors counter and return at end.
+// Iterate through a one dimensional array representing the color histogram.
+// If at least a single color exists (> 0), than increment num_colors counter and return at end.
 int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
 {
   int num_colors = 0;
@@ -161,8 +160,8 @@ int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
   return num_colors;
 }
 
-//Iterate through a three dimensional array representing the color histogram.
-//If at least a single color exists (> 0), than increment num_colors counter and return at end.
+// Iterate through a three dimensional array representing the color histogram.
+// If at least a single color exists (> 0), than increment num_colors counter and return at end.
 int count_colors_3d_histo(int histogram[MAX_VAL][MAX_VAL][MAX_VAL])
 {
   int num_colors = 0;
@@ -224,32 +223,33 @@ int count_colors_2dsll(struct SLL_Node sll2darray[MAX_VAL][MAX_VAL])
 int main(int argc, char **argv)
 {
   clock_t start, stop;
-  double 
-  addtime1d, counttime1d, 
-  addtime2dbst, counttime2dbst, 
-  addtime2dsll, counttime2dsll, 
-  addtime3d, counttime3d, 
-  addtimebst, counttimebst,
-  addtimeht,
-  addtimeavl,
-  addtimerb;
+  double
+      addtime1d,
+      counttime1d,
+      addtime2dbst, counttime2dbst,
+      addtime2dsll, counttime2dsll,
+      addtime3d, counttime3d,
+      addtimebst, counttimebst,
+      addtimeht,
+      addtimeavl,
+      addtimerb;
 
   FILE *results;
   results = fopen("results.txt", "w");
 
-  fprintf(results, 
-  "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s", 
-  "IMAGE",
-  "ADD (RB)", "COUNT (RB)","COLORS (RB)",
-  "ADD (AVL)", "COUNT (AVL)","COLORS (AVL)",
-  "ADD (Hash Table)","COUNT (Hash Table)","COLORS (Hash Table)",
-  "ADD (2-D SLL)", "COUNT (2-D SLL)", "COLORS (2-D SLL)",
-  "ADD (2-D BST)", "COUNT(2-D BST)", "COLORS (2-D BST)",
-  "ADD (BST)", "COUNT(BST)", "COLORS (BST)",
-  "ADD (3-D)", "COUNT (3-D)", "COLORS (3-D)",
-  "ADD (1-D)", "COUNT (1-D)", "COLORS (1-D)");
-  
-  const char *pictures[10];  
+  fprintf(results,
+          "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s",
+          "IMAGE",
+          "ADD (RB)", "COUNT (RB)", "COLORS (RB)",
+          "ADD (AVL)", "COUNT (AVL)", "COLORS (AVL)",
+          "ADD (Hash Table)", "COUNT (Hash Table)", "COLORS (Hash Table)",
+          "ADD (2-D SLL)", "COUNT (2-D SLL)", "COLORS (2-D SLL)",
+          "ADD (2-D BST)", "COUNT(2-D BST)", "COLORS (2-D BST)",
+          "ADD (BST)", "COUNT(BST)", "COLORS (BST)",
+          "ADD (3-D)", "COUNT (3-D)", "COLORS (3-D)",
+          "ADD (1-D)", "COUNT (1-D)", "COLORS (1-D)");
+
+  const char *pictures[10];
   pictures[0] = "./images/baboon.ppm";
   pictures[1] = "./images/fish.ppm";
   pictures[2] = "./images/girl.ppm";
@@ -268,11 +268,12 @@ int main(int argc, char **argv)
 
     in_img = read_PPM(in_file_name);
 
-    //1-D array histogram
+    // 1-D array histogram
     printf("Processing %s with 1-D array histogram\n", pictures[z]);
     start = clock();
     int *histogram1d;
-    histogram1d = malloc(sizeof *histogram1d * MAX_VAL_PACKED);    start = clock();
+    histogram1d = malloc(sizeof *histogram1d * MAX_VAL_PACKED);
+    start = clock();
     RGB_Pixel *pixel;
     for (int i = 0; i < in_img->size; i++)
     {
@@ -280,16 +281,16 @@ int main(int argc, char **argv)
       histogram1d[(pixel->red << 16) | (pixel->green << 8) | pixel->blue]++;
     }
     stop = clock();
-    addtime1d = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    addtime1d = ((double)(stop - start)) / CLOCKS_PER_SEC;
 
     start = clock();
     int num_cols_1darray = count_colors_1d_histo(histogram1d);
     stop = clock();
-    counttime1d = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    counttime1d = ((double)(stop - start)) / CLOCKS_PER_SEC;
 
-    //3-D array histogram
+    // 3-D array histogram
     printf("Processing %s with 3-D array histogram\n", pictures[z]);
-    int (*histogram3d)[MAX_VAL][MAX_VAL] = malloc(sizeof(int[MAX_VAL][MAX_VAL][MAX_VAL]));
+    int(*histogram3d)[MAX_VAL][MAX_VAL] = malloc(sizeof(int[MAX_VAL][MAX_VAL][MAX_VAL]));
     start = clock();
     for (int i = 0; i < in_img->size; i++)
     {
@@ -297,14 +298,14 @@ int main(int argc, char **argv)
       histogram3d[pixel->red][pixel->green][pixel->blue]++;
     }
     stop = clock();
-    addtime3d = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    addtime3d = ((double)(stop - start)) / CLOCKS_PER_SEC;
 
     start = clock();
     int num_cols_3darray = count_colors_3d_histo(histogram3d);
     stop = clock();
-    counttime3d = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    counttime3d = ((double)(stop - start)) / CLOCKS_PER_SEC;
 
-    //BST histogram
+    // BST histogram
     printf("Processing %s with BST histogram\n", pictures[z]);
     start = clock();
     pixel = &in_img->data[0];
@@ -317,32 +318,32 @@ int main(int argc, char **argv)
       insert_bst_node(root, key);
     }
     stop = clock();
-    addtimebst = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    addtimebst = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
     int num_cols_bst = traverse_bst(root);
     stop = clock();
-    counttimebst = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    counttimebst = ((double)(stop - start)) / CLOCKS_PER_SEC;
 
-    //2-D BST
+    // 2-D BST
     printf("Processing %s with 2-D BST histogram\n", pictures[z]);
     start = clock();
-    struct BST_Node (*bst2darray)[MAX_VAL] = malloc(sizeof(struct BST_Node[MAX_VAL][MAX_VAL]));
+    struct BST_Node(*bst2darray)[MAX_VAL] = malloc(sizeof(struct BST_Node[MAX_VAL][MAX_VAL]));
     for (int i = 0; i < in_img->size; i++)
     {
       pixel = &in_img->data[i];
       struct BST_Node *root = insert_bst_node(&bst2darray[pixel->red][pixel->green], pixel->blue);
     }
     stop = clock();
-    addtime2dbst = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    addtime2dbst = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
     int num_cols_bst2d = count_colors_2dbst(bst2darray);
     stop = clock();
-    counttime2dbst = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    counttime2dbst = ((double)(stop - start)) / CLOCKS_PER_SEC;
 
-    //2-D SLL
+    // 2-D SLL
     printf("Processing %s with 2-D SLL histogram\n", pictures[z]);
     start = clock();
-    struct SLL_Node (*sll2darray)[MAX_VAL] = malloc(sizeof(struct SLL_Node[MAX_VAL][MAX_VAL]));
+    struct SLL_Node(*sll2darray)[MAX_VAL] = malloc(sizeof(struct SLL_Node[MAX_VAL][MAX_VAL]));
 
     for (int i = 0; i < in_img->size; i++)
     {
@@ -350,13 +351,13 @@ int main(int argc, char **argv)
       struct SLL_Node *head = insert_sll_node(&sll2darray[pixel->red][pixel->green], pixel->blue);
     }
     stop = clock();
-    addtime2dsll = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    addtime2dsll = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
     int num_cols_2dsll = count_colors_2dsll(sll2darray);
     stop = clock();
-    counttime2dsll = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    counttime2dsll = ((double)(stop - start)) / CLOCKS_PER_SEC;
 
-    //Hash table
+    // Hash table
     printf("Processing %s with hash table histogram\n", pictures[z]);
     start = clock();
 
@@ -372,53 +373,53 @@ int main(int argc, char **argv)
 
     for (ih = 0; ih < HASH_SIZE; ih++)
     {
-        hash_table[ih] = NULL;
+      hash_table[ih] = NULL;
     }
 
     for (int i = 0; i < in_img->size; i++)
     {
 
-        red = in_img->data[i].red;
-        green = in_img->data[i].green;
-        blue = in_img->data[i].blue;
+      red = in_img->data[i].red;
+      green = in_img->data[i].green;
+      blue = in_img->data[i].blue;
 
-        /* Determine the bucket */
-        hash = HASH(red, green, blue);
+      /* Determine the bucket */
+      hash = HASH(red, green, blue);
 
-        /* Search for the color in the bucket chain */
-        for (bucket = hash_table[hash]; bucket != NULL; bucket = bucket->next)
+      /* Search for the color in the bucket chain */
+      for (bucket = hash_table[hash]; bucket != NULL; bucket = bucket->next)
+      {
+
+        if (bucket->red == red && bucket->green == green && bucket->blue == blue)
         {
+          /* This color exists in the hash table */
+          break;
+        }
+      }
+      if (bucket != NULL)
+      {
+        /* This color exists in the hash table */
+        bucket->count++;
+      }
+      else
+      {
+        num_cols_hashtable++;
+        /* Create a new bucket entry for this color */
+        bucket = (Bucket)malloc(sizeof(struct Bucket_Entry));
 
-            if (bucket->red == red && bucket->green == green && bucket->blue == blue)
-            {
-                /* This color exists in the hash table */
-                break;
-            }
-        }
-        if (bucket != NULL)
-        {
-            /* This color exists in the hash table */
-            bucket->count++;
-        }
-        else
-        {
-            num_cols_hashtable++;
-            /* Create a new bucket entry for this color */
-            bucket = (Bucket)malloc(sizeof(struct Bucket_Entry));
-
-            bucket->red = red;
-            bucket->green = green;
-            bucket->blue = blue;
-            bucket->count = 1;
-            bucket->next = hash_table[hash];
-            hash_table[hash] = bucket;
-        }
+        bucket->red = red;
+        bucket->green = green;
+        bucket->blue = blue;
+        bucket->count = 1;
+        bucket->next = hash_table[hash];
+        hash_table[hash] = bucket;
+      }
     }
 
     stop = clock();
-    addtimeht = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    addtimeht = ((double)(stop - start)) / CLOCKS_PER_SEC;
 
-    //AVL histogram
+    // AVL histogram
     printf("Processing %s with AVL histogram\n", pictures[z]);
     struct libavl_allocator avlallocator = avl_allocator_default;
     struct avl_table *avltree = avl_create(compare_ints, NULL, &avlallocator);
@@ -432,9 +433,9 @@ int main(int argc, char **argv)
       avl_probe(avltree, &avlinsertions[i]);
     }
     stop = clock();
-    addtimeavl = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    addtimeavl = ((double)(stop - start)) / CLOCKS_PER_SEC;
 
-    //RB histogram
+    // RB histogram
     printf("Processing %s with RB histogram\n", pictures[z]);
     struct libavl_allocator rballocator = rb_allocator_default;
     struct rb_table *rbtree = rb_create(compare_ints, NULL, &rballocator);
@@ -448,7 +449,7 @@ int main(int argc, char **argv)
       rb_probe(rbtree, &rbinsertions[i]);
     }
     stop = clock();
-    addtimerb = ((double) (stop - start)) / CLOCKS_PER_SEC;
+    addtimerb = ((double)(stop - start)) / CLOCKS_PER_SEC;
 
     /*
     Filename (String)
@@ -462,7 +463,7 @@ int main(int argc, char **argv)
     AVL colors (%zu)
 
     Hash table add (double)
-    Hash table count (double) - 0 
+    Hash table count (double) - 0
     Hash table colors (int)
 
     2dsll add (double)
@@ -487,18 +488,18 @@ int main(int argc, char **argv)
 
     */
     fprintf(results, "\n");
-    fprintf(results, 
-    "%-25s%-25g%-25d%-25zu%-25g%-25d%-25zu%-25g%-25d%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d", 
-    in_file_name, 
-    addtimerb, 0, rbtree->rb_count,
-    addtimeavl, 0, avltree->avl_count,
-    addtimeht, 0, num_cols_hashtable, 
-    addtime2dsll, counttime2dsll, num_cols_2dsll, 
-    addtime2dbst, counttime2dbst, num_cols_bst2d,
-    addtimebst, counttimebst, num_cols_bst,
-    addtime1d, counttime1d, num_cols_1darray,
-    addtime3d, counttime3d, num_cols_3darray);
-    
+    fprintf(results,
+            "%-25s%-25g%-25d%-25zu%-25g%-25d%-25zu%-25g%-25d%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d",
+            in_file_name,
+            addtimerb, 0, rbtree->rb_count,
+            addtimeavl, 0, avltree->avl_count,
+            addtimeht, 0, num_cols_hashtable,
+            addtime2dsll, counttime2dsll, num_cols_2dsll,
+            addtime2dbst, counttime2dbst, num_cols_bst2d,
+            addtimebst, counttimebst, num_cols_bst,
+            addtime1d, counttime1d, num_cols_1darray,
+            addtime3d, counttime3d, num_cols_3darray);
+
     num_cols_bst2d = 0;
     num_cols_bst = 0;
     num_cols_2dsll = 0;

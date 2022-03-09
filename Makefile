@@ -23,3 +23,5 @@ bst: bst
 	$(CC) -O3 -o bst bst.c -I.
 hashtable: hashtable
 	$(CC) -O3 -o hashtable hashtable.c -I.
+runtest: runtest
+	$(CC) -O3 -o runtest runtest.c -I.	

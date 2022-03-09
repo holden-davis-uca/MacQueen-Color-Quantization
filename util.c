@@ -110,6 +110,8 @@ static void print_usage(char *prog_name)
 {
   fprintf(stderr, "Color Histogram Testing Program\n\n");
   fprintf(stderr, "Creates color histograms from input .ppm images.\n\n");
-  fprintf(stderr, "Usage: %s -i <input image>\n\n", prog_name);
+  fprintf(stderr, "Usage Instructions:\n\n");
+  fprintf(stderr, "\ttester.c / runtest.c: %s -r <number of runs>\n\n", prog_name);
+  fprintf(stderr, "\tAll others: %s -i <input image>\n\n", prog_name);
   exit(EXIT_FAILURE);
 }
