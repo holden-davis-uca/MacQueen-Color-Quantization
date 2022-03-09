@@ -17,6 +17,8 @@ tester: tester
 	$(CC) -O3 -o 3darray 3darray.c -I.
 avl_base: avl_base 
 	$(CC) -O3 -o avl_base avl_base.c -I.
+rb_base: rb_base
+	$(CC) -O3 -o rb_base rb_base.c -I.
 bst: bst
 	$(CC) -O3 -o bst bst.c -I.
 hashtable: hashtable
