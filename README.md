@@ -9,3 +9,24 @@ Single file:
 has two base methods:
     one is do/methodname/ like do1darray(takes argument of RGB_Image) - this does all of the actual stuff and returns the triplet struct containing the relevant values - probably does its own timing as well
     other is main() - this is what occurs when called solo, takes argument of filename (via argc/argv as before) (and run number?) and just calls the above
+
+# Stream of consciousness time
+
+i have deleted every implementation from this branch and need to make them all by combining actual code from main branch with skeleton
+
+skeleton created!
+
+what i have done:
+
+skeleton
+1darray
+2dbst
+
+what i need to do:
+
+2dsll
+3darray
+avl_base
+hashtable
+rb_base
+tester

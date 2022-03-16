@@ -7,6 +7,33 @@ The read_PPM function needed to read in the ppm images and extract relevant info
 typedef unsigned char uchar;
 typedef unsigned long ulong;
 
+//Maximum value for an r, g, or b value
+int const MAX_VAL = 256;
+
+#define HASH_SIZE 20023
+
+#define HASH(R, G, B) ((((long)(R)*33023 +  \
+                         (long)(G)*30013 +  \
+                         (long)(B)*27011) & \
+                        0x7fffffff) %       \
+                       HASH_SIZE)
+
+/* Comparison function for pointers to |int|s.
+   |param| is not used. */
+int
+compare_ints (const void *pa, const void *pb, void *param)
+{
+  const int *a = pa;
+  const int *b = pb;
+
+  if (*a < *b)
+    return -1;
+  else if (*a > *b)
+    return +1;
+  else
+    return 0;
+}
+
 RGB_Image * read_PPM(const char *filename)
 {
   uchar byte;
@@ -109,9 +136,15 @@ RGB_Image * read_PPM(const char *filename)
 static void print_usage(char *prog_name)
 {
   fprintf(stderr, "Color Histogram Testing Program\n\n");
-  fprintf(stderr, "Creates color histograms from input .ppm images.\n\n");
-  fprintf(stderr, "Usage Instructions:\n\n");
-  fprintf(stderr, "\ttester.c / runtest.c: %s -r <number of runs>\n\n", prog_name);
-  fprintf(stderr, "\tAll others: %s -i <input image>\n\n", prog_name);
+  fprintf(stderr, "Creates color histograms from input .ppm images. Prints a informative segment to the console describing time usage and image color count\n\n");
+  fprintf(stderr, "Usage Instructions: %s -i <input image> -r <number of runs>\n\n", prog_name);
+  exit(EXIT_FAILURE);
+}
+
+static void print_usage_test(char *prog_name)
+{
+  fprintf(stderr, "Color Histogram Testing Program - Test Suite\n\n");
+  fprintf(stderr, "Creates color histograms from input .ppm images. Prints a informative segment to the console describing time usage and image color count\n\n");
+  fprintf(stderr, "Usage Instructions: %s -r <number of runs>\n\n", prog_name);
   exit(EXIT_FAILURE);
 }

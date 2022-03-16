@@ -6,7 +6,7 @@ CFLAGS = -O3 -W -Wall -ansi -pedantic
 LDFLAGS = -O3
 #All implementations: O3 for optimization, o for output .exe with same name as file
 tester: tester 
-	$(CC) -O3 -o tester tester.c -I.
+	$(CC) -O3 -o tester tester.c -I. -e main1
 1darray: 1darray
 	$(CC) -O3 -o 1darray 1darray.c -I.
 2dbst: 2dbst
@@ -23,7 +23,3 @@ bst: bst
 	$(CC) -O3 -o bst bst.c -I.
 hashtable: hashtable
 	$(CC) -O3 -o hashtable hashtable.c -I.
-runtest: runtest
-	$(CC) -O3 -o runtest runtest.c -I.	
-randtest: randtest
-	$(CC) -O3 -o randtest randtest.c -I.	

@@ -1,80 +1,32 @@
-/* 
-  To compile:
-  make hashtable
+/*
 
-  For a list of command line options: ./hashtable
+To compile: make %hashtable%
 
-  Example usage: ./hashtable -i ./images/myimage.ppm
+To run: ./%hashtable% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
+
+It can be run with just the image argument and the number of runs will default to 1
+
 */
 
-// TODO: Fix/Check Memory Leaks
-
-#include <time.h>
 #include <stdlib.h>
+#include <time.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
 #include "util.c"
 
-#define HASH_SIZE 20023
-
-/* TODO: Do we need bitmasking in the HASH function? */
-
-#define HASH(R, G, B) ((((long)(R)*33023 +  \
-                         (long)(G)*30013 +  \
-                         (long)(B)*27011) & \
-                        0x7fffffff) %       \
-                       HASH_SIZE)
-
-typedef struct Bucket_Entry *Bucket;
-
-struct Bucket_Entry
-{
-    uint red;
-    uint green;
-    uint blue;
-    uint count;
-    Bucket next;
-};
-
-typedef Bucket *Hash_Table;
-
-int main(int argc, char **argv)
+results dohashtable(RGB_Image *in_img)
 {
     clock_t start, stop;
     double addtime, counttime;
-
-    char in_file_name[256];
-    RGB_Image *in_img;
-
-    if (argc == 1)
-    {
-        print_usage(argv[0]);
-    }
-    for (int i = 1; i < argc; i++)
-    {
-        if (!strcmp(argv[i], "-i"))
-        {
-            strcpy(in_file_name, argv[++i]);
-        }
-        else
-        {
-            print_usage(argv[0]);
-        }
-    }
-
-    in_img = read_PPM(in_file_name);
-
-    //Hash table histogram
+    results res;
     start = clock();
-
     int ih;
     uint hash;
     int index;
     uint red, green, blue;
     Bucket bucket;
     Hash_Table hash_table;
-
     int num_colors = 0;
     hash_table = (Hash_Table)malloc(HASH_SIZE * sizeof(Bucket));
 
@@ -82,10 +34,8 @@ int main(int argc, char **argv)
     {
         hash_table[ih] = NULL;
     }
-
     for (int i = 0; i < in_img->size; i++)
     {
-
         red = in_img->data[i].red;
         green = in_img->data[i].green;
         blue = in_img->data[i].blue;
@@ -122,16 +72,58 @@ int main(int argc, char **argv)
             hash_table[hash] = bucket;
         }
     }
-
     stop = clock();
-    addtime = ((double) (stop - start)) / CLOCKS_PER_SEC;
-    printf("\nTotal time to add and count all colors to histogram (hash table) = %g\n", addtime);
-    printf("\nTotal number of colors in %s according to hash table count: %d\n", in_file_name, num_colors);
-
+    addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
+    start = clock();
+    int cols_hashtable = num_colors;
+    stop = clock();
+    counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
+    res.num_cols = num_colors;
+    res.addtime = addtime;
+    res.counttime = counttime;
     free(bucket);
     free(hash_table);
-    free(in_img->data);
-    free(in_img);
+    return res;
+}
 
-    return EXIT_SUCCESS;
+int main(int argc, char **argv)
+{
+    int num_runs = 1;
+    char in_file_name[256];
+    RGB_Image *in_img;
+    if (argc == 1)
+    {
+        print_usage(argv[0]);
+    }
+    for (int i = 1; i < argc; i++)
+    {
+        if (!strcmp(argv[i], "-i"))
+        {
+            strcpy(in_file_name, argv[++i]);
+        }
+        else if (!strcmp(argv[i], "-r"))
+        {
+            num_runs = atoi(argv[++i]);
+        }
+        else
+        {
+            print_usage(argv[0]);
+        }
+    }
+    in_img = read_PPM(in_file_name);
+    double totaladd, totalcount, averageadd, averagecount;
+    int num_cols;
+    for (int i = 0; i < num_runs; i++)
+    {
+        results res = dohashtable(in_img);
+        totaladd += res.addtime;
+        totalcount += res.counttime;
+        num_cols = res.num_cols;
+    }
+    averageadd = totaladd / num_runs;
+    averagecount = totalcount / num_runs;
+    printf("Average time to add colors over %d runs: %f", num_runs, averageadd);
+    printf("\nAverage time to count colors over %d runs: %f", num_runs, averagecount);
+    printf("\nNumber of unique colors: %d", num_cols);
+    return 0;
 }

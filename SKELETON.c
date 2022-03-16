@@ -1,8 +1,8 @@
 /*
 
-To compile: make %rb_base%
+To compile: make %FILENAME%
 
-To run: ./%rb_base% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
+To run: ./%FILENAME% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
 
 It can be run with just the image argument and the number of runs will default to 1
 
@@ -14,36 +14,26 @@ It can be run with just the image argument and the number of runs will default t
 #include <string.h>
 #include <stdio.h>
 #include "util.c"
-#include "rb.c"
 
-results dorb_base(RGB_Image *in_img)
+//Define all implementation specific things here
+
+results doFILENAME(RGB_Image *in_img)
 {
     clock_t start, stop;
     double addtime, counttime;
     results res;
     start = clock();
-    struct libavl_allocator allocator = rb_allocator_default;
-    struct rb_table *tree = rb_create(compare_ints, NULL, &allocator);
-    uint *insertions = malloc(sizeof *insertions * in_img->size);
-    RGB_Pixel *pixel;
-    for (int i = 0; i < in_img->size; i++)
-    {
-        pixel = &in_img->data[i];
-        uint key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
-        insertions[i] = key;
-        rb_probe(tree, &insertions[i]);
-    }
+    //Do implementation adding here
     stop = clock();
     addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
-    int rb_cols = tree->rb_count;
+    //Do implementation counting here
     stop = clock();
     counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
-    res.num_cols = rb_cols;
+    res.num_cols = ???;
     res.addtime = addtime;
     res.counttime = counttime;
-    free(insertions);
-    free(tree);
+    //Do all free() calls here
     return res;
 }
 
@@ -76,15 +66,15 @@ int main(int argc, char **argv)
     int num_cols;
     for (int i = 0; i < num_runs; i++)
     {
-        results res = dorb_base(in_img);
+        results res = doFILENAME(in_img);
         totaladd += res.addtime;
         totalcount += res.counttime;
         num_cols = res.num_cols;
     }
     averageadd = totaladd / num_runs;
     averagecount = totalcount / num_runs;
-    printf("Average time to add colors over %d runs: %f", num_runs, averageadd);
+    printf("Average time to add colors over %d runs: %f", num_runs ,averageadd);
     printf("\nAverage time to count colors over %d runs: %f", num_runs, averagecount);
-    printf("\nNumber of unique colors: %d", num_cols);
+    printf("\nNumber of unique colors: %d",num_cols);
     return 0;
 }

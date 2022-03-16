@@ -1,13 +1,12 @@
-/* 
-  To compile:
-  make 1darray
+/*
 
-  For a list of command line options: ./1darray
+To compile: make 1darray
 
-  Example usage: ./1darray -i ./images/myimage.ppm
+To run: ./1darray -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
+
+It can be run with just the image argument and the number of runs will default to 1
+
 */
-
-// TODO: Fix/Check Memory Leaks
 
 #include <stdlib.h>
 #include <time.h>
@@ -16,76 +15,89 @@
 #include <stdio.h>
 #include "util.c"
 
-
-
-//Maximum value for an any (r * 65536 + g * 256 + b) value
+// Maximum value for an any (r * 65536 + g * 256 + b) value
 #define MAX_VAL_PACKED 16777216
 
-//Iterate through a one dimensional array representing the color histogram.
-//If at least a single color exists (> 0), than increment num_colors counter and return at end.
+// Iterate through a one dimensional array representing the color histogram.
+// If at least a single color exists (> 0), than increment num_colors counter and return at end.
 int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
 {
-  int num_colors = 0;
-  for (int i = 0; i < MAX_VAL_PACKED; i++)
-  {
-    if (histogram[i] != 0)
+    int num_colors = 0;
+    for (int i = 0; i < MAX_VAL_PACKED; i++)
     {
-      num_colors++;
+        if (histogram[i] != 0)
+        {
+            num_colors++;
+        }
     }
-  }
-  return num_colors;
+    return num_colors;
+}
+
+results do1darray(RGB_Image *in_img)
+{
+    clock_t start, stop;
+    double addtime, counttime;
+    results res;
+    start = clock();
+    int *histogram;
+    histogram = malloc(sizeof *histogram * MAX_VAL_PACKED);
+    RGB_Pixel *pixel;
+    for (int i = 0; i < in_img->size; i++)
+    {
+        pixel = &in_img->data[i];
+        histogram[(pixel->red << 16) | (pixel->green << 8) | pixel->blue]++;
+    }
+    stop = clock();
+    addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
+    start = clock();
+    int num_cols_1darray = count_colors_1d_histo(histogram);
+    stop = clock();
+    counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
+    res.num_cols = num_cols_1darray;
+    res.addtime = addtime;
+    res.counttime = counttime;
+    free(histogram);
+    return res;
 }
 
 int main(int argc, char **argv)
 {
-  clock_t start, stop;
-  double addtime, counttime;
-
-  char in_file_name[256];
-  RGB_Image *in_img;
-
-  if (argc == 1)
-  {
-    print_usage(argv[0]);
-  }
-  for (int i = 1; i < argc; i++)
-  {
-    if (!strcmp(argv[i], "-i"))
+    int num_runs = 1;
+    char in_file_name[256];
+    RGB_Image *in_img;
+    if (argc == 1)
     {
-      strcpy(in_file_name, argv[++i]);
+        print_usage(argv[0]);
     }
-    else
+    for (int i = 1; i < argc; i++)
     {
-      print_usage(argv[0]);
+        if (!strcmp(argv[i], "-i"))
+        {
+            strcpy(in_file_name, argv[++i]);
+        }
+        else if (!strcmp(argv[i], "-r"))
+        {
+            num_runs = atoi(argv[++i]);
+        }
+        else
+        {
+            print_usage(argv[0]);
+        }
     }
-  }
-
-  in_img = read_PPM(in_file_name);
-
-  //1-D array histogram
-  start = clock();
-  int *histogram;
-  histogram = malloc(sizeof *histogram * MAX_VAL_PACKED);
-  RGB_Pixel *pixel;
-  for (int i = 0; i < in_img->size; i++)
-  {
-    pixel = &in_img->data[i];
-    histogram[(pixel->red << 16) | (pixel->green << 8) | pixel->blue]++;
-  }
-  stop = clock();
-  addtime = ((double) (stop - start)) / CLOCKS_PER_SEC;
-  printf("\nTotal time to add all colors to histogram (1-D array) = %g\n", addtime);
-  start = clock();
-  int num_cols_3darray = count_colors_1d_histo(histogram);
-  stop = clock();
-  counttime = ((double) (stop - start)) / CLOCKS_PER_SEC;
-  printf("\nTotal time to count number of colors in histogram (1-D array) = %g\n", counttime);
-  printf("\nTotal number of colors in %s according to 1d array count: %d\n", in_file_name, num_cols_3darray);
-
-  free(pixel);
-  free(histogram);
-  free(in_img->data);
-  free(in_img);
-
-  return EXIT_SUCCESS;
+    in_img = read_PPM(in_file_name);
+    double totaladd, totalcount, averageadd, averagecount;
+    int num_cols;
+    for (int i = 0; i < num_runs; i++)
+    {
+        results res = do1darray(in_img);
+        totaladd += res.addtime;
+        totalcount += res.counttime;
+        num_cols = res.num_cols;
+    }
+    averageadd = totaladd / num_runs;
+    averagecount = totalcount / num_runs;
+    printf("Average time to add colors over %d runs: %f", num_runs, averageadd);
+    printf("\nAverage time to count colors over %d runs: %f", num_runs, averagecount);
+    printf("\nNumber of unique colors: %d", num_cols);
+    return 0;
 }
