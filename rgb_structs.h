@@ -15,3 +15,10 @@ typedef struct
   int size;
   RGB_Pixel *data;
 } RGB_Image;
+
+typedef struct 
+{
+  int num_cols;
+  double addtime;
+  double counttime;
+} results;

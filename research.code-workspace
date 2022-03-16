@@ -17,7 +17,8 @@
 			"xmemory": "c",
 			"xtree": "c",
 			"climits": "c",
-			"atomic": "c"
+			"atomic": "c",
+			"time.h": "c"
 		}
 	}
 }

@@ -25,3 +25,5 @@ hashtable: hashtable
 	$(CC) -O3 -o hashtable hashtable.c -I.
 runtest: runtest
 	$(CC) -O3 -o runtest runtest.c -I.	
+randtest: randtest
+	$(CC) -O3 -o randtest randtest.c -I.	

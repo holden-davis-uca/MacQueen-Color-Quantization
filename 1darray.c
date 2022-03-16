@@ -16,6 +16,8 @@
 #include <stdio.h>
 #include "util.c"
 
+
+
 //Maximum value for an any (r * 65536 + g * 256 + b) value
 #define MAX_VAL_PACKED 16777216
 

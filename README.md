@@ -1,51 +1,11 @@
-# About
+The idea behind this branch is to test if a larger refactor would be beneficial to prevent excess overlap of code
 
-*Base code forked form https://github.com/skythomp16/MacQueen-Color-Quantization*
+Where a single main suite includes every other file and calls do1darray() or whatnot and is returned a struct or something that contains three values. Those three values would be the number of colors, time to add and time to count
 
-Research on memory and time requirements of data structures used for color histograms in color quantization.
+Single file:
 
-Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022.
+// has all includes for .h c libraries and util.c and rgb_structs.c
 
-# Current codebase:
-## Folders:
-- **.vscode**: My personal VS Code settings (irrelevant to research).
-- **images**: A folder containing various .ppm images to test on.
-    - baboon.ppm
-    - fish.ppm
-    - girl.ppm
-    - goldhill.ppm
-    - kodim05.ppm
-    - kodim23.ppm
-    - peppers.ppm
-    - pills.ppm
-    - frymire.ppm
-    - kiss.ppm
-## Implementations:
-- **1darray.c**: Flattened 1-D array implementation of a color histogram.
-- **2dbst.c**: 2-D array with Binary Search Tree element implementation of a color histogram.
-- **2dsll.c**: 2-D array with Singly-Linked List element implementation of a color histogram.
-- **3darray.c**: 3-D array implementation of a color histogram.
-- **avl_base.c**: LibAVL implementation of a color histogram.
-- **bst.c**: Binary Search Tree implementation of a color histogram.
-- **hashtable.c**: Hash Table implementation of a color histogram.
-## Other:
-- **avl-test.c**: LibAVL testing library.
-- **avl.c**: LibAVL testing library.
-- **avl.h**: LibAVL testing library.
-- **research.code-workspace**: My personal VS Code workspace file (irrelevant to research).
-- **rgb_structs.h**: Defines RGB structures for image analysis.
-- **test.c**: LibAVL testing library.
-- **test.h**: LibAVL testing library.
-- **util.c**: Utility functions (such as image input).
-- **mkm.c**: The original work from the above repository (used for image input/output functions).
-- **tester.c**: a file combining all previous methods (used for testing timing and comparing methods against each other).
-
-# Notes:
-
-- All files except tester require at least a .ppm image as an argument.
-
-- Currently, all implementations are to be compiled with GNU Make.
-
-- All implementations print a short message to the console indicating image, time performance and counted colors.
-
-- The one exception to this is tester, which instead creates a file called results.txt, which contains a comparison table of all implementations executed on all files.
+has two base methods:
+    one is do/methodname/ like do1darray(takes argument of RGB_Image) - this does all of the actual stuff and returns the triplet struct containing the relevant values - probably does its own timing as well
+    other is main() - this is what occurs when called solo, takes argument of filename (via argc/argv as before) (and run number?) and just calls the above
