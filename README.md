@@ -1,32 +1,60 @@
-The idea behind this branch is to test if a larger refactor would be beneficial to prevent excess overlap of code
+# About
 
-Where a single main suite includes every other file and calls do1darray() or whatnot and is returned a struct or something that contains three values. Those three values would be the number of colors, time to add and time to count
+*Base code forked form https://github.com/skythomp16/MacQueen-Color-Quantization*
 
-Single file:
+Research on memory and time requirements of data structures used for color histograms in color quantization.
 
-// has all includes for .h c libraries and util.c and rgb_structs.c
+Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022.
 
-has two base methods:
-    one is do/methodname/ like do1darray(takes argument of RGB_Image) - this does all of the actual stuff and returns the triplet struct containing the relevant values - probably does its own timing as well
-    other is main() - this is what occurs when called solo, takes argument of filename (via argc/argv as before) (and run number?) and just calls the above
+# Current codebase:
+## Folders:
+- **.vscode**: My personal VS Code settings (irrelevant to research).
+- **images**: A folder containing various .ppm images to test on.
+    - baboon.ppm
+    - fish.ppm
+    - girl.ppm
+    - goldhill.ppm
+    - kodim05.ppm
+    - kodim23.ppm
+    - peppers.ppm
+    - pills.ppm
+    - frymire.ppm
+    - kiss.ppm
+## Implementations:
+- **1darray.c**: Flattened 1-D array implementation of a color histogram.
+- **2dbst.c**: 2-D array with Binary Search Tree element implementation of a color histogram.
+- **2dsll.c**: 2-D array with Singly-Linked List element implementation of a color histogram.
+- **3darray.c**: 3-D array implementation of a color histogram.
+- **avl_base.c**: LibAVL AVL tree implementation of a color histogram.
+- **rb_base.c**: LibAVL Red Black tree implementation of a color histogram.
+- **bst.c**: Binary Search Tree implementation of a color histogram.
+- **hashtable.c**: Hash Table implementation of a color histogram.
+## Other:
+- **avl.c**: LibAVL testing library.
+- **avl.h**: LibAVL testing library.
+- **rb.c**: LibAVL testing library.
+- **rb.h**: LibAVL testing library.
+- **research.code-workspace**: My personal VS Code workspace file (irrelevant to research).
+- **rgb_structs.h**: Defines RGB structures for image analysis.
+- **SKELETON.c**: A simple, empty, easily-filled framework for adding future implementations.
+- **test.c**: LibAVL testing library.
+- **test.h**: LibAVL testing library.
+- **util.c**: Utility functions (such as image input).
+- **mkm.c**: The original work from the above repository (used for image input/output functions).
+- **tester.c**: a file combining all previous methods (used for testing timing and comparing methods against each other).
 
-# Stream of consciousness time
+# Notes:
 
-i have deleted every implementation from this branch and need to make them all by combining actual code from main branch with skeleton
+- Due to the common use case of this project by the authors, the project is currently configured to run solely via the compilation and execution of tester.c. In order to execute each standalone implementation as its own file, uncomment the two commented segments in the given file: the #include headers at the top and the main() function at the bottom.
 
-skeleton created!
+- All implementations print a short message to the console indicating image, time performance and counted colors.
 
-what i have done:
+- The one exception to this is tester, which instead creates a file called data.txt, which contains a comparison table of all implementations executed on all files.
 
-skeleton
-1darray
-2dbst
+- All files except tester require at least a .ppm image as an argument.
 
-what i need to do:
+- All files can accept a -r (number) argument, which executes the implementation a specific number of times and uses the average of those numbers as the result (all files execute a single run by default).
 
-2dsll
-3darray
-avl_base
-hashtable
-rb_base
-tester
+- Tester.c can accept a -d argument, which increases console verbosity for debug purposes
+
+- Currently, all implementations are to be compiled with GNU Make.

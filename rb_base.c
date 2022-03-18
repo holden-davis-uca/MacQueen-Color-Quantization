@@ -8,13 +8,13 @@ It can be run with just the image argument and the number of runs will default t
 
 */
 
-#include <stdlib.h>
-#include <time.h>
-#include <math.h>
-#include <string.h>
-#include <stdio.h>
-#include "util.c"
-#include "rb.c"
+// #include <stdlib.h>
+// #include <time.h>
+// #include <math.h>
+// #include <string.h>
+// #include <stdio.h>
+// #include "util.c"
+// #include "rb.c"
 
 results dorb_base(RGB_Image *in_img)
 {
@@ -47,44 +47,44 @@ results dorb_base(RGB_Image *in_img)
     return res;
 }
 
-int main(int argc, char **argv)
-{
-    int num_runs = 1;
-    char in_file_name[256];
-    RGB_Image *in_img;
-    if (argc == 1)
-    {
-        print_usage(argv[0]);
-    }
-    for (int i = 1; i < argc; i++)
-    {
-        if (!strcmp(argv[i], "-i"))
-        {
-            strcpy(in_file_name, argv[++i]);
-        }
-        else if (!strcmp(argv[i], "-r"))
-        {
-            num_runs = atoi(argv[++i]);
-        }
-        else
-        {
-            print_usage(argv[0]);
-        }
-    }
-    in_img = read_PPM(in_file_name);
-    double totaladd, totalcount, averageadd, averagecount;
-    int num_cols;
-    for (int i = 0; i < num_runs; i++)
-    {
-        results res = dorb_base(in_img);
-        totaladd += res.addtime;
-        totalcount += res.counttime;
-        num_cols = res.num_cols;
-    }
-    averageadd = totaladd / num_runs;
-    averagecount = totalcount / num_runs;
-    printf("Average time to add colors over %d runs: %f", num_runs, averageadd);
-    printf("\nAverage time to count colors over %d runs: %f", num_runs, averagecount);
-    printf("\nNumber of unique colors: %d", num_cols);
-    return 0;
-}
+// int main(int argc, char **argv)
+// {
+//     int num_runs = 1;
+//     char in_file_name[256];
+//     RGB_Image *in_img;
+//     if (argc == 1)
+//     {
+//         print_usage(argv[0]);
+//     }
+//     for (int i = 1; i < argc; i++)
+//     {
+//         if (!strcmp(argv[i], "-i"))
+//         {
+//             strcpy(in_file_name, argv[++i]);
+//         }
+//         else if (!strcmp(argv[i], "-r"))
+//         {
+//             num_runs = atoi(argv[++i]);
+//         }
+//         else
+//         {
+//             print_usage(argv[0]);
+//         }
+//     }
+//     in_img = read_PPM(in_file_name);
+//     double totaladd, totalcount, averageadd, averagecount;
+//     int num_cols;
+//     for (int i = 0; i < num_runs; i++)
+//     {
+//         results res = dorb_base(in_img);
+//         totaladd += res.addtime;
+//         totalcount += res.counttime;
+//         num_cols = res.num_cols;
+//     }
+//     averageadd = totaladd / num_runs;
+//     averagecount = totalcount / num_runs;
+//     printf("Average time to add colors over %d runs: %f", num_runs, averageadd);
+//     printf("\nAverage time to count colors over %d runs: %f", num_runs, averagecount);
+//     printf("\nNumber of unique colors: %d", num_cols);
+//     return 0;
+// }

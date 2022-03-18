@@ -137,7 +137,7 @@ static void print_usage(char *prog_name)
 {
   fprintf(stderr, "Color Histogram Testing Program\n\n");
   fprintf(stderr, "Creates color histograms from input .ppm images. Prints a informative segment to the console describing time usage and image color count\n\n");
-  fprintf(stderr, "Usage Instructions: %s -i <input image> -r <number of runs>\n\n", prog_name);
+  fprintf(stderr, "Usage Instructions: %s required: -i <input image>, optionally: -r <number of runs>\n\n", prog_name);
   exit(EXIT_FAILURE);
 }
 
@@ -145,6 +145,51 @@ static void print_usage_test(char *prog_name)
 {
   fprintf(stderr, "Color Histogram Testing Program - Test Suite\n\n");
   fprintf(stderr, "Creates color histograms from input .ppm images. Prints a informative segment to the console describing time usage and image color count\n\n");
-  fprintf(stderr, "Usage Instructions: %s -r <number of runs>\n\n", prog_name);
+  fprintf(stderr, "Usage Instructions: %s required: N/A, optionally: -r <number of runs>, -d for debug output in console\n\n", prog_name);
   exit(EXIT_FAILURE);
+}
+
+struct BST_Node *alloc_bst_node(const int new_key)
+{
+    struct BST_Node *here = (struct BST_Node *)malloc(sizeof(struct BST_Node));
+    here->key = new_key;
+    here->count = 1;
+    here->left = NULL;
+    here->right = NULL;
+    return here;
+}
+
+struct BST_Node *insert_bst_node(struct BST_Node *node, const int new_key)
+{
+    if (node == NULL)
+    {
+        return alloc_bst_node(new_key);
+    }
+    if (new_key == node->key)
+    {
+        node->count++;
+    }
+    else if (new_key > node->key)
+    {
+        node->right = insert_bst_node(node->right, new_key);
+    }
+    else
+    {
+        node->left = insert_bst_node(node->left, new_key);
+    }
+    return node;
+}
+
+// TODO: Fix counting logic
+int traverse_bst(const struct BST_Node *root)
+{
+    if (root == NULL)
+    {
+        return 0;
+    }
+    else if (root->count == 0)
+    {
+        return traverse_bst(root->right) + traverse_bst(root->left);
+    }
+    return 1 + traverse_bst(root->right) + traverse_bst(root->left);
 }

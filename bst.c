@@ -1,8 +1,8 @@
 /*
 
-To compile: make %avl_base%
+To compile: make %bst%
 
-To run: ./%avl_base% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
+To run: ./%bst% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
 
 It can be run with just the image argument and the number of runs will default to 1
 
@@ -14,36 +14,37 @@ It can be run with just the image argument and the number of runs will default t
 // #include <string.h>
 // #include <stdio.h>
 // #include "util.c"
-// #include "avl.c"
 
-results doavl_base(RGB_Image *in_img)
+// Define all implementation specific things here
+
+results dobst(RGB_Image *in_img)
 {
     clock_t start, stop;
     double addtime, counttime;
     results res;
     start = clock();
-    struct libavl_allocator allocator = avl_allocator_default;
-    struct avl_table *tree = avl_create(compare_ints, NULL, &allocator);
-    uint *insertions = malloc(sizeof *insertions * in_img->size);
     RGB_Pixel *pixel;
-    for (int i = 0; i < in_img->size; i++)
+    pixel = &in_img->data[0];
+    int key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
+    struct BST_Node *root = insert_bst_node(NULL, key);
+    for (int i = 1; i < in_img->size; i++)
     {
         pixel = &in_img->data[i];
-        uint key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
-        insertions[i] = key;
-        avl_probe(tree, &insertions[i]);
+        key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
+        insert_bst_node(root, key);
     }
+
+    stop = clock();
     stop = clock();
     addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
-    int avl_cols = tree->avl_count;
+    int num_cols_bst = traverse_bst(root);
     stop = clock();
     counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
-    res.num_cols = avl_cols;
+    res.num_cols = num_cols_bst;
     res.addtime = addtime;
     res.counttime = counttime;
-    free(insertions);
-    free(tree);
+    free(root);
     return res;
 }
 
@@ -76,7 +77,7 @@ results doavl_base(RGB_Image *in_img)
 //     int num_cols;
 //     for (int i = 0; i < num_runs; i++)
 //     {
-//         results res = doavl_base(in_img);
+//         results res = dobst(in_img);
 //         totaladd += res.addtime;
 //         totalcount += res.counttime;
 //         num_cols = res.num_cols;
