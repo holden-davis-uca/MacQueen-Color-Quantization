@@ -17,6 +17,8 @@ It can be run with no arguments and the number of runs will default to 1
 #include "util.c"
 #include "avl.c"
 #include "rb.c"
+#include "pavl.c"
+#include "prb.c"
 
 // Individual implementations
 #include "1darray.c"
@@ -27,6 +29,9 @@ It can be run with no arguments and the number of runs will default to 1
 #include "avl_base.c"
 #include "hashtable.c"
 #include "rb_base.c"
+#include "avl_pp.c"
+#include "rb_pp.c"
+
 
 int main(int argc, char **argv)
 {
@@ -59,8 +64,10 @@ int main(int argc, char **argv)
     fprintf(data, "ALL TIMING DATA AVERAGED OVER %d RUNS. PLEASE REPORT ANY ERRORS TO https://github.com/holden-davis-uca/Research\n\n", num_runs);
 
     fprintf(data,
-            "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s",
+            "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s",
             "IMAGE",
+            "ADD (RB PP)", "COUNT (RB PP)", "COLORS (RB PP)",
+            "ADD (AVL PP)", "COUNT (AVL PP)", "COLORS (AVL PP)",
             "ADD (RB)", "COUNT (RB)", "COLORS (RB)",
             "ADD (AVL)", "COUNT (AVL)", "COLORS (AVL)",
             "ADD (Hash Table)", "COUNT (Hash Table)", "COLORS (Hash Table)",
@@ -89,7 +96,9 @@ int main(int argc, char **argv)
         totaladdtimebst, totalcounttimebst,
         totaladdtimeht, totalcounttimeht,
         totaladdtimeavl, totalcounttimeavl,
-        totaladdtimerb, totalcounttimerb;
+        totaladdtimerb, totalcounttimerb,
+        totaladdtimeavlpp, totalcounttimeavlpp,
+        totaladdtimerbpp, totalcounttimerbpp;
     double
         averageaddtime1d, averagecounttime1d,
         averageaddtime2dbst, averagecounttime2dbst,
@@ -98,7 +107,9 @@ int main(int argc, char **argv)
         averageaddtimebst, averagecounttimebst,
         averageaddtimeht, averagecounttimeht,
         averageaddtimeavl, averagecounttimeavl,
-        averageaddtimerb, averagecounttimerb;
+        averageaddtimerb, averagecounttimerb,
+        averageaddtimeavlpp, averagecounttimeavlpp,
+        averageaddtimerbpp, averagecounttimerbpp;
     int
         num_cols_1d,
         num_cols_bst,
@@ -107,7 +118,9 @@ int main(int argc, char **argv)
         num_cols_3d,
         num_cols_ht,
         num_cols_avl,
-        num_cols_rb;
+        num_cols_rb,
+        num_cols_avlpp,
+        num_cols_rbpp;
 
     // PER IMAGE:
     for (int y = 0; y < 10; y++)
@@ -175,6 +188,20 @@ int main(int argc, char **argv)
             totaladdtimerb += res.addtime;
             totalcounttimerb += res.counttime;
             num_cols_rb = res.num_cols;
+
+            if (debug)
+                printf("Executing run %d of AVL PP Tree on %s...\n", i+1, in_file_name);
+            res = doavl_base(in_img);
+            totaladdtimeavlpp += res.addtime;
+            totalcounttimeavlpp += res.counttime;
+            num_cols_avlpp = res.num_cols;
+            
+            if (debug)
+                printf("Executing run %d of RB PP Tree on %s...\n", i+1, in_file_name);
+            res = dorb_base(in_img);
+            totaladdtimerbpp += res.addtime;
+            totalcounttimerbpp += res.counttime;
+            num_cols_rbpp = res.num_cols;
         }
         averageaddtime1d = totaladdtime1d / num_runs; 
         averagecounttime1d = totalcounttime1d / num_runs;
@@ -192,11 +219,17 @@ int main(int argc, char **argv)
         averagecounttimeavl = totalcounttimeavl / num_runs;
         averageaddtimerb = totaladdtimerb / num_runs; 
         averagecounttimerb = totalcounttimerb / num_runs;
+        averageaddtimeavlpp = totaladdtimeavlpp / num_runs; 
+        averagecounttimeavlpp = totalcounttimeavlpp / num_runs;
+        averageaddtimerbpp = totaladdtimerbpp / num_runs; 
+        averagecounttimerbpp = totalcounttimerbpp / num_runs;
 
         fprintf(data, "\n");
         fprintf(data,
-                "%-25s%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d",
+                "%-25s%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d",
                 in_file_name,
+                averageaddtimerbpp, averagecounttimerbpp, num_cols_rbpp,
+                averageaddtimeavlpp, averagecounttimeavlpp, num_cols_avlpp,
                 averageaddtimerb, averagecounttimerb, num_cols_rb,
                 averageaddtimeavl, averagecounttimeavl, num_cols_avl,
                 averageaddtimeht, averagecounttimeht, num_cols_ht,

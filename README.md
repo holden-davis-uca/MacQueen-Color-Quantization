@@ -27,6 +27,8 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 - **3darray.c**: 3-D array implementation of a color histogram.
 - **avl_base.c**: LibAVL AVL tree implementation of a color histogram.
 - **rb_base.c**: LibAVL Red Black tree implementation of a color histogram.
+- **avl_pp.c**: LibAVL AVL tree implementation of a color histogram with parent pointers.
+- **rb_pp.c**: LibAVL Red Black tree implementation of a color histogram with parent pointers.
 - **bst.c**: Binary Search Tree implementation of a color histogram.
 - **hashtable.c**: Hash Table implementation of a color histogram.
 ## Other:
@@ -34,6 +36,10 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 - **avl.h**: LibAVL testing library.
 - **rb.c**: LibAVL testing library.
 - **rb.h**: LibAVL testing library.
+- **pavl.c**: LibAVL testing library.
+- **pavl.h**: LibAVL testing library.
+- **prb.c**: LibAVL testing library.
+- **prb.h**: LibAVL testing library.
 - **research.code-workspace**: My personal VS Code workspace file (irrelevant to research).
 - **rgb_structs.h**: Defines RGB structures for image analysis.
 - **SKELETON.c**: A simple, empty, easily-filled framework for adding future implementations.

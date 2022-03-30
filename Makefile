@@ -19,6 +19,10 @@ avl_base: avl_base
 	$(CC) -O3 -o avl_base avl_base.c -I.
 rb_base: rb_base
 	$(CC) -O3 -o rb_base rb_base.c -I.
+avl_pp: avl_pp 
+	$(CC) -O3 -o avl_pp avl_pp.c -I.
+rb_pp: rb_pp
+	$(CC) -O3 -o rb_pp rb_pp.c -I.
 bst: bst
 	$(CC) -O3 -o bst bst.c -I.
 hashtable: hashtable
