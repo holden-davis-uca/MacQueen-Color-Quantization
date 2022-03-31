@@ -27,3 +27,5 @@ bst: bst
 	$(CC) -O3 -o bst bst.c -I.
 hashtable: hashtable
 	$(CC) -O3 -o hashtable hashtable.c -I.
+aa_base: aa_base
+	$(CC) -O3 -o aa_base aa_base.c -I.

@@ -31,6 +31,7 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 - **rb_pp.c**: LibAVL Red Black tree implementation of a color histogram with parent pointers.
 - **bst.c**: Binary Search Tree implementation of a color histogram.
 - **hashtable.c**: Hash Table implementation of a color histogram.
+- **aa_base.c**: AA tree implementation of a color histogram. - UNFINISHED, WIP
 ## Other:
 - **avl.c**: LibAVL testing library.
 - **avl.h**: LibAVL testing library.
@@ -40,6 +41,11 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 - **pavl.h**: LibAVL testing library.
 - **prb.c**: LibAVL testing library.
 - **prb.h**: LibAVL testing library.
+- **AAT.c**: AA tree testing library.
+- **AAT.h**: AA tree testing library.
+- **alloc.h**: AA tree testing library.
+- **bailout.h**: AA tree testing library.
+- **common.h**: AA tree testing library.
 - **research.code-workspace**: My personal VS Code workspace file (irrelevant to research).
 - **rgb_structs.h**: Defines RGB structures for image analysis.
 - **SKELETON.c**: A simple, empty, easily-filled framework for adding future implementations.
