@@ -32,6 +32,7 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 - **bst.c**: Binary Search Tree implementation of a color histogram.
 - **hashtable.c**: Hash Table implementation of a color histogram.
 - **aa_base.c**: AA tree implementation of a color histogram. - UNFINISHED, WIP
+- **wavl_base.c**: WAVL tree implementation of a color histogram. - UNFINISHED, WIP
 ## Other:
 - **avl.c**: LibAVL testing library.
 - **avl.h**: LibAVL testing library.
@@ -46,6 +47,9 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 - **alloc.h**: AA tree testing library.
 - **bailout.h**: AA tree testing library.
 - **common.h**: AA tree testing library.
+- **wavltree.c**: WAVL tree testing library.
+- **wavltree.h**: WAVL tree testing library.
+- **wavltree_priv.h**: WAVL tree testing library.
 - **research.code-workspace**: My personal VS Code workspace file (irrelevant to research).
 - **rgb_structs.h**: Defines RGB structures for image analysis.
 - **SKELETON.c**: A simple, empty, easily-filled framework for adding future implementations.
