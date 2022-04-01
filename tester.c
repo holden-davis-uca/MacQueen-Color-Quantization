@@ -76,18 +76,28 @@ int main(int argc, char **argv)
             "ADD (BST)", "COUNT(BST)", "COLORS (BST)",
             "ADD (3-D)", "COUNT (3-D)", "COLORS (3-D)",
             "ADD (1-D)", "COUNT (1-D)", "COLORS (1-D)");
-
-    const char *pictures[10];
-    pictures[0] = "./images/baboon.ppm";
-    pictures[1] = "./images/fish.ppm";
+    fclose(data);
+    const char *pictures[18];
+    //Arranged by image size from smallest to largest
+    pictures[0] = "./images/fish.ppm";
+    pictures[1] = "./images/peppers.ppm";
     pictures[2] = "./images/girl.ppm";
-    pictures[3] = "./images/goldhill.ppm";
+    pictures[3] = "./images/baboon.ppm";
     pictures[4] = "./images/kodim05.ppm";
     pictures[5] = "./images/kodim23.ppm";
-    pictures[6] = "./images/peppers.ppm";
+    pictures[6] = "./images/goldhill.ppm";
     pictures[7] = "./images/pills.ppm";
-    pictures[8] = "./images/frymire.ppm";
-    pictures[9] = "./images/kiss.ppm";
+    pictures[8] = "./images/kiss.ppm";
+    pictures[9] = "./images/frymire.ppm";
+    pictures[10] = "./images/hotair.ppm";
+    pictures[11] = "./images/fruit.ppm";
+    pictures[12] = "./images/dissolve.ppm";
+    pictures[13] = "./images/palette.ppm";
+    pictures[14] = "./images/pencils.ppm";
+    pictures[15] = "./images/chairs.ppm";
+    pictures[16] = "./images/blur.ppm";
+    pictures[17] = "./images/balloons.ppm";
+
     double
         totaladdtime1d, totalcounttime1d,
         totaladdtime2dbst, totalcounttime2dbst,
@@ -123,8 +133,9 @@ int main(int argc, char **argv)
         num_cols_rbpp;
 
     // PER IMAGE:
-    for (int y = 0; y < 10; y++)
+    for (int y = 0; y < 18; y++)
     {
+        data = fopen("data.txt", "a");
         char in_file_name[256];
         RGB_Image *in_img;
         results res;
@@ -238,9 +249,10 @@ int main(int argc, char **argv)
                 averageaddtimebst, averagecounttimebst, num_cols_bst,
                 averageaddtime1d, averagecounttime1d, num_cols_1d,
                 averageaddtime3d, averagecounttime3d, num_cols_3d);
+        fclose(data);
     }
 
-    fclose(data);
+    
     printf("\nCheck data.txt for stats!\n\n");
     return EXIT_SUCCESS;
 }

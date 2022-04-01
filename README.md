@@ -20,6 +20,14 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
     - pills.ppm
     - frymire.ppm
     - kiss.ppm
+    - balloons.ppm
+    - blur.ppm
+    - chairs.ppm
+    - dissolve.ppm
+    - fruit.ppm
+    - hotair.ppm
+    - palette.ppm
+    - pencils.ppm
 ## Implementations:
 - **1darray.c**: Flattened 1-D array implementation of a color histogram.
 - **2dbst.c**: 2-D array with Binary Search Tree element implementation of a color histogram.
