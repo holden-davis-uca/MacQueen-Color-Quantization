@@ -1,8 +1,8 @@
 /*
 
-To compile: make %aa_base%
+To compile: make %wavl_base%
 
-To run: ./%aa_base% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
+To run: ./%wavl_base% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
 
 It can be run with just the image argument and the number of runs will default to 1
 
@@ -14,35 +14,27 @@ It can be run with just the image argument and the number of runs will default t
 #include <string.h>
 #include <stdio.h>
 #include "util.c"
-#include "AAT.c"
 
 //Define all implementation specific things here
 
-results doaa_base(RGB_Image *in_img)
+results dowavl_base(RGB_Image *in_img)
 {
     clock_t start, stop;
     double addtime, counttime;
     results res;
     start = clock();
-    struct aat_tree_t *tree = aat_new_tree(NULL);
-    RGB_Pixel *pixel;
-    for (int i = 0; i < in_img->size; i++)
-    {
-        pixel = &in_img->data[i];
-        uint key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
-        // printf("\nJust did pixel number: %d", i);
-        aat_store_entry(tree, key, key, NULL);
-    }
+    //Do implementation adding here
     stop = clock();
     addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
-    int num_cols = aat_number_of_entries(tree);
+    //Do implementation counting here
+    int num_cols;
     stop = clock();
     counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     res.num_cols = num_cols;
     res.addtime = addtime;
     res.counttime = counttime;
-    free(tree);
+    //Do all free() calls here
     return res;
 }
 
@@ -75,7 +67,7 @@ int main(int argc, char **argv)
     int num_cols;
     for (int i = 0; i < num_runs; i++)
     {
-        results res = doaa_base(in_img);
+        results res = dowavl_base(in_img);
         totaladd += res.addtime;
         totalcount += res.counttime;
         num_cols = res.num_cols;
