@@ -132,6 +132,7 @@ struct wavl_tree_node {
  */
 struct wavl_tree {
     struct wavl_tree_node *root;                /**< Root of the tree */
+    int count;                                  /**< Number of nodes in the tree */
     wavl_node_to_node_compare_func_t node_cmp;  /**< Function pointer to compare a node to a node */
     wavl_key_to_node_compare_func_t key_cmp;    /**< Function pointer to compare a key to a node */
 };

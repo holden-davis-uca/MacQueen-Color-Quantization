@@ -451,6 +451,7 @@ wavl_result_t wavl_tree_insert(struct wavl_tree *tree,
     WAVL_ASSERT_ARG(NULL != node);
 
     node->left = node-> right = NULL;
+    tree->count++;
 
     /* Set initial rank parity (freshly inserted nodes are 0-children) */
     node->rp = false;
@@ -469,6 +470,7 @@ wavl_result_t wavl_tree_insert(struct wavl_tree *tree,
         int dir = -1;
 
         if (WAVL_FAILED(ret = tree->key_cmp(key, parent, &dir))) {
+            tree->count--;
             goto done;
         }
 
@@ -495,6 +497,7 @@ wavl_result_t wavl_tree_insert(struct wavl_tree *tree,
         } else {
             /* Leave the tree unchanged - this node is a duplicate */
             ret = WAVL_ERR_TREE_DUPE;
+            tree->count--;
             goto done;
         }
     }

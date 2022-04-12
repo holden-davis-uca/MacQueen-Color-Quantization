@@ -82,3 +82,7 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 - Tester.c can accept a -d argument, which increases console verbosity for debug purposes
 
 - Currently, all implementations are to be compiled with GNU Make.
+
+- [AA Tree source](https://github.com/trijezdci/C-Collections/tree/master/bstlib)
+
+- [WAVL Tree source](https://github.com/pvachon/wavl_tree)

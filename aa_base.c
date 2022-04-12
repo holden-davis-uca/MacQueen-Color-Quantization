@@ -25,13 +25,14 @@ results doaa_base(RGB_Image *in_img)
     results res;
     start = clock();
     struct aat_tree_t *tree = aat_new_tree(NULL);
+    uint *insertions = malloc(sizeof *insertions * in_img->size);
     RGB_Pixel *pixel;
     for (int i = 0; i < in_img->size; i++)
     {
         pixel = &in_img->data[i];
         uint key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
-        // printf("\nJust did pixel number: %d", i);
-        aat_store_entry(tree, key, key, NULL);
+        insertions[i] = key;
+        aat_store_entry(tree, (void *)insertions[i], (void *)insertions[i], NULL);
     }
     stop = clock();
     addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
@@ -43,6 +44,7 @@ results doaa_base(RGB_Image *in_img)
     res.addtime = addtime;
     res.counttime = counttime;
     free(tree);
+    free(insertions);
     return res;
 }
 
