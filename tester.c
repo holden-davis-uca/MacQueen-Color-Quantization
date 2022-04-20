@@ -35,6 +35,8 @@ It can be run with no arguments and the number of runs will default to 1
 
 int main(int argc, char **argv)
 {
+    clock_t fullstart, fullstop;
+    fullstart = clock();
     // Everything that is only done once: ie. things that executed a single time regardless of number of runs
     int num_runs = 1;
     bool debug = false;
@@ -77,26 +79,27 @@ int main(int argc, char **argv)
             "ADD (3-D)", "COUNT (3-D)", "COLORS (3-D)",
             "ADD (1-D)", "COUNT (1-D)", "COLORS (1-D)");
     fclose(data);
-    const char *pictures[18];
+    const char *pictures[16];
     //Arranged by image size from smallest to largest
-    pictures[0] = "./images/fish.ppm";
-    pictures[1] = "./images/peppers.ppm";
-    pictures[2] = "./images/girl.ppm";
-    pictures[3] = "./images/baboon.ppm";
-    pictures[4] = "./images/kodim05.ppm";
-    pictures[5] = "./images/kodim23.ppm";
-    pictures[6] = "./images/goldhill.ppm";
-    pictures[7] = "./images/pills.ppm";
-    pictures[8] = "./images/kiss.ppm";
-    pictures[9] = "./images/frymire.ppm";
-    pictures[10] = "./images/hotair.ppm";
-    pictures[11] = "./images/fruit.ppm";
-    pictures[12] = "./images/dissolve.ppm";
-    pictures[13] = "./images/palette.ppm";
-    pictures[14] = "./images/pencils.ppm";
-    pictures[15] = "./images/chairs.ppm";
-    pictures[16] = "./images/blur.ppm";
-    pictures[17] = "./images/balloons.ppm";
+    //https://faculty.uca.edu/ecelebi/eight_images.zip - chairs, dissolve, fruit, blur, pencils, hotair, balloons, palette
+    //https://faculty.uca.edu/ecelebi/eight_more_images.zip - chart, bags, 1931, pigments, bloom, market, candy, wood
+
+    pictures[0] = "./images/market.ppm";
+    pictures[1] = "./images/chart.ppm";
+    pictures[2] = "./images/1931.ppm";
+    pictures[3] = "./images/pigments.ppm";
+    pictures[4] = "./images/hotair.ppm";
+    pictures[5] = "./images/fruit.ppm";
+    pictures[6] = "./images/dissolve.ppm";
+    pictures[7] = "./images/palette.ppm";
+    pictures[8] = "./images/wood.ppm";
+    pictures[9] = "./images/bloom.ppm";
+    pictures[10] = "./images/bags.ppm";
+    pictures[11] = "./images/pencils.ppm";
+    pictures[12] = "./images/chairs.ppm";
+    pictures[13] = "./images/blur.ppm";
+    pictures[14] = "./images/balloons.ppm";
+    pictures[15] = "./images/candy.ppm";
 
     double
         totaladdtime1d, totalcounttime1d,
@@ -133,7 +136,7 @@ int main(int argc, char **argv)
         num_cols_rbpp;
 
     // PER IMAGE:
-    for (int y = 0; y < 18; y++)
+    for (int y = 0; y < 16; y++)
     {
         data = fopen("data.txt", "a");
         char in_file_name[256];
@@ -214,6 +217,8 @@ int main(int argc, char **argv)
             totalcounttimerbpp += res.counttime;
             num_cols_rbpp = res.num_cols;
         }
+
+        //Rounding down count times for implementations with O(1) (constant time) methods
         averageaddtime1d = totaladdtime1d / num_runs; 
         averagecounttime1d = totalcounttime1d / num_runs;
         averageaddtime2dbst = totaladdtime2dbst / num_runs; 
@@ -239,11 +244,11 @@ int main(int argc, char **argv)
         fprintf(data,
                 "%-25s%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d",
                 in_file_name,
-                averageaddtimerbpp, averagecounttimerbpp, num_cols_rbpp,
-                averageaddtimeavlpp, averagecounttimeavlpp, num_cols_avlpp,
-                averageaddtimerb, averagecounttimerb, num_cols_rb,
-                averageaddtimeavl, averagecounttimeavl, num_cols_avl,
-                averageaddtimeht, averagecounttimeht, num_cols_ht,
+                averageaddtimerbpp, round(averagecounttimerbpp), num_cols_rbpp,
+                averageaddtimeavlpp, round(averagecounttimeavlpp), num_cols_avlpp,
+                averageaddtimerb, round(averagecounttimerb), num_cols_rb,
+                averageaddtimeavl, round(averagecounttimeavl), num_cols_avl,
+                averageaddtimeht, round(averagecounttimeht), num_cols_ht,
                 averageaddtime2dsll, averagecounttime2dsll, num_cols_2dsll,
                 averageaddtime2dbst, averagecounttime2dbst, num_cols_2dbst,
                 averageaddtimebst, averagecounttimebst, num_cols_bst,
@@ -251,7 +256,11 @@ int main(int argc, char **argv)
                 averageaddtime3d, averagecounttime3d, num_cols_3d);
         fclose(data);
     }
-
+    fullstop = clock();
+    data = fopen("data.txt", "a");
+    fprintf(data, "\n");
+    fprintf(data, "%d runs took %d seconds\n", num_runs, (double)(fullstop - fullstart) / CLOCKS_PER_SEC);
+    fclose(data);
     
     printf("\nCheck data.txt for stats!\n\n");
     return EXIT_SUCCESS;

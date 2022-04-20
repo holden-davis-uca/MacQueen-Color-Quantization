@@ -18,7 +18,8 @@
 			"xtree": "c",
 			"climits": "c",
 			"atomic": "c",
-			"time.h": "c"
+			"time.h": "c",
+			"cmath": "c"
 		}
 	}
 }
