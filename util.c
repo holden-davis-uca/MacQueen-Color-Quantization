@@ -14,8 +14,7 @@ int const MAX_VAL = 256;
 
 #define HASH(R, G, B) ((((long)(R)*33023 +  \
                          (long)(G)*30013 +  \
-                         (long)(B)*27011) & \
-                        0x7fffffff) %       \
+                         (long)(B)*27011)) %       \
                        HASH_SIZE)
 
 /* Comparison function for pointers to |int|s.

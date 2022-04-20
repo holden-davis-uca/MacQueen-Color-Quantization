@@ -68,16 +68,16 @@ int main(int argc, char **argv)
     fprintf(data,
             "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s",
             "IMAGE",
-            "ADD (RB PP)", "COUNT (RB PP)", "COLORS (RB PP)",
-            "ADD (AVL PP)", "COUNT (AVL PP)", "COLORS (AVL PP)",
-            "ADD (RB)", "COUNT (RB)", "COLORS (RB)",
-            "ADD (AVL)", "COUNT (AVL)", "COLORS (AVL)",
-            "ADD (Hash Table)", "COUNT (Hash Table)", "COLORS (Hash Table)",
-            "ADD (2-D SLL)", "COUNT (2-D SLL)", "COLORS (2-D SLL)",
-            "ADD (2-D BST)", "COUNT(2-D BST)", "COLORS (2-D BST)",
-            "ADD (BST)", "COUNT(BST)", "COLORS (BST)",
-            "ADD (3-D)", "COUNT (3-D)", "COLORS (3-D)",
-            "ADD (1-D)", "COUNT (1-D)", "COLORS (1-D)");
+            "ADD (RB PP)", "CNT (RB PP)", "CLR (RB PP)",
+            "ADD (AVL PP)", "CNT (AVL PP)", "CLR (AVL PP)",
+            "ADD (RB)", "CNT (RB)", "CLR (RB)",
+            "ADD (AVL)", "CNT (AVL)", "CLR (AVL)",
+            "ADD (HT)", "CNT (HT)", "CLR (HT)",
+            "ADD (2D SLL)", "CNT (2D SLL)", "CLR (2D SLL)",
+            "ADD (2D BST)", "CNT(2D BST)", "CLR (2D BST)",
+            "ADD (BST)", "CNT(BST)", "CLR (BST)",
+            "ADD (3D)", "CNT (3D)", "CLR (3D)",
+            "ADD (1D)", "CNT (1D)", "CLR (1D)");
     fclose(data);
     const char *pictures[16];
     //Arranged by image size from smallest to largest
@@ -102,27 +102,27 @@ int main(int argc, char **argv)
     pictures[15] = "./images/candy.ppm";
 
     double
-        totaladdtime1d, totalcounttime1d,
-        totaladdtime2dbst, totalcounttime2dbst,
-        totaladdtime2dsll, totalcounttime2dsll,
-        totaladdtime3d, totalcounttime3d,
-        totaladdtimebst, totalcounttimebst,
-        totaladdtimeht, totalcounttimeht,
-        totaladdtimeavl, totalcounttimeavl,
-        totaladdtimerb, totalcounttimerb,
-        totaladdtimeavlpp, totalcounttimeavlpp,
-        totaladdtimerbpp, totalcounttimerbpp;
+        totaladdtime1d, totalCNTtime1d,
+        totaladdtime2dbst, totalCNTtime2dbst,
+        totaladdtime2dsll, totalCNTtime2dsll,
+        totaladdtime3d, totalCNTtime3d,
+        totaladdtimebst, totalCNTtimebst,
+        totaladdtimeht, totalCNTtimeht,
+        totaladdtimeavl, totalCNTtimeavl,
+        totaladdtimerb, totalCNTtimerb,
+        totaladdtimeavlpp, totalCNTtimeavlpp,
+        totaladdtimerbpp, totalCNTtimerbpp;
     double
-        averageaddtime1d, averagecounttime1d,
-        averageaddtime2dbst, averagecounttime2dbst,
-        averageaddtime2dsll, averagecounttime2dsll,
-        averageaddtime3d, averagecounttime3d,
-        averageaddtimebst, averagecounttimebst,
-        averageaddtimeht, averagecounttimeht,
-        averageaddtimeavl, averagecounttimeavl,
-        averageaddtimerb, averagecounttimerb,
-        averageaddtimeavlpp, averagecounttimeavlpp,
-        averageaddtimerbpp, averagecounttimerbpp;
+        averageaddtime1d, averageCNTtime1d,
+        averageaddtime2dbst, averageCNTtime2dbst,
+        averageaddtime2dsll, averageCNTtime2dsll,
+        averageaddtime3d, averageCNTtime3d,
+        averageaddtimebst, averageCNTtimebst,
+        averageaddtimeht, averageCNTtimeht,
+        averageaddtimeavl, averageCNTtimeavl,
+        averageaddtimerb, averageCNTtimerb,
+        averageaddtimeavlpp, averageCNTtimeavlpp,
+        averageaddtimerbpp, averageCNTtimerbpp;
     int
         num_cols_1d,
         num_cols_bst,
@@ -151,109 +151,109 @@ int main(int argc, char **argv)
                 printf("Executing run %d of 1D Array on %s...\n", i+1, in_file_name);
             res = do1darray(in_img);
             totaladdtime1d += res.addtime;
-            totalcounttime1d += res.counttime;
+            totalCNTtime1d += res.CNTtime;
             num_cols_1d = res.num_cols;
             
             if (debug)
                 printf("Executing run %d of BST on %s...\n", i+1, in_file_name);
             res = dobst(in_img);
             totaladdtimebst += res.addtime;
-            totalcounttimebst += res.counttime;
+            totalCNTtimebst += res.CNTtime;
             num_cols_bst = res.num_cols;
             
             if (debug)
                 printf("Executing run %d of 2D BST on %s...\n", i+1, in_file_name);
             res = do2dbst(in_img);
             totaladdtime2dbst += res.addtime;
-            totalcounttime2dbst += res.counttime;
+            totalCNTtime2dbst += res.CNTtime;
             num_cols_2dbst = res.num_cols;
             
             if (debug)
                 printf("Executing run %d of 2D SLL on %s...\n", i+1, in_file_name);
             res = do2dsll(in_img);
             totaladdtime2dsll += res.addtime;
-            totalcounttime2dsll += res.counttime;
+            totalCNTtime2dsll += res.CNTtime;
             num_cols_2dsll = res.num_cols;
             
             if (debug)
                 printf("Executing run %d of 3D Array on %s...\n", i+1, in_file_name);
             res = do3darray(in_img);
             totaladdtime3d += res.addtime;
-            totalcounttime3d += res.counttime;
+            totalCNTtime3d += res.CNTtime;
             num_cols_3d = res.num_cols;
             
             if (debug)
                 printf("Executing run %d of Hashtable on %s...\n", i+1, in_file_name);
             res = dohashtable(in_img);
             totaladdtimeht += res.addtime;
-            totalcounttimeht += res.counttime;
+            totalCNTtimeht += res.CNTtime;
             num_cols_ht = res.num_cols;
             
             if (debug)
                 printf("Executing run %d of AVL Tree on %s...\n", i+1, in_file_name);
             res = doavl_base(in_img);
             totaladdtimeavl += res.addtime;
-            totalcounttimeavl += res.counttime;
+            totalCNTtimeavl += res.CNTtime;
             num_cols_avl = res.num_cols;
             
             if (debug)
                 printf("Executing run %d of RB Tree on %s...\n", i+1, in_file_name);
             res = dorb_base(in_img);
             totaladdtimerb += res.addtime;
-            totalcounttimerb += res.counttime;
+            totalCNTtimerb += res.CNTtime;
             num_cols_rb = res.num_cols;
 
             if (debug)
                 printf("Executing run %d of AVL PP Tree on %s...\n", i+1, in_file_name);
             res = doavl_base(in_img);
             totaladdtimeavlpp += res.addtime;
-            totalcounttimeavlpp += res.counttime;
+            totalCNTtimeavlpp += res.CNTtime;
             num_cols_avlpp = res.num_cols;
             
             if (debug)
                 printf("Executing run %d of RB PP Tree on %s...\n", i+1, in_file_name);
             res = dorb_base(in_img);
             totaladdtimerbpp += res.addtime;
-            totalcounttimerbpp += res.counttime;
+            totalCNTtimerbpp += res.CNTtime;
             num_cols_rbpp = res.num_cols;
         }
 
-        //Rounding down count times for implementations with O(1) (constant time) methods
+        //Rounding down CNT times for implementations with O(1) (constant time) methods
         averageaddtime1d = totaladdtime1d / num_runs; 
-        averagecounttime1d = totalcounttime1d / num_runs;
+        averageCNTtime1d = totalCNTtime1d / num_runs;
         averageaddtime2dbst = totaladdtime2dbst / num_runs; 
-        averagecounttime2dbst = totalcounttime2dbst / num_runs;
+        averageCNTtime2dbst = totalCNTtime2dbst / num_runs;
         averageaddtime2dsll = totaladdtime2dsll / num_runs;
-        averagecounttime2dsll = totalcounttime2dsll / num_runs;
+        averageCNTtime2dsll = totalCNTtime2dsll / num_runs;
         averageaddtime3d = totaladdtime3d / num_runs;
-        averagecounttime3d = totalcounttime3d / num_runs;
+        averageCNTtime3d = totalCNTtime3d / num_runs;
         averageaddtimebst = totaladdtimebst / num_runs; 
-        averagecounttimebst = totalcounttimebst / num_runs;
+        averageCNTtimebst = totalCNTtimebst / num_runs;
         averageaddtimeht = totaladdtimeht / num_runs; 
-        averagecounttimeht = totalcounttimeht / num_runs;
+        averageCNTtimeht = totalCNTtimeht / num_runs;
         averageaddtimeavl = totaladdtimeavl / num_runs; 
-        averagecounttimeavl = totalcounttimeavl / num_runs;
+        averageCNTtimeavl = totalCNTtimeavl / num_runs;
         averageaddtimerb = totaladdtimerb / num_runs; 
-        averagecounttimerb = totalcounttimerb / num_runs;
+        averageCNTtimerb = totalCNTtimerb / num_runs;
         averageaddtimeavlpp = totaladdtimeavlpp / num_runs; 
-        averagecounttimeavlpp = totalcounttimeavlpp / num_runs;
+        averageCNTtimeavlpp = totalCNTtimeavlpp / num_runs;
         averageaddtimerbpp = totaladdtimerbpp / num_runs; 
-        averagecounttimerbpp = totalcounttimerbpp / num_runs;
+        averageCNTtimerbpp = totalCNTtimerbpp / num_runs;
 
         fprintf(data, "\n");
         fprintf(data,
                 "%-25s%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d",
                 in_file_name,
-                averageaddtimerbpp, round(averagecounttimerbpp), num_cols_rbpp,
-                averageaddtimeavlpp, round(averagecounttimeavlpp), num_cols_avlpp,
-                averageaddtimerb, round(averagecounttimerb), num_cols_rb,
-                averageaddtimeavl, round(averagecounttimeavl), num_cols_avl,
-                averageaddtimeht, round(averagecounttimeht), num_cols_ht,
-                averageaddtime2dsll, averagecounttime2dsll, num_cols_2dsll,
-                averageaddtime2dbst, averagecounttime2dbst, num_cols_2dbst,
-                averageaddtimebst, averagecounttimebst, num_cols_bst,
-                averageaddtime1d, averagecounttime1d, num_cols_1d,
-                averageaddtime3d, averagecounttime3d, num_cols_3d);
+                averageaddtimerbpp, round(averageCNTtimerbpp), num_cols_rbpp,
+                averageaddtimeavlpp, round(averageCNTtimeavlpp), num_cols_avlpp,
+                averageaddtimerb, round(averageCNTtimerb), num_cols_rb,
+                averageaddtimeavl, round(averageCNTtimeavl), num_cols_avl,
+                averageaddtimeht, round(averageCNTtimeht), num_cols_ht,
+                averageaddtime2dsll, averageCNTtime2dsll, num_cols_2dsll,
+                averageaddtime2dbst, averageCNTtime2dbst, num_cols_2dbst,
+                averageaddtimebst, averageCNTtimebst, num_cols_bst,
+                averageaddtime1d, averageCNTtime1d, num_cols_1d,
+                averageaddtime3d, averageCNTtime3d, num_cols_3d);
         fclose(data);
     }
     fullstop = clock();
