@@ -259,7 +259,7 @@ int main(int argc, char **argv)
     fullstop = clock();
     data = fopen("data.txt", "a");
     fprintf(data, "\n");
-    fprintf(data, "%d runs took %d seconds\n", num_runs, (double)(fullstop - fullstart) / CLOCKS_PER_SEC);
+    fprintf(data, "\n%d runs took %g seconds\n", num_runs, ((double)(fullstop - fullstart) / CLOCKS_PER_SEC));
     fclose(data);
     
     printf("\nCheck data.txt for stats!\n\n");
