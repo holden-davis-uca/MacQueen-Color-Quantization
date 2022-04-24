@@ -39,6 +39,7 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 - **rb_pp.c**: LibAVL Red Black tree implementation of a color histogram with parent pointers.
 - **bst.c**: Binary Search Tree implementation of a color histogram.
 - **hashtable.c**: Hash Table implementation of a color histogram.
+- **hashtablebig.c**: Hash Table (with size of 65537) implementation of a color histogram.
 ## Other:
 - **avl.c**: LibAVL testing library.
 - **avl.h**: LibAVL testing library.

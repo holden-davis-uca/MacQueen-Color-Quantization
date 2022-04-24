@@ -1,8 +1,8 @@
 /*
 
-To compile: make %hashtable%
+To compile: make %hashtablebig%
 
-To run: ./%hashtable% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
+To run: ./%hashtablebig% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
 
 It can be run with just the image argument and the number of runs will default to 1
 
@@ -15,7 +15,7 @@ It can be run with just the image argument and the number of runs will default t
 // #include <stdio.h>
 // #include "util.c"
 
-results dohashtable(RGB_Image *in_img)
+results dohashtablebig(RGB_Image *in_img)
 {
     clock_t start, stop;
     double addtime, counttime;
@@ -28,9 +28,9 @@ results dohashtable(RGB_Image *in_img)
     Bucket bucket;
     Hash_Table hash_table;
     int num_colors = 0;
-    hash_table = (Hash_Table)malloc(HASH_SIZE * sizeof(Bucket));
+    hash_table = (Hash_Table)malloc(HASH_SIZE_BIG * sizeof(Bucket));
 
-    for (ih = 0; ih < HASH_SIZE; ih++)
+    for (ih = 0; ih < HASH_SIZE_BIG; ih++)
     {
         hash_table[ih] = NULL;
     }
@@ -41,7 +41,7 @@ results dohashtable(RGB_Image *in_img)
         blue = in_img->data[i].blue;
 
         /* Determine the bucket */
-        hash = HASH(red, green, blue);
+        hash = HASH_BIG(red, green, blue);
 
         /* Search for the color in the bucket chain */
         for (bucket = hash_table[hash]; bucket != NULL; bucket = bucket->next)
@@ -75,7 +75,7 @@ results dohashtable(RGB_Image *in_img)
     stop = clock();
     addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
-    int cols_hashtable = num_colors;
+    int cols_hashtablebig = num_colors;
     stop = clock();
     counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     res.num_cols = num_colors;
@@ -115,7 +115,7 @@ results dohashtable(RGB_Image *in_img)
 //     int num_cols;
 //     for (int i = 0; i < num_runs; i++)
 //     {
-//         results res = dohashtable(in_img);
+//         results res = dohashtablebig(in_img);
 //         totaladd += res.addtime;
 //         totalcount += res.counttime;
 //         num_cols = res.num_cols;
