@@ -59,9 +59,7 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 
 # Notes:
 
-- Due to the common use case of this project by the authors, the project is currently configured to run solely via the compilation and execution of tester.c. In order to execute each standalone implementation as its own file, uncomment the two commented segments in the given file: the #include headers at the top and the main() function at the bottom.
-
-- By default, all files and the implementation also collect information on memory used (individual files output the number of bytes and tester adds an additional column to the output file for each structure's memory usage) - this can be turned off by removing the -DMEM_USAGE switch in the Makefile for the relevant implementation.
+- By default, all files and the implementation also collect information on memory used in addition to time (individual files output the number of bytes and tester adds an additional column to the output file for each structure's memory usage) - this can be turned off by removing the -DMEM_USAGE switch in the Makefile for the relevant implementation.
 
 - All implementations print a short message to the console indicating image, time performance and counted colors.
 
