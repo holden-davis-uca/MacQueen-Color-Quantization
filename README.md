@@ -10,24 +10,23 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 ## Folders:
 - **.vscode**: My personal VS Code settings (irrelevant to research).
 - **images**: A folder containing various .ppm images to test on.
-    - baboon.ppm
-    - fish.ppm
-    - girl.ppm
-    - goldhill.ppm
-    - kodim05.ppm
-    - kodim23.ppm
-    - peppers.ppm
-    - pills.ppm
-    - frymire.ppm
-    - kiss.ppm
+    - 1931.ppm
+    - bags.ppm
     - balloons.ppm
     - blur.ppm
+    - candy.ppm
     - chairs.ppm
+    - chart.ppm
     - dissolve.ppm
     - fruit.ppm
+    - frymire.ppm
     - hotair.ppm
+    - kiss.ppm
+    - market.ppm
     - palette.ppm
     - pencils.ppm
+    - pigments.ppm
+    - wood.ppm
 ## Implementations:
 - **1darray.c**: Flattened 1-D array implementation of a color histogram.
 - **2dbst.c**: 2-D array with Binary Search Tree element implementation of a color histogram.
@@ -61,6 +60,8 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 # Notes:
 
 - Due to the common use case of this project by the authors, the project is currently configured to run solely via the compilation and execution of tester.c. In order to execute each standalone implementation as its own file, uncomment the two commented segments in the given file: the #include headers at the top and the main() function at the bottom.
+
+- By default, all files and the implementation also collect information on memory used (individual files output the number of bytes and tester adds an additional column to the output file for each structure's memory usage) - this can be turned off by removing the -DMEM_USAGE switch in the Makefile for the relevant implementation.
 
 - All implementations print a short message to the console indicating image, time performance and counted colors.
 

@@ -15,6 +15,7 @@ It can be run with just the image argument and the number of runs will default t
 // #include <stdio.h>
 // #include "util.c"
 
+//Define all implementation specific things here
 struct SLL_Node *alloc_sll_node(const int new_key)
 {
     struct SLL_Node *here = (struct SLL_Node *)malloc(sizeof(struct SLL_Node));
@@ -41,7 +42,6 @@ struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
     return node;
 }
 
-// TODO: Fix counting logic
 int traverse_2dsll(const struct SLL_Node *head)
 {
     if (head == NULL)
@@ -68,11 +68,12 @@ int count_colors_2dsll(struct SLL_Node sll2darray[MAX_VAL][MAX_VAL])
     }
     return num_cols_2dsll;
 }
+//Trigger executed by make command -DMEM_USAGE to count bytes used by the program
+// #define MEM_USAGE
 
 results do2dsll(RGB_Image *in_img)
 {
     clock_t start, stop;
-    double addtime, counttime;
     results res;
     start = clock();
     struct SLL_Node(*sll2darray)[MAX_VAL] = malloc(sizeof(struct SLL_Node[MAX_VAL][MAX_VAL]));
@@ -82,15 +83,16 @@ results do2dsll(RGB_Image *in_img)
         pixel = &in_img->data[i];
         struct SLL_Node *head = insert_sll_node(&sll2darray[pixel->red][pixel->green], pixel->blue);
     }
+    //Do memory counting here
+    #ifdef MEM_USAGE
+    res.total_mem = sizeof(struct SLL_Node[MAX_VAL][MAX_VAL]);
+    #endif
     stop = clock();
-    addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
+    res.addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
-    int num_cols_2dsll = count_colors_2dsll(sll2darray);
+    res.num_cols = count_colors_2dsll(sll2darray);
     stop = clock();
-    counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
-    res.num_cols = num_cols_2dsll;
-    res.addtime = addtime;
-    res.counttime = counttime;
+    res.counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     free(sll2darray);
     return res;
 }
@@ -121,18 +123,24 @@ results do2dsll(RGB_Image *in_img)
 //     }
 //     in_img = read_PPM(in_file_name);
 //     double totaladd, totalcount, averageadd, averagecount;
-//     int num_cols;
+//     int num_cols, total_mem;
 //     for (int i = 0; i < num_runs; i++)
 //     {
 //         results res = do2dsll(in_img);
 //         totaladd += res.addtime;
 //         totalcount += res.counttime;
 //         num_cols = res.num_cols;
+//         #ifdef MEM_USAGE
+//         total_mem += res.total_mem;
+//         #endif
 //     }
 //     averageadd = totaladd / num_runs;
 //     averagecount = totalcount / num_runs;
-//     printf("Average time to add colors over %d runs: %f", num_runs, averageadd);
+//     #ifdef MEM_USAGE
+//     printf("%d bytes of memory used\n", total_mem);
+//     #endif
+//     printf("Average time to add colors over %d runs: %f", num_runs ,averageadd);
 //     printf("\nAverage time to count colors over %d runs: %f", num_runs, averagecount);
-//     printf("\nNumber of unique colors: %d", num_cols);
+//     printf("\nNumber of unique colors: %d",num_cols);
 //     return 0;
 // }

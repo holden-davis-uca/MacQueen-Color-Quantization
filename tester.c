@@ -66,6 +66,7 @@ int main(int argc, char **argv)
 
     fprintf(data, "ALL TIMING DATA AVERAGED OVER %d RUNS. PLEASE REPORT ANY ERRORS TO https://github.com/holden-davis-uca/Research\n\n", num_runs);
 
+    #ifndef MEM_USAGE
     fprintf(data,
             "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s",
             "IMAGE",
@@ -81,6 +82,23 @@ int main(int argc, char **argv)
             "ADD (3D)", "CNT (3D)", "CLR (3D)",
             "ADD (1D)", "CNT (1D)", "CLR (1D)");
     fclose(data);
+    #else
+        fprintf(data,
+            "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s",
+            "IMAGE",
+            "ADD (RB PP)", "CNT (RB PP)", "CLR (RB PP)", "MEM (RB PP)",
+            "ADD (AVL PP)", "CNT (AVL PP)", "CLR (AVL PP)", "MEM (AVL PP)",
+            "ADD (RB)", "CNT (RB)", "CLR (RB)", "MEM (RB)",
+            "ADD (AVL)", "CNT (AVL)", "CLR (AVL)", "MEM (AVL)",
+            "ADD (HT)", "CNT (HT)", "CLR (HT)", "MEM (HT)",
+            "ADD (HTB)", "CNT (HTB)", "CLR (HTB)", "MEM (HTB)",
+            "ADD (2D SLL)", "CNT (2D SLL)", "CLR (2D SLL)", "MEM (2D SLL)",
+            "ADD (2D BST)", "CNT(2D BST)", "CLR (2D BST)", "MEM (2D BST)",
+            "ADD (BST)", "CNT(BST)", "CLR (BST)", "MEM (BST)",
+            "ADD (3D)", "CNT (3D)", "CLR (3D)", "MEM (3D)",
+            "ADD (1D)", "CNT (1D)", "CLR (1D)" , "MEM (1D)");
+    fclose(data);
+    #endif
     const char *pictures[16];
     //Arranged by image size from smallest to largest
     //https://faculty.uca.edu/ecelebi/eight_images.zip - chairs, dissolve, fruit, blur, pencils, hotair, balloons, palette
@@ -140,6 +158,21 @@ int main(int argc, char **argv)
         num_cols_avlpp,
         num_cols_rbpp;
 
+    #ifdef MEM_USAGE
+    long 
+        total_mem_1d,
+        total_mem_bst,
+        total_mem_2dbst,
+        total_mem_2dsll,
+        total_mem_3d,
+        total_mem_ht,
+        total_mem_htb,
+        total_mem_avl,
+        total_mem_rb,
+        total_mem_avlpp,
+        total_mem_rbpp;
+    #endif
+
     // PER IMAGE:
     for (int y = 0; y < 16; y++)
     {
@@ -158,6 +191,9 @@ int main(int argc, char **argv)
             totaladdtime1d += res.addtime;
             totalCNTtime1d += res.counttime;
             num_cols_1d = res.num_cols;
+            #ifdef MEM_USAGE
+            total_mem_1d = res.total_mem;
+            #endif
             
             if (debug)
                 printf("Executing run %d of BST on %s...\n", i+1, in_file_name);
@@ -165,6 +201,9 @@ int main(int argc, char **argv)
             totaladdtimebst += res.addtime;
             totalCNTtimebst += res.counttime;
             num_cols_bst = res.num_cols;
+            #ifdef MEM_USAGE
+            total_mem_bst = res.total_mem;
+            #endif
             
             if (debug)
                 printf("Executing run %d of 2D BST on %s...\n", i+1, in_file_name);
@@ -172,6 +211,9 @@ int main(int argc, char **argv)
             totaladdtime2dbst += res.addtime;
             totalCNTtime2dbst += res.counttime;
             num_cols_2dbst = res.num_cols;
+            #ifdef MEM_USAGE
+            total_mem_2dbst = res.total_mem;
+            #endif
             
             if (debug)
                 printf("Executing run %d of 2D SLL on %s...\n", i+1, in_file_name);
@@ -179,6 +221,9 @@ int main(int argc, char **argv)
             totaladdtime2dsll += res.addtime;
             totalCNTtime2dsll += res.counttime;
             num_cols_2dsll = res.num_cols;
+            #ifdef MEM_USAGE
+            total_mem_2dsll = res.total_mem;
+            #endif
             
             if (debug)
                 printf("Executing run %d of 3D Array on %s...\n", i+1, in_file_name);
@@ -186,6 +231,9 @@ int main(int argc, char **argv)
             totaladdtime3d += res.addtime;
             totalCNTtime3d += res.counttime;
             num_cols_3d = res.num_cols;
+            #ifdef MEM_USAGE
+            total_mem_3d = res.total_mem;
+            #endif
             
             if (debug)
                 printf("Executing run %d of Hashtable on %s...\n", i+1, in_file_name);
@@ -193,6 +241,9 @@ int main(int argc, char **argv)
             totaladdtimeht += res.addtime;
             totalCNTtimeht += res.counttime;
             num_cols_ht = res.num_cols;
+            #ifdef MEM_USAGE
+            total_mem_ht = res.total_mem;
+            #endif
             
             if (debug)
                 printf("Executing run %d of Hashtable (Big) on %s...\n", i+1, in_file_name);
@@ -200,6 +251,9 @@ int main(int argc, char **argv)
             totaladdtimehtb += res.addtime;
             totalCNTtimehtb += res.counttime;
             num_cols_htb = res.num_cols;
+            #ifdef MEM_USAGE
+            total_mem_htb = res.total_mem;
+            #endif
 
             if (debug)
                 printf("Executing run %d of AVL Tree on %s...\n", i+1, in_file_name);
@@ -207,6 +261,9 @@ int main(int argc, char **argv)
             totaladdtimeavl += res.addtime;
             totalCNTtimeavl += res.counttime;
             num_cols_avl = res.num_cols;
+            #ifdef MEM_USAGE
+            total_mem_avl = res.total_mem;
+            #endif
             
             if (debug)
                 printf("Executing run %d of RB Tree on %s...\n", i+1, in_file_name);
@@ -214,6 +271,9 @@ int main(int argc, char **argv)
             totaladdtimerb += res.addtime;
             totalCNTtimerb += res.counttime;
             num_cols_rb = res.num_cols;
+            #ifdef MEM_USAGE
+            total_mem_rb = res.total_mem;
+            #endif
 
             if (debug)
                 printf("Executing run %d of AVL PP Tree on %s...\n", i+1, in_file_name);
@@ -221,6 +281,9 @@ int main(int argc, char **argv)
             totaladdtimeavlpp += res.addtime;
             totalCNTtimeavlpp += res.counttime;
             num_cols_avlpp = res.num_cols;
+            #ifdef MEM_USAGE
+            total_mem_avlpp = res.total_mem;
+            #endif
             
             if (debug)
                 printf("Executing run %d of RB PP Tree on %s...\n", i+1, in_file_name);
@@ -228,6 +291,9 @@ int main(int argc, char **argv)
             totaladdtimerbpp += res.addtime;
             totalCNTtimerbpp += res.counttime;
             num_cols_rbpp = res.num_cols;
+            #ifdef MEM_USAGE
+            total_mem_rbpp = res.total_mem;
+            #endif
         }
 
         //Rounding down CNT times for implementations with O(1) (constant time) methods
@@ -254,6 +320,7 @@ int main(int argc, char **argv)
         averageaddtimerbpp = totaladdtimerbpp / num_runs; 
         averageCNTtimerbpp = totalCNTtimerbpp / num_runs;
 
+        #ifndef MEM_USAGE
         fprintf(data, "\n");
         fprintf(data,
                 "%-25s%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d%-25g%-25g%-25d",
@@ -270,6 +337,24 @@ int main(int argc, char **argv)
                 averageaddtime1d, averageCNTtime1d, num_cols_1d,
                 averageaddtime3d, averageCNTtime3d, num_cols_3d);
         fclose(data);
+        #else
+        fprintf(data, "\n");
+        fprintf(data,
+                "%-25s%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu",
+                in_file_name,
+                averageaddtimerbpp, round(averageCNTtimerbpp), num_cols_rbpp, total_mem_rbpp,
+                averageaddtimeavlpp, round(averageCNTtimeavlpp), num_cols_avlpp, total_mem_avlpp,
+                averageaddtimerb, round(averageCNTtimerb), num_cols_rb, total_mem_rb,
+                averageaddtimeavl, round(averageCNTtimeavl), num_cols_avl, total_mem_avl,
+                averageaddtimeht, round(averageCNTtimeht), num_cols_ht, total_mem_ht,
+                averageaddtimehtb, round(averageCNTtimehtb), num_cols_htb, total_mem_htb,
+                averageaddtime2dsll, averageCNTtime2dsll, num_cols_2dsll, total_mem_2dsll,
+                averageaddtime2dbst, averageCNTtime2dbst, num_cols_2dbst, total_mem_2dbst,
+                averageaddtimebst, averageCNTtimebst, num_cols_bst, total_mem_bst,
+                averageaddtime1d, averageCNTtime1d, num_cols_1d, total_mem_1d,
+                averageaddtime3d, averageCNTtime3d, num_cols_3d, total_mem_3d);
+        fclose(data);
+        #endif
     }
     fullstop = clock();
     data = fopen("data.txt", "a");

@@ -1,8 +1,8 @@
 /*
 
-To compile: make 1darray
+To compile: make %1darray%
 
-To run: ./1darray -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
+To run: ./%1darray% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
 
 It can be run with just the image argument and the number of runs will default to 1
 
@@ -15,9 +15,11 @@ It can be run with just the image argument and the number of runs will default t
 // #include <stdio.h>
 // #include "util.c"
 
+//Define all implementation specific things here
 // Maximum value for an any (r * 65536 + g * 256 + b) value
 #define MAX_VAL_PACKED 16777216
-
+//Trigger executed by make command -DMEM_USAGE to count bytes used by the program
+// #define MEM_USAGE
 // Iterate through a one dimensional array representing the color histogram.
 // If at least a single color exists (> 0), than increment num_colors counter and return at end.
 int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
@@ -32,15 +34,16 @@ int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
     }
     return num_colors;
 }
-
 results do1darray(RGB_Image *in_img)
 {
     clock_t start, stop;
-    double addtime, counttime;
     results res;
     start = clock();
-    int *histogram;
-    histogram = malloc(sizeof *histogram * MAX_VAL_PACKED);
+    //Do memory counting here
+    #ifdef MEM_USAGE
+    res.total_mem = sizeof(int) * MAX_VAL_PACKED;
+    #endif
+    int *histogram = malloc(sizeof(int) * MAX_VAL_PACKED);
     RGB_Pixel *pixel;
     for (int i = 0; i < in_img->size; i++)
     {
@@ -48,14 +51,11 @@ results do1darray(RGB_Image *in_img)
         histogram[(pixel->red << 16) | (pixel->green << 8) | pixel->blue]++;
     }
     stop = clock();
-    addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
+    res.addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
-    int num_cols_1darray = count_colors_1d_histo(histogram);
+    res.num_cols = count_colors_1d_histo(histogram);
     stop = clock();
-    counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
-    res.num_cols = num_cols_1darray;
-    res.addtime = addtime;
-    res.counttime = counttime;
+    res.counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     free(histogram);
     return res;
 }
@@ -86,18 +86,24 @@ results do1darray(RGB_Image *in_img)
 //     }
 //     in_img = read_PPM(in_file_name);
 //     double totaladd, totalcount, averageadd, averagecount;
-//     int num_cols;
+//     int num_cols, total_mem;
 //     for (int i = 0; i < num_runs; i++)
 //     {
 //         results res = do1darray(in_img);
 //         totaladd += res.addtime;
 //         totalcount += res.counttime;
 //         num_cols = res.num_cols;
+//         #ifdef MEM_USAGE
+//         total_mem += res.total_mem;
+//         #endif
 //     }
 //     averageadd = totaladd / num_runs;
 //     averagecount = totalcount / num_runs;
-//     printf("Average time to add colors over %d runs: %f", num_runs, averageadd);
+//     #ifdef MEM_USAGE
+//     printf("%d bytes of memory used\n", total_mem);
+//     #endif
+//     printf("Average time to add colors over %d runs: %f", num_runs ,averageadd);
 //     printf("\nAverage time to count colors over %d runs: %f", num_runs, averagecount);
-//     printf("\nNumber of unique colors: %d", num_cols);
+//     printf("\nNumber of unique colors: %d",num_cols);
 //     return 0;
 // }

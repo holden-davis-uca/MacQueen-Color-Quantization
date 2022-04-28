@@ -22,6 +22,7 @@ typedef struct
   int num_cols;
   double addtime;
   double counttime;
+  int total_mem;
 } results;
 
 struct BST_Node
