@@ -29,15 +29,15 @@ results do2dsll(RGB_Image *in_img)
         pixel = &in_img->data[i];
         struct SLL_Node *head = insert_sll_node(&sll2darray[pixel->red][pixel->green], pixel->blue);
     }
-    #ifdef MEM_USAGE
-    res.total_mem = sizeof(struct SLL_Node[MAX_VAL][MAX_VAL]);
-    #endif
     stop = clock();
     res.addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
     res.num_cols = count_colors_2dsll(sll2darray);
     stop = clock();
     res.counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
+    #ifdef MEM_USAGE
+    res.total_mem = sizeof(struct SLL_Node[MAX_VAL][MAX_VAL]) + (sizeof(struct SLL_Node) * res.num_cols);
+    #endif
     free(sll2darray);
     return res;
 }

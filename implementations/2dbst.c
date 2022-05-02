@@ -29,15 +29,15 @@ results do2dbst(RGB_Image *in_img)
         pixel = &in_img->data[i];
         struct BST_Node *root = insert_bst_node(&bst2darray[pixel->red][pixel->green], pixel->blue);
     }
-    #ifdef MEM_USAGE
-    res.total_mem = sizeof(struct BST_Node[MAX_VAL][MAX_VAL]);
-    #endif
     stop = clock();
     res.addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
     res.num_cols = count_colors_2dbst(bst2darray);
     stop = clock();
     res.counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
+    #ifdef MEM_USAGE
+    res.total_mem = sizeof(struct BST_Node[MAX_VAL][MAX_VAL]) + (sizeof(struct BST_Node) * res.num_cols);
+    #endif
     free(bst2darray);
     return res;
 }

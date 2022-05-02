@@ -50,6 +50,19 @@ int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
     }
     return num_colors;
 }
+// TODO: Fix counting logic
+int traverse_bst(const struct BST_Node *root)
+{
+    if (root == NULL)
+    {
+        return 0;
+    }
+    else if (root->count == 0)
+    {
+        return traverse_bst(root->right) + traverse_bst(root->left);
+    }
+    return 1 + traverse_bst(root->right) + traverse_bst(root->left);
+}
 
 //Define all implementation specific things here
 int count_colors_2dbst(struct BST_Node bst2darray[MAX_VAL][MAX_VAL])
@@ -229,21 +242,6 @@ int count_colors_3d_histo(int histogram[MAX_VAL][MAX_VAL][MAX_VAL])
         }
     }
     return num_colors;
-}
-
-
-// TODO: Fix counting logic
-int traverse_bst(const struct BST_Node *root)
-{
-    if (root == NULL)
-    {
-        return 0;
-    }
-    else if (root->count == 0)
-    {
-        return traverse_bst(root->right) + traverse_bst(root->left);
-    }
-    return 1 + traverse_bst(root->right) + traverse_bst(root->left);
 }
 
 //Define all implementation specific things here
