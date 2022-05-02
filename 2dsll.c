@@ -123,8 +123,12 @@ int main(int argc, char **argv)
         }
     }
     in_img = read_PPM(in_file_name);
-    double totaladd, totalcount, averageadd, averagecount;
-    int num_cols, total_mem;
+    double totaladd = 0;
+    double totalcount = 0;
+    double averageadd = 0;
+    double averagecount = 0;
+    int num_cols = 0;
+    int total_mem = 0;
     for (int i = 0; i < num_runs; i++)
     {
         results res = do2dsll(in_img);
@@ -132,7 +136,7 @@ int main(int argc, char **argv)
         totalcount += res.counttime;
         num_cols = res.num_cols;
         #ifdef MEM_USAGE
-        total_mem += res.total_mem;
+        total_mem = res.total_mem;
         #endif
     }
     averageadd = totaladd / num_runs;
