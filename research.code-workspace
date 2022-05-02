@@ -19,7 +19,8 @@
 			"climits": "c",
 			"atomic": "c",
 			"time.h": "c",
-			"cmath": "c"
+			"cmath": "c",
+			"rb.h": "c"
 		}
 	}
 }

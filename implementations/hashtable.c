@@ -1,8 +1,8 @@
 /*
 
-To compile: make %avl_base%
+To compile: make %hashtable%
 
-To run: ./%avl_base% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
+To run: ./%hashtable% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
 
 It can be run with just the image argument and the number of runs will default to 1
 
@@ -14,41 +14,84 @@ It can be run with just the image argument and the number of runs will default t
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-#include "util.c"
-#include "avl.c"
+#include "./lib/util.c"
 #endif
 
 //Define all implementation specific things here
 
-results doavl_base(RGB_Image *in_img)
+results dohashtable(RGB_Image *in_img)
 {
     clock_t start, stop;
     results res;
     start = clock();
-    struct libavl_allocator allocator = avl_allocator_default;
-    struct avl_table *tree = avl_create(compare_ints, NULL, &allocator);
-    uint *insertions = malloc(sizeof(uint) * in_img->size);
-    RGB_Pixel *pixel;
+    int ih;
+    uint hash;
+    int index;
+    uint red, green, blue;
+    Bucket bucket;
+    Hash_Table hash_table;
+    int num_colors = 0;
+    hash_table = (Hash_Table)malloc(HASH_SIZE * sizeof(Bucket));
+
+    for (ih = 0; ih < HASH_SIZE; ih++)
+    {
+        hash_table[ih] = NULL;
+    }
     for (int i = 0; i < in_img->size; i++)
     {
-        pixel = &in_img->data[i];
-        uint key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
-        insertions[i] = key;
-        avl_probe(tree, &insertions[i]);
+        red = in_img->data[i].red;
+        green = in_img->data[i].green;
+        blue = in_img->data[i].blue;
+
+        /* Determine the bucket */
+        hash = HASH(red, green, blue);
+
+        /* Search for the color in the bucket chain */
+        for (bucket = hash_table[hash]; bucket != NULL; bucket = bucket->next)
+        {
+
+            if (bucket->red == red && bucket->green == green && bucket->blue == blue)
+            {
+                /* This color exists in the hash table */
+                break;
+            }
+        }
+        if (bucket != NULL)
+        {
+            /* This color exists in the hash table */
+            bucket->count++;
+        }
+        else
+        {
+            num_colors++;
+            /* Create a new bucket entry for this color */
+            bucket = (Bucket)malloc(sizeof(struct Bucket_Entry));
+
+            bucket->red = red;
+            bucket->green = green;
+            bucket->blue = blue;
+            bucket->count = 1;
+            bucket->next = hash_table[hash];
+            hash_table[hash] = bucket;
+        }
     }
-    #ifdef MEM_USAGE
-    res.total_mem = sizeof(uint) * in_img->size;
-    #endif
+
     stop = clock();
     res.addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
-    res.num_cols = tree->avl_count;
+    //Do implementation counting here
+    res.num_cols = num_colors;
     stop = clock();
     res.counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
-    free(insertions);
-    free(tree);
+    //Do memory counting here
+    #ifdef MEM_USAGE
+    res.total_mem = sizeof(bucket) * num_colors;
+    #endif
+    free(bucket);
+    free(hash_table);
     return res;
 }
+
 #ifdef ALONE
 int main(int argc, char **argv)
 {
@@ -83,7 +126,7 @@ int main(int argc, char **argv)
     int total_mem = 0;
     for (int i = 0; i < num_runs; i++)
     {
-        results res = doavl_base(in_img);
+        results res = dohashtable(in_img);
         totaladd += res.addtime;
         totalcount += res.counttime;
         num_cols = res.num_cols;
@@ -101,4 +144,4 @@ int main(int argc, char **argv)
     printf("\nNumber of unique colors: %d",num_cols);
     return 0;
 }
-#endif 
+#endif

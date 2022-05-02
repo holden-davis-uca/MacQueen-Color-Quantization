@@ -1,8 +1,8 @@
 /*
 
-To compile: make %bst%
+To compile: make %1darray%
 
-To run: ./%bst% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
+To run: ./%1darray% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
 
 It can be run with just the image argument and the number of runs will default to 1
 
@@ -14,37 +14,48 @@ It can be run with just the image argument and the number of runs will default t
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-#include "util.c"
+#include "./lib/util.c"
 #endif
-
 //Define all implementation specific things here
-
-results dobst(RGB_Image *in_img)
+// Maximum value for an any (r * 65536 + g * 256 + b) value
+#define MAX_VAL_PACKED 16777216
+// Iterate through a one dimensional array representing the color histogram.
+// If at least a single color exists (> 0), than increment num_colors counter and return at end.
+int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
+{
+    int num_colors = 0;
+    for (int i = 0; i < MAX_VAL_PACKED; i++)
+    {
+        if (histogram[i] != 0)
+        {
+            num_colors++;
+        }
+    }
+    return num_colors;
+}
+results do1darray(RGB_Image *in_img)
 {
     clock_t start, stop;
     results res;
     start = clock();
+    //Do memory counting here
+    #ifdef MEM_USAGE
+    res.total_mem = sizeof(int) * MAX_VAL_PACKED;
+    #endif
+    int *histogram = malloc(sizeof(int) * MAX_VAL_PACKED);
     RGB_Pixel *pixel;
-    pixel = &in_img->data[0];
-    int key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
-    struct BST_Node *root = insert_bst_node(NULL, key);
-    for (int i = 1; i < in_img->size; i++)
+    for (int i = 0; i < in_img->size; i++)
     {
         pixel = &in_img->data[i];
-        key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
-        insert_bst_node(root, key);
+        histogram[(pixel->red << 16) | (pixel->green << 8) | pixel->blue]++;
     }
     stop = clock();
     res.addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
-    res.num_cols = traverse_bst(root);
+    res.num_cols = count_colors_1d_histo(histogram);
     stop = clock();
     res.counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
-    //Do memory counting here
-    #ifdef MEM_USAGE
-    res.total_mem = sizeof(struct BST_Node) * res.num_cols;
-    #endif
-    free(root);
+    free(histogram);
     return res;
 }
 
@@ -82,7 +93,7 @@ int main(int argc, char **argv)
     int total_mem = 0;
     for (int i = 0; i < num_runs; i++)
     {
-        results res = dobst(in_img);
+        results res = do1darray(in_img);
         totaladd += res.addtime;
         totalcount += res.counttime;
         num_cols = res.num_cols;

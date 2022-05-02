@@ -1,8 +1,8 @@
 /*
 
-To compile: make %1darray%
+To compile: make %avl_base%
 
-To run: ./%1darray% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
+To run: ./%avl_base% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
 
 It can be run with just the image argument and the number of runs will default to 1
 
@@ -14,51 +14,41 @@ It can be run with just the image argument and the number of runs will default t
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-#include "util.c"
+#include "./lib/util.c"
+#include "./lib/avl.c"
 #endif
+
 //Define all implementation specific things here
-// Maximum value for an any (r * 65536 + g * 256 + b) value
-#define MAX_VAL_PACKED 16777216
-// Iterate through a one dimensional array representing the color histogram.
-// If at least a single color exists (> 0), than increment num_colors counter and return at end.
-int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
-{
-    int num_colors = 0;
-    for (int i = 0; i < MAX_VAL_PACKED; i++)
-    {
-        if (histogram[i] != 0)
-        {
-            num_colors++;
-        }
-    }
-    return num_colors;
-}
-results do1darray(RGB_Image *in_img)
+
+results doavl_base(RGB_Image *in_img)
 {
     clock_t start, stop;
     results res;
     start = clock();
-    //Do memory counting here
-    #ifdef MEM_USAGE
-    res.total_mem = sizeof(int) * MAX_VAL_PACKED;
-    #endif
-    int *histogram = malloc(sizeof(int) * MAX_VAL_PACKED);
+    struct libavl_allocator allocator = avl_allocator_default;
+    struct avl_table *tree = avl_create(compare_ints, NULL, &allocator);
+    uint *insertions = malloc(sizeof(uint) * in_img->size);
     RGB_Pixel *pixel;
     for (int i = 0; i < in_img->size; i++)
     {
         pixel = &in_img->data[i];
-        histogram[(pixel->red << 16) | (pixel->green << 8) | pixel->blue]++;
+        uint key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
+        insertions[i] = key;
+        avl_probe(tree, &insertions[i]);
     }
+    #ifdef MEM_USAGE
+    res.total_mem = sizeof(uint) * in_img->size;
+    #endif
     stop = clock();
     res.addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
-    res.num_cols = count_colors_1d_histo(histogram);
+    res.num_cols = tree->avl_count;
     stop = clock();
     res.counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
-    free(histogram);
+    free(insertions);
+    free(tree);
     return res;
 }
-
 #ifdef ALONE
 int main(int argc, char **argv)
 {
@@ -93,7 +83,7 @@ int main(int argc, char **argv)
     int total_mem = 0;
     for (int i = 0; i < num_runs; i++)
     {
-        results res = do1darray(in_img);
+        results res = doavl_base(in_img);
         totaladd += res.addtime;
         totalcount += res.counttime;
         num_cols = res.num_cols;
@@ -111,4 +101,4 @@ int main(int argc, char **argv)
     printf("\nNumber of unique colors: %d",num_cols);
     return 0;
 }
-#endif
+#endif 

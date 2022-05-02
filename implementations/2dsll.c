@@ -1,8 +1,8 @@
 /*
 
-To compile: make %3darray%
+To compile: make %2dsll%
 
-To run: ./%3darray% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
+To run: ./%2dsll% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
 
 It can be run with just the image argument and the number of runs will default to 1
 
@@ -14,52 +14,86 @@ It can be run with just the image argument and the number of runs will default t
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-#include "util.c"
+#include "./lib/util.c"
 #endif
 
 //Define all implementation specific things here
-int count_colors_3d_histo(int histogram[MAX_VAL][MAX_VAL][MAX_VAL])
+struct SLL_Node *alloc_sll_node(const int new_key)
 {
-    int num_colors = 0;
+    struct SLL_Node *here = (struct SLL_Node *)malloc(sizeof(struct SLL_Node));
+    here->key = new_key;
+    here->count = 1;
+    here->next = NULL;
+    return here;
+}
+
+struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
+{
+    if (node == NULL)
+    {
+        return alloc_sll_node(new_key);
+    }
+    if (new_key == node->key)
+    {
+        node->count++;
+    }
+    else
+    {
+        node->next = insert_sll_node(node->next, new_key);
+    }
+    return node;
+}
+
+int traverse_2dsll(const struct SLL_Node *head)
+{
+    if (head == NULL)
+    {
+        return 0;
+    }
+    else if (head->count == 0)
+    {
+        return traverse_2dsll(head->next);
+    }
+
+    return 1 + traverse_2dsll(head->next);
+}
+
+int count_colors_2dsll(struct SLL_Node sll2darray[MAX_VAL][MAX_VAL])
+{
+    int num_cols_2dsll = 0;
     for (int i = 0; i < MAX_VAL; i++)
     {
         for (int j = 0; j < MAX_VAL; j++)
         {
-            for (int k = 0; k < MAX_VAL; k++)
-            {
-                if (histogram[i][j][k] != 0)
-                {
-                    num_colors++;
-                }
-            }
+            num_cols_2dsll += traverse_2dsll(&sll2darray[i][j]);
         }
     }
-    return num_colors;
+    return num_cols_2dsll;
 }
 
-results do3darray(RGB_Image *in_img)
+results do2dsll(RGB_Image *in_img)
 {
     clock_t start, stop;
     results res;
     start = clock();
+    struct SLL_Node(*sll2darray)[MAX_VAL] = malloc(sizeof(struct SLL_Node[MAX_VAL][MAX_VAL]));
     RGB_Pixel *pixel;
-    int(*histogram)[MAX_VAL][MAX_VAL] = malloc(sizeof(int[MAX_VAL][MAX_VAL][MAX_VAL]));
     for (int i = 0; i < in_img->size; i++)
     {
         pixel = &in_img->data[i];
-        histogram[pixel->red][pixel->green][pixel->blue]++;
+        struct SLL_Node *head = insert_sll_node(&sll2darray[pixel->red][pixel->green], pixel->blue);
     }
     //Do memory counting here
     #ifdef MEM_USAGE
-    res.total_mem = sizeof(int[MAX_VAL][MAX_VAL][MAX_VAL]);
+    res.total_mem = sizeof(struct SLL_Node[MAX_VAL][MAX_VAL]);
     #endif
     stop = clock();
     res.addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
-    res.num_cols = count_colors_3d_histo(histogram);
+    res.num_cols = count_colors_2dsll(sll2darray);
     stop = clock();
     res.counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
-    free(histogram);
+    free(sll2darray);
     return res;
 }
 
@@ -97,7 +131,7 @@ int main(int argc, char **argv)
     int total_mem = 0;
     for (int i = 0; i < num_runs; i++)
     {
-        results res = do3darray(in_img);
+        results res = do2dsll(in_img);
         totaladd += res.addtime;
         totalcount += res.counttime;
         num_cols = res.num_cols;

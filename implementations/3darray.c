@@ -1,8 +1,8 @@
 /*
 
-To compile: make %rb_base%
+To compile: make %3darray%
 
-To run: ./%rb_base% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
+To run: ./%3darray% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
 
 It can be run with just the image argument and the number of runs will default to 1
 
@@ -14,39 +14,52 @@ It can be run with just the image argument and the number of runs will default t
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-#include "util.c"
-#include "rb.c"
+#include "./lib/util.c"
 #endif
 
 //Define all implementation specific things here
+int count_colors_3d_histo(int histogram[MAX_VAL][MAX_VAL][MAX_VAL])
+{
+    int num_colors = 0;
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+        for (int j = 0; j < MAX_VAL; j++)
+        {
+            for (int k = 0; k < MAX_VAL; k++)
+            {
+                if (histogram[i][j][k] != 0)
+                {
+                    num_colors++;
+                }
+            }
+        }
+    }
+    return num_colors;
+}
 
-results dorb_base(RGB_Image *in_img)
+results do3darray(RGB_Image *in_img)
 {
     clock_t start, stop;
     results res;
     start = clock();
-    struct libavl_allocator allocator = rb_allocator_default;
-    struct rb_table *tree = rb_create(compare_ints, NULL, &allocator);
-    uint *insertions = malloc(sizeof(uint) * in_img->size);
     RGB_Pixel *pixel;
+    int(*histogram)[MAX_VAL][MAX_VAL] = malloc(sizeof(int[MAX_VAL][MAX_VAL][MAX_VAL]));
     for (int i = 0; i < in_img->size; i++)
     {
         pixel = &in_img->data[i];
-        uint key = (pixel->red << 16) | (pixel->green << 8) | pixel->blue;
-        insertions[i] = key;
-        rb_probe(tree, &insertions[i]);
+        histogram[pixel->red][pixel->green][pixel->blue]++;
     }
+    //Do memory counting here
     #ifdef MEM_USAGE
-    res.total_mem = sizeof(uint) * in_img->size;
+    res.total_mem = sizeof(int[MAX_VAL][MAX_VAL][MAX_VAL]);
     #endif
     stop = clock();
     res.addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
-    res.num_cols = tree->rb_count;
+    res.num_cols = count_colors_3d_histo(histogram);
     stop = clock();
     res.counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
-    free(insertions);
-    free(tree);
+    free(histogram);
     return res;
 }
 
@@ -84,7 +97,7 @@ int main(int argc, char **argv)
     int total_mem = 0;
     for (int i = 0; i < num_runs; i++)
     {
-        results res = dorb_base(in_img);
+        results res = do3darray(in_img);
         totaladd += res.addtime;
         totalcount += res.counttime;
         num_cols = res.num_cols;

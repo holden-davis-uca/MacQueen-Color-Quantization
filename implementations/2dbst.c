@@ -1,46 +1,62 @@
 /*
 
-To compile: make %FILENAME%
+To compile: make %2dbst%
 
-To run: ./%FILENAME% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
+To run: ./%2dbst% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
 
 It can be run with just the image argument and the number of runs will default to 1
 
 */
 
+#ifdef ALONE
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-#include "util.c"
+#include "./lib/util.c"
+#endif
 
 //Define all implementation specific things here
+int count_colors_2dbst(struct BST_Node bst2darray[MAX_VAL][MAX_VAL])
+{
+    int num_cols_2dbst = 0;
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+        for (int j = 0; j < MAX_VAL; j++)
+        {
+            num_cols_2dbst += traverse_bst(&bst2darray[i][j]);
+        }
+    }
+    return num_cols_2dbst;
+}
 
-//Trigger executed by make command -DMEM_USAGE to count bytes used by the program
-// #define MEM_USAGE
-
-results doFILENAME(RGB_Image *in_img)
+results do2dbst(RGB_Image *in_img)
 {
     clock_t start, stop;
     results res;
     start = clock();
-    //Do implementation adding here
-    //Do memory counting here
+    struct BST_Node(*bst2darray)[MAX_VAL] = malloc(sizeof(struct BST_Node[MAX_VAL][MAX_VAL]));
+    RGB_Pixel *pixel;
+    for (int i = 0; i < in_img->size; i++)
+    {
+        pixel = &in_img->data[i];
+        struct BST_Node *root = insert_bst_node(&bst2darray[pixel->red][pixel->green], pixel->blue);
+    }
     #ifdef MEM_USAGE
-    res.total_mem = 0;
+    res.total_mem = sizeof(struct BST_Node[MAX_VAL][MAX_VAL]);
     #endif
     stop = clock();
     res.addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
-    //Do implementation counting here
-    res.num_cols = 0;
+    res.num_cols = count_colors_2dbst(bst2darray);
     stop = clock();
     res.counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
-    //Do all free() calls here
+    free(bst2darray);
     return res;
 }
 
+#ifdef ALONE
 int main(int argc, char **argv)
 {
     int num_runs = 1;
@@ -74,7 +90,7 @@ int main(int argc, char **argv)
     int total_mem = 0;
     for (int i = 0; i < num_runs; i++)
     {
-        results res = doFILENAME(in_img);
+        results res = do2dbst(in_img);
         totaladd += res.addtime;
         totalcount += res.counttime;
         num_cols = res.num_cols;
@@ -92,3 +108,4 @@ int main(int argc, char **argv)
     printf("\nNumber of unique colors: %d",num_cols);
     return 0;
 }
+#endif

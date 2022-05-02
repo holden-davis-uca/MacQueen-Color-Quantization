@@ -1,98 +1,46 @@
 /*
 
-To compile: make %hashtable%
+To compile: make %FILENAME%
 
-To run: ./%hashtable% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
+To run: ./%FILENAME% -i %PPM_IMAGE_PATH% -r %NUMBER_OF_RUNS%
 
 It can be run with just the image argument and the number of runs will default to 1
 
 */
 
-#ifdef ALONE
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-#include "util.c"
-#endif
+#include "./lib/util.c"
 
 //Define all implementation specific things here
 
-results dohashtable(RGB_Image *in_img)
+//Trigger executed by make command -DMEM_USAGE to count bytes used by the program
+// #define MEM_USAGE
+
+results doFILENAME(RGB_Image *in_img)
 {
     clock_t start, stop;
     results res;
     start = clock();
-    int ih;
-    uint hash;
-    int index;
-    uint red, green, blue;
-    Bucket bucket;
-    Hash_Table hash_table;
-    int num_colors = 0;
-    hash_table = (Hash_Table)malloc(HASH_SIZE * sizeof(Bucket));
-
-    for (ih = 0; ih < HASH_SIZE; ih++)
-    {
-        hash_table[ih] = NULL;
-    }
-    for (int i = 0; i < in_img->size; i++)
-    {
-        red = in_img->data[i].red;
-        green = in_img->data[i].green;
-        blue = in_img->data[i].blue;
-
-        /* Determine the bucket */
-        hash = HASH(red, green, blue);
-
-        /* Search for the color in the bucket chain */
-        for (bucket = hash_table[hash]; bucket != NULL; bucket = bucket->next)
-        {
-
-            if (bucket->red == red && bucket->green == green && bucket->blue == blue)
-            {
-                /* This color exists in the hash table */
-                break;
-            }
-        }
-        if (bucket != NULL)
-        {
-            /* This color exists in the hash table */
-            bucket->count++;
-        }
-        else
-        {
-            num_colors++;
-            /* Create a new bucket entry for this color */
-            bucket = (Bucket)malloc(sizeof(struct Bucket_Entry));
-
-            bucket->red = red;
-            bucket->green = green;
-            bucket->blue = blue;
-            bucket->count = 1;
-            bucket->next = hash_table[hash];
-            hash_table[hash] = bucket;
-        }
-    }
-
+    //Do implementation adding here
+    //Do memory counting here
+    #ifdef MEM_USAGE
+    res.total_mem = 0;
+    #endif
     stop = clock();
     res.addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     start = clock();
     //Do implementation counting here
-    res.num_cols = num_colors;
+    res.num_cols = 0;
     stop = clock();
     res.counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
-    //Do memory counting here
-    #ifdef MEM_USAGE
-    res.total_mem = sizeof(bucket) * num_colors;
-    #endif
-    free(bucket);
-    free(hash_table);
+    //Do all free() calls here
     return res;
 }
 
-#ifdef ALONE
 int main(int argc, char **argv)
 {
     int num_runs = 1;
@@ -126,7 +74,7 @@ int main(int argc, char **argv)
     int total_mem = 0;
     for (int i = 0; i < num_runs; i++)
     {
-        results res = dohashtable(in_img);
+        results res = doFILENAME(in_img);
         totaladd += res.addtime;
         totalcount += res.counttime;
         num_cols = res.num_cols;
@@ -144,4 +92,3 @@ int main(int argc, char **argv)
     printf("\nNumber of unique colors: %d",num_cols);
     return 0;
 }
-#endif

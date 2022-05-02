@@ -14,19 +14,19 @@ It can be run with no arguments and the number of runs will default to 1
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "util.c"
-#include "avl.c"
-#include "rb.c"
+#include "./lib/util.c"
+#include "./lib/avl.c"
+#include "./lib/rb.c"
 
 // Individual implementations
-#include "1darray.c"
-#include "bst.c"
-#include "2dbst.c"
-#include "2dsll.c"
-#include "3darray.c"
-#include "avl_base.c"
-#include "hashtable.c"
-#include "rb_base.c"
+#include "./implementations/1darray.c"
+#include "./implementations/bst.c"
+#include "./implementations/2dbst.c"
+#include "./implementations/2dsll.c"
+#include "./implementations/3darray.c"
+#include "./implementations/avl_base.c"
+#include "./implementations/hashtable.c"
+#include "./implementations/rb_base.c"
 
 int main(int argc, char **argv)
 {

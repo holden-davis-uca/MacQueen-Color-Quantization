@@ -8,27 +8,21 @@ LDFLAGS = -O3
 tester:  
 	$(CC) -DMEM_USAGE -O3 -o tester tester.c -I. 
 1darray: 
-	$(CC) -DMEM_USAGE -DALONE -O3 -o 1darray 1darray.c -I.
+	$(CC) -DMEM_USAGE -DALONE -O3 -o 1darray ./implementations/1darray.c -I.
 2dbst: 
-	$(CC) -DMEM_USAGE -DALONE -O3 -o 2dbst 2dbst.c -I.
+	$(CC) -DMEM_USAGE -DALONE -O3 -o 2dbst ./implementations/2dbst.c -I.
 2dsll: 
-	$(CC) -DMEM_USAGE -DALONE -O3 -o 2dsll 2dsll.c -I.
+	$(CC) -DMEM_USAGE -DALONE -O3 -o 2dsll ./implementations/2dsll.c -I.
 3darray: 
-	$(CC) -DMEM_USAGE -DALONE -O3 -o 3darray 3darray.c -I.
+	$(CC) -DMEM_USAGE -DALONE -O3 -o 3darray ./implementations/3darray.c -I.
 avl_base:
-	$(CC) -DMEM_USAGE -DALONE -O3 -o avl_base avl_base.c -I.
+	$(CC) -DMEM_USAGE -DALONE -O3 -o avl_base ./implementations/avl_base.c -I.
 rb_base:
-	$(CC) -DMEM_USAGE -DALONE -O3 -o rb_base rb_base.c -I.
-avl_pp:
-	$(CC) -DMEM_USAGE -DALONE -O3 -o avl_pp avl_pp.c -I.
-rb_pp: 
-	$(CC) -DMEM_USAGE -DALONE -O3 -o rb_pp rb_pp.c -I.
+	$(CC) -DMEM_USAGE -DALONE -O3 -o rb_base ./implementations/rb_base.c -I.
 bst: bst
-	$(CC) -DMEM_USAGE -DALONE -O3 -o bst bst.c -I.
+	$(CC) -DMEM_USAGE -DALONE -O3 -o bst ./implementations/bst.c -I.
 hashtable:
-	$(CC) -DMEM_USAGE -DALONE -O3 -o hashtable hashtable.c -I.
-hashtablebig: 
-	$(CC) -DMEM_USAGE -DALONE -O3 -o hashtablebig hashtablebig.c -I.
+	$(CC) -DMEM_USAGE -DALONE -O3 -o hashtable ./implementations/hashtable.c -I.
 .PHONY: clean
 clean:
-	rm -f tester 1darray 2dbst 1dsll 3darray avl_base rb_base avl_pp rb_pp hashtable hashtablebig
+	rm -f tester 1darray bst 2dbst 1dsll 3darray avl_base rb_base hashtable

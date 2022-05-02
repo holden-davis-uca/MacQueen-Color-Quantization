@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "rb.h"
+#include "./headers/rb.h"
 
 /* Creates and returns a new table
    with comparison function |compare| using parameter |param|

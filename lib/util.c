@@ -2,7 +2,7 @@
 The read_PPM function needed to read in the ppm images and extract relevant inforamtion (for us, colors)
 */
 
-#include "rgb_structs.h"
+#include "./headers/rgb_structs.h"
 
 typedef unsigned char uchar;
 typedef unsigned long ulong;

@@ -14,6 +14,11 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 # Current codebase:
 ## Folders:
 - **.vscode**: My personal VS Code settings (irrelevant to research).
+- **headers**: C header files required for various implementations.
+    - **avl.h**: LibAVL header file (required for AVL)
+    - **rb.h**: LibAVL header file (required for RB)
+    - **rb_structs.h**: A header I wrote to contain the various structures used by different implementations to store color data.
+    - **test.h**: LibAVL header (required for both AVL and RB)
 - **images**: A folder containing various .ppm images to test on.
     - 1931.ppm
     - bags.ppm
@@ -32,35 +37,28 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
     - pencils.ppm
     - pigments.ppm
     - wood.ppm
-## Implementations:
-- **1darray.c**: Flattened 1-D array implementation of a color histogram.
-- **2dbst.c**: 2-D array with Binary Search Tree element implementation of a color histogram.
-- **2dsll.c**: 2-D array with Singly-Linked List element implementation of a color histogram.
-- **3darray.c**: 3-D array implementation of a color histogram.
-- **avl_base.c**: LibAVL AVL tree implementation of a color histogram.
-- **rb_base.c**: LibAVL Red Black tree implementation of a color histogram.
-- **avl_pp.c**: LibAVL AVL tree implementation of a color histogram with parent pointers.
-- **rb_pp.c**: LibAVL Red Black tree implementation of a color histogram with parent pointers.
-- **bst.c**: Binary Search Tree implementation of a color histogram.
-- **hashtable.c**: Hash Table implementation of a color histogram.
-- **hashtablebig.c**: Hash Table (with size of 65537) implementation of a color histogram.
+- **implementations**: All of the individual color histogram data structure implementations.
+    - **1darray.c**: Flattened 1-D array implementation of a color histogram.
+    - **2dbst.c**: 2-D array with Binary Search Tree element implementation of a color histogram.
+    - **2dsll.c**: 2-D array with Singly-Linked List element implementation of a color histogram.
+    - **3darray.c**: 3-D array implementation of a color histogram.
+    - **avl_base.c**: LibAVL AVL tree implementation of a color histogram.
+    - **rb_base.c**: LibAVL Red Black tree implementation of a color histogram.
+    - **bst.c**: Binary Search Tree implementation of a color histogram.
+    - **hashtable.c**: Hash Table implementation of a color histogram.
+- **lib**: Various C libraries required for different implementations.
+    - **avl.c**: LibAVL library (required for AVL)
+    - **rb.c**: LibAVL library (required for RB)
+    - **SKELETON.c**: Skeleton file I wrote to quickly and easily build future implementations
+    - **test.c**: LibAVL library (required for both AVL and RB)
+    - **util.c**: A library containing various functions and definitions that are shared between implementations
 ## Other:
-- **avl.c**: LibAVL testing library.
-- **avl.h**: LibAVL testing library.
-- **rb.c**: LibAVL testing library.
-- **rb.h**: LibAVL testing library.
-- **pavl.c**: LibAVL testing library.
-- **pavl.h**: LibAVL testing library.
-- **prb.c**: LibAVL testing library.
-- **prb.h**: LibAVL testing library.
+- **Makefile**: GNU Make instructions to compile every implementation individually or together (by using the tester) with gcc
+- **README.md**: This!
 - **research.code-workspace**: My personal VS Code workspace file (irrelevant to research).
-- **rgb_structs.h**: Defines RGB structures for image analysis.
-- **SKELETON.c**: A simple, empty, easily-filled framework for adding future implementations.
-- **test.c**: LibAVL testing library.
-- **test.h**: LibAVL testing library.
-- **util.c**: Utility functions (such as image input).
-- **mkm.c**: The original work from the above repository (used for image input/output functions).
-- **tester.c**: a file combining all previous methods (used for testing timing and comparing methods against each other).
+- **tester.c**: A singular testing suite file that encompasses all implementations. 
+    - Can be run with a debug switch for verbose console ouput and a run number switch to average a larger number of consecutive runs. 
+    - Runs all implementations on all images and generates a file called **data.txt** containing numerical results for comparison, including time to add colors (denoted ADD), time to count colors (denoted CNT), number of colors (denoted CLR), and memory usage in bytes per unique color (denoted MEM).
 
 # Notes:
 
