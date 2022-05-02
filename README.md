@@ -52,7 +52,7 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
     - **SKELETON.c**: Skeleton file I wrote to quickly and easily build future implementations
     - **test.c**: LibAVL library (required for both AVL and RB)
     - **util.c**: A library containing various functions and definitions that are shared between implementations
-## Other:
+## Files:
 - **Makefile**: GNU Make instructions to compile every implementation individually or together (by using the tester) with gcc
 - **README.md**: This!
 - **research.code-workspace**: My personal VS Code workspace file (irrelevant to research).
