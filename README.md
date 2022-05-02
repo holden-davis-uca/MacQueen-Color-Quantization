@@ -7,7 +7,6 @@ Research on memory and time requirements of data structures used for color histo
 Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022.
 
 # Todo:
-- Fix HTB counting method
 - Re-evaluate BST memory usage
 
 # Current codebase:
