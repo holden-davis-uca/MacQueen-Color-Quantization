@@ -11,8 +11,6 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 - Fix 2-D SLL + 2-D BST counting method
 - Initialize num_cols and total_mem to 0
 - Re-evaluate BST memory usage
-- Remove 1D/3D array memory counts
-- Change memory column to byte/color ratio
 
 # Current codebase:
 ## Folders:
@@ -67,7 +65,9 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 
 # Notes:
 
-- By default, all files and the implementation also collect information on memory used in addition to time (individual files output the number of bytes and tester adds an additional column to the output file for each structure's memory usage) - this can be turned off by removing the -DMEM_USAGE switch in the Makefile for the relevant implementation.
+- By default, all files and the implementation also collect information on memory used in addition to time (individual files output the number of bytes per unique color and tester adds an additional column to the output file for each structure's memory usage) - this can be turned off by removing the -DMEM_USAGE switch in the Makefile for the relevant implementation.
+
+- The 1D and 3D array implementations do not report memory in the output file as their bytes per color ratio is the same given that they allocate the same memory regardless of image size.
 
 - All implementations print a short message to the console indicating image, time performance and counted colors.
 

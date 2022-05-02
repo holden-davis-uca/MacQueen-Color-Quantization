@@ -75,7 +75,7 @@ int main(int argc, char **argv)
     fclose(data);
     #else
         fprintf(data,
-            "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s",
+            "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s",
             "IMAGE",
             "ADD (RB)", "CNT (RB)", "CLR (RB)", "MEM (RB)",
             "ADD (AVL)", "CNT (AVL)", "CLR (AVL)", "MEM (AVL)",
@@ -83,8 +83,8 @@ int main(int argc, char **argv)
             "ADD (2D SLL)", "CNT (2D SLL)", "CLR (2D SLL)", "MEM (2D SLL)",
             "ADD (2D BST)", "CNT(2D BST)", "CLR (2D BST)", "MEM (2D BST)",
             "ADD (BST)", "CNT(BST)", "CLR (BST)", "MEM (BST)",
-            "ADD (3D)", "CNT (3D)", "CLR (3D)", "MEM (3D)",
-            "ADD (1D)", "CNT (1D)", "CLR (1D)" , "MEM (1D)");
+            "ADD (3D)", "CNT (3D)", "CLR (3D)",
+            "ADD (1D)", "CNT (1D)", "CLR (1D)");
     fclose(data);
     #endif
     const char *pictures[16];
@@ -278,16 +278,16 @@ int main(int argc, char **argv)
         #else
         fprintf(data, "\n");
         fprintf(data,
-                "%-25s%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu",
+                "%-25s%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25lu%-25g%-25g%-25d%-25g%-25g%-25d",
                 in_file_name,
-                averageaddtimerb, round(averageCNTtimerb), num_cols_rb, total_mem_rb,
-                averageaddtimeavl, round(averageCNTtimeavl), num_cols_avl, total_mem_avl,
-                averageaddtimeht, round(averageCNTtimeht), num_cols_ht, total_mem_ht,
-                averageaddtime2dsll, averageCNTtime2dsll, num_cols_2dsll, total_mem_2dsll,
-                averageaddtime2dbst, averageCNTtime2dbst, num_cols_2dbst, total_mem_2dbst,
-                averageaddtimebst, averageCNTtimebst, num_cols_bst, total_mem_bst,
-                averageaddtime1d, averageCNTtime1d, num_cols_1d, total_mem_1d,
-                averageaddtime3d, averageCNTtime3d, num_cols_3d, total_mem_3d);
+                averageaddtimerb, round(averageCNTtimerb), num_cols_rb, total_mem_rb / num_cols_rb,
+                averageaddtimeavl, round(averageCNTtimeavl), num_cols_avl, total_mem_avl / num_cols_avl,
+                averageaddtimeht, round(averageCNTtimeht), num_cols_ht, total_mem_ht / num_cols_ht,
+                averageaddtime2dsll, averageCNTtime2dsll, num_cols_2dsll, total_mem_2dsll / num_cols_2dsll,
+                averageaddtime2dbst, averageCNTtime2dbst, num_cols_2dbst, total_mem_2dbst / num_cols_2dbst,
+                averageaddtimebst, averageCNTtimebst, num_cols_bst, total_mem_bst / num_cols_bst,
+                averageaddtime1d, averageCNTtime1d, num_cols_1d,
+                averageaddtime3d, averageCNTtime3d, num_cols_3d);
         fclose(data);
         #endif
     }
