@@ -7,12 +7,10 @@ Research on memory and time requirements of data structures used for color histo
 Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022.
 
 # Todo:
-- Remove AVL PP and RB PP
 - Fix HTB counting method
 - Fix 2-D SLL + 2-D BST counting method
 - Initialize num_cols and total_mem to 0
 - Re-evaluate BST memory usage
-- Remove HT
 - Remove 1D/3D array memory counts
 - Change memory column to byte/color ratio
 

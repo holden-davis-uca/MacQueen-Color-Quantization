@@ -10,19 +10,12 @@ typedef unsigned long ulong;
 //Maximum value for an r, g, or b value
 int const MAX_VAL = 256;
 
-#define HASH_SIZE 20023
+#define HASH_SIZE 65537
 
 #define HASH(R, G, B) ((((long)(R)*33023 +  \
                          (long)(G)*30013 +  \
                          (long)(B)*27011)) %       \
                        HASH_SIZE)
-
-#define HASH_SIZE_BIG 65537
-
-#define HASH_BIG(R, G, B) ((((long)(R)*33023 +  \
-                         (long)(G)*30013 +  \
-                         (long)(B)*27011)) %       \
-                       HASH_SIZE_BIG)
 
 /* Comparison function for pointers to |int|s.
    |param| is not used. */
