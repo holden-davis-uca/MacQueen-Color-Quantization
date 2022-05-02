@@ -17,20 +17,6 @@ It can be run with just the image argument and the number of runs will default t
 #include "./lib/util.c"
 #endif
 
-//Define all implementation specific things here
-int count_colors_2dbst(struct BST_Node bst2darray[MAX_VAL][MAX_VAL])
-{
-    int num_cols_2dbst = 0;
-    for (int i = 0; i < MAX_VAL; i++)
-    {
-        for (int j = 0; j < MAX_VAL; j++)
-        {
-            num_cols_2dbst += traverse_bst(&bst2darray[i][j]);
-        }
-    }
-    return num_cols_2dbst;
-}
-
 results do2dbst(RGB_Image *in_img)
 {
     clock_t start, stop;
@@ -62,11 +48,7 @@ int main(int argc, char **argv)
     int num_runs = 1;
     char in_file_name[256];
     RGB_Image *in_img;
-    if (argc == 1)
-    {
-        print_usage(argv[0]);
-    }
-    for (int i = 1; i < argc; i++)
+        for (int i = 1; i < argc; i++)
     {
         if (!strcmp(argv[i], "-i"))
         {
@@ -76,7 +58,7 @@ int main(int argc, char **argv)
         {
             num_runs = atoi(argv[++i]);
         }
-        else
+        else if (strcmp(argv[i], "-i") && strcmp(argv[i], "-r"))
         {
             print_usage(argv[0]);
         }

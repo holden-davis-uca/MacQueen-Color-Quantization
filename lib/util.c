@@ -33,6 +33,38 @@ compare_ints (const void *pa, const void *pb, void *param)
     return 0;
 }
 
+//Define all implementation specific things here
+// Maximum value for an any (r * 65536 + g * 256 + b) value
+#define MAX_VAL_PACKED 16777216
+// Iterate through a one dimensional array representing the color histogram.
+// If at least a single color exists (> 0), than increment num_colors counter and return at end.
+int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
+{
+    int num_colors = 0;
+    for (int i = 0; i < MAX_VAL_PACKED; i++)
+    {
+        if (histogram[i] != 0)
+        {
+            num_colors++;
+        }
+    }
+    return num_colors;
+}
+
+//Define all implementation specific things here
+int count_colors_2dbst(struct BST_Node bst2darray[MAX_VAL][MAX_VAL])
+{
+    int num_cols_2dbst = 0;
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+        for (int j = 0; j < MAX_VAL; j++)
+        {
+            num_cols_2dbst += traverse_bst(&bst2darray[i][j]);
+        }
+    }
+    return num_cols_2dbst;
+}
+
 RGB_Image * read_PPM(const char *filename)
 {
   uchar byte;
@@ -179,6 +211,27 @@ struct BST_Node *insert_bst_node(struct BST_Node *node, const int new_key)
     return node;
 }
 
+//Define all implementation specific things here
+int count_colors_3d_histo(int histogram[MAX_VAL][MAX_VAL][MAX_VAL])
+{
+    int num_colors = 0;
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+        for (int j = 0; j < MAX_VAL; j++)
+        {
+            for (int k = 0; k < MAX_VAL; k++)
+            {
+                if (histogram[i][j][k] != 0)
+                {
+                    num_colors++;
+                }
+            }
+        }
+    }
+    return num_colors;
+}
+
+
 // TODO: Fix counting logic
 int traverse_bst(const struct BST_Node *root)
 {
@@ -191,4 +244,58 @@ int traverse_bst(const struct BST_Node *root)
         return traverse_bst(root->right) + traverse_bst(root->left);
     }
     return 1 + traverse_bst(root->right) + traverse_bst(root->left);
+}
+
+//Define all implementation specific things here
+struct SLL_Node *alloc_sll_node(const int new_key)
+{
+    struct SLL_Node *here = (struct SLL_Node *)malloc(sizeof(struct SLL_Node));
+    here->key = new_key;
+    here->count = 1;
+    here->next = NULL;
+    return here;
+}
+
+struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
+{
+    if (node == NULL)
+    {
+        return alloc_sll_node(new_key);
+    }
+    if (new_key == node->key)
+    {
+        node->count++;
+    }
+    else
+    {
+        node->next = insert_sll_node(node->next, new_key);
+    }
+    return node;
+}
+
+int traverse_2dsll(const struct SLL_Node *head)
+{
+    if (head == NULL)
+    {
+        return 0;
+    }
+    else if (head->count == 0)
+    {
+        return traverse_2dsll(head->next);
+    }
+
+    return 1 + traverse_2dsll(head->next);
+}
+
+int count_colors_2dsll(struct SLL_Node sll2darray[MAX_VAL][MAX_VAL])
+{
+    int num_cols_2dsll = 0;
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+        for (int j = 0; j < MAX_VAL; j++)
+        {
+            num_cols_2dsll += traverse_2dsll(&sll2darray[i][j]);
+        }
+    }
+    return num_cols_2dsll;
 }

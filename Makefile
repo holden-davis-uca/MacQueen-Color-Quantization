@@ -19,7 +19,7 @@ avl_base:
 	$(CC) -DMEM_USAGE -DALONE -O3 -o avl_base ./implementations/avl_base.c -I.
 rb_base:
 	$(CC) -DMEM_USAGE -DALONE -O3 -o rb_base ./implementations/rb_base.c -I.
-bst: bst
+bst:
 	$(CC) -DMEM_USAGE -DALONE -O3 -o bst ./implementations/bst.c -I.
 hashtable:
 	$(CC) -DMEM_USAGE -DALONE -O3 -o hashtable ./implementations/hashtable.c -I.

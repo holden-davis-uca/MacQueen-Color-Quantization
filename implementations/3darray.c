@@ -17,26 +17,6 @@ It can be run with just the image argument and the number of runs will default t
 #include "./lib/util.c"
 #endif
 
-//Define all implementation specific things here
-int count_colors_3d_histo(int histogram[MAX_VAL][MAX_VAL][MAX_VAL])
-{
-    int num_colors = 0;
-    for (int i = 0; i < MAX_VAL; i++)
-    {
-        for (int j = 0; j < MAX_VAL; j++)
-        {
-            for (int k = 0; k < MAX_VAL; k++)
-            {
-                if (histogram[i][j][k] != 0)
-                {
-                    num_colors++;
-                }
-            }
-        }
-    }
-    return num_colors;
-}
-
 results do3darray(RGB_Image *in_img)
 {
     clock_t start, stop;
@@ -49,7 +29,6 @@ results do3darray(RGB_Image *in_img)
         pixel = &in_img->data[i];
         histogram[pixel->red][pixel->green][pixel->blue]++;
     }
-    //Do memory counting here
     #ifdef MEM_USAGE
     res.total_mem = sizeof(int[MAX_VAL][MAX_VAL][MAX_VAL]);
     #endif
@@ -69,10 +48,6 @@ int main(int argc, char **argv)
     int num_runs = 1;
     char in_file_name[256];
     RGB_Image *in_img;
-    if (argc == 1)
-    {
-        print_usage(argv[0]);
-    }
     for (int i = 1; i < argc; i++)
     {
         if (!strcmp(argv[i], "-i"))
@@ -83,7 +58,7 @@ int main(int argc, char **argv)
         {
             num_runs = atoi(argv[++i]);
         }
-        else
+        else if (strcmp(argv[i], "-i") && strcmp(argv[i], "-r"))
         {
             print_usage(argv[0]);
         }

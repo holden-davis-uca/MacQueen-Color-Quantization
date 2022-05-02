@@ -17,8 +17,6 @@ It can be run with just the image argument and the number of runs will default t
 #include "./lib/util.c"
 #endif
 
-//Define all implementation specific things here
-
 results dohashtable(RGB_Image *in_img)
 {
     clock_t start, stop;
@@ -85,7 +83,7 @@ results dohashtable(RGB_Image *in_img)
     res.counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
     //Do memory counting here
     #ifdef MEM_USAGE
-    res.total_mem = sizeof(bucket) * num_colors;
+    res.total_mem = (sizeof(struct Bucket_Entry) * num_colors) + sizeof(HASH_SIZE * sizeof(Bucket));
     #endif
     free(bucket);
     free(hash_table);
@@ -98,10 +96,6 @@ int main(int argc, char **argv)
     int num_runs = 1;
     char in_file_name[256];
     RGB_Image *in_img;
-    if (argc == 1)
-    {
-        print_usage(argv[0]);
-    }
     for (int i = 1; i < argc; i++)
     {
         if (!strcmp(argv[i], "-i"))
@@ -112,7 +106,7 @@ int main(int argc, char **argv)
         {
             num_runs = atoi(argv[++i]);
         }
-        else
+        else if (strcmp(argv[i], "-i") && strcmp(argv[i], "-r"))
         {
             print_usage(argv[0]);
         }

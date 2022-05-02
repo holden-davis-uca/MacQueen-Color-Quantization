@@ -36,10 +36,6 @@ int main(int argc, char **argv)
     int num_runs = 1;
     bool debug = false;
 
-    if (argc == 1)
-    {
-        print_usage_test(argv[0]);
-    }
     for (int i = 1; i < argc; i++)
     {
         if (!strcmp(argv[i], "-r"))
@@ -50,7 +46,7 @@ int main(int argc, char **argv)
         {
             debug = true;
         }
-        else
+        else if (strcmp(argv[i], "-r") && strcmp(argv[i], "-d"))
         {
             print_usage_test(argv[0]);
         }

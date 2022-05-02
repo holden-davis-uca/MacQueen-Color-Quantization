@@ -17,60 +17,6 @@ It can be run with just the image argument and the number of runs will default t
 #include "./lib/util.c"
 #endif
 
-//Define all implementation specific things here
-struct SLL_Node *alloc_sll_node(const int new_key)
-{
-    struct SLL_Node *here = (struct SLL_Node *)malloc(sizeof(struct SLL_Node));
-    here->key = new_key;
-    here->count = 1;
-    here->next = NULL;
-    return here;
-}
-
-struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
-{
-    if (node == NULL)
-    {
-        return alloc_sll_node(new_key);
-    }
-    if (new_key == node->key)
-    {
-        node->count++;
-    }
-    else
-    {
-        node->next = insert_sll_node(node->next, new_key);
-    }
-    return node;
-}
-
-int traverse_2dsll(const struct SLL_Node *head)
-{
-    if (head == NULL)
-    {
-        return 0;
-    }
-    else if (head->count == 0)
-    {
-        return traverse_2dsll(head->next);
-    }
-
-    return 1 + traverse_2dsll(head->next);
-}
-
-int count_colors_2dsll(struct SLL_Node sll2darray[MAX_VAL][MAX_VAL])
-{
-    int num_cols_2dsll = 0;
-    for (int i = 0; i < MAX_VAL; i++)
-    {
-        for (int j = 0; j < MAX_VAL; j++)
-        {
-            num_cols_2dsll += traverse_2dsll(&sll2darray[i][j]);
-        }
-    }
-    return num_cols_2dsll;
-}
-
 results do2dsll(RGB_Image *in_img)
 {
     clock_t start, stop;
@@ -83,7 +29,6 @@ results do2dsll(RGB_Image *in_img)
         pixel = &in_img->data[i];
         struct SLL_Node *head = insert_sll_node(&sll2darray[pixel->red][pixel->green], pixel->blue);
     }
-    //Do memory counting here
     #ifdef MEM_USAGE
     res.total_mem = sizeof(struct SLL_Node[MAX_VAL][MAX_VAL]);
     #endif
@@ -103,10 +48,6 @@ int main(int argc, char **argv)
     int num_runs = 1;
     char in_file_name[256];
     RGB_Image *in_img;
-    if (argc == 1)
-    {
-        print_usage(argv[0]);
-    }
     for (int i = 1; i < argc; i++)
     {
         if (!strcmp(argv[i], "-i"))
@@ -117,7 +58,7 @@ int main(int argc, char **argv)
         {
             num_runs = atoi(argv[++i]);
         }
-        else
+        else if (strcmp(argv[i], "-i") && strcmp(argv[i], "-r"))
         {
             print_usage(argv[0]);
         }

@@ -16,29 +16,12 @@ It can be run with just the image argument and the number of runs will default t
 #include <stdio.h>
 #include "./lib/util.c"
 #endif
-//Define all implementation specific things here
-// Maximum value for an any (r * 65536 + g * 256 + b) value
-#define MAX_VAL_PACKED 16777216
-// Iterate through a one dimensional array representing the color histogram.
-// If at least a single color exists (> 0), than increment num_colors counter and return at end.
-int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
-{
-    int num_colors = 0;
-    for (int i = 0; i < MAX_VAL_PACKED; i++)
-    {
-        if (histogram[i] != 0)
-        {
-            num_colors++;
-        }
-    }
-    return num_colors;
-}
+
 results do1darray(RGB_Image *in_img)
 {
     clock_t start, stop;
     results res;
     start = clock();
-    //Do memory counting here
     #ifdef MEM_USAGE
     res.total_mem = sizeof(int) * MAX_VAL_PACKED;
     #endif
@@ -65,10 +48,6 @@ int main(int argc, char **argv)
     int num_runs = 1;
     char in_file_name[256];
     RGB_Image *in_img;
-    if (argc == 1)
-    {
-        print_usage(argv[0]);
-    }
     for (int i = 1; i < argc; i++)
     {
         if (!strcmp(argv[i], "-i"))
@@ -79,7 +58,7 @@ int main(int argc, char **argv)
         {
             num_runs = atoi(argv[++i]);
         }
-        else
+        else if (strcmp(argv[i], "-i") && strcmp(argv[i], "-r"))
         {
             print_usage(argv[0]);
         }
