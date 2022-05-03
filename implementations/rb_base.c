@@ -43,8 +43,8 @@ results dorb_base(RGB_Image *in_img)
     res.num_cols = tree->rb_count;
     stop = clock();
     res.counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
+    rb_destroy(tree, NULL);
     free(insertions);
-    free(tree);
     return res;
 }
 

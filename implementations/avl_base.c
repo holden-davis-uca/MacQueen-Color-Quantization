@@ -43,8 +43,8 @@ results doavl_base(RGB_Image *in_img)
     res.num_cols = tree->avl_count;
     stop = clock();
     res.counttime = ((double)(stop - start)) / CLOCKS_PER_SEC;
+    avl_destroy(tree, NULL);
     free(insertions);
-    free(tree);
     return res;
 }
 #ifdef ALONE
