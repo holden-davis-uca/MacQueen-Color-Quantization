@@ -239,6 +239,9 @@ int main(int argc, char **argv)
 
         }
 
+        free(in_img->data);
+        free(in_img);
+        
         //Rounding down CNT times for implementations with O(1) (constant time) methods
         averageaddtime1d = totaladdtime1d / num_runs; 
         averageCNTtime1d = totalCNTtime1d / num_runs;

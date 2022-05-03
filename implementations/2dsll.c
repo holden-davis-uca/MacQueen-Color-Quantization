@@ -80,6 +80,8 @@ int main(int argc, char **argv)
         total_mem = res.total_mem;
         #endif
     }
+    free(in_img->data);
+    free(in_img);
     averageadd = totaladd / num_runs;
     averagecount = totalcount / num_runs;
     #ifdef MEM_USAGE
