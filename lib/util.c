@@ -19,6 +19,21 @@ Various utility functions
                          (long)(B)*27011)) %       \
                        HASH_SIZE)
 
+//Deallocate hash table
+void dealloc_ht(Hash_Table hash_table)
+{
+  for (int hash = 0; hash < HASH_SIZE; hash++)
+  {
+    for (Bucket bucket = hash_table[hash]; bucket != NULL;)
+    {
+      Bucket temp_bucket = bucket;
+      bucket = bucket->next;
+      free(temp_bucket);
+    }
+  }
+  free(hash_table);
+}
+
 /* Comparison function for pointers to |int|s.
    |param| is not used. */
 int

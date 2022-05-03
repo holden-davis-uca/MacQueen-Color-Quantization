@@ -85,8 +85,7 @@ results dohashtable(RGB_Image *in_img)
     #ifdef MEM_USAGE
     res.total_mem = (sizeof(struct Bucket_Entry) * num_colors) + sizeof(HASH_SIZE * sizeof(Bucket));
     #endif
-    free(bucket);
-    free(hash_table);
+    dealloc_ht(hash_table);
     return res;
 }
 
