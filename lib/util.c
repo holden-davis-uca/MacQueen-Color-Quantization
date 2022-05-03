@@ -1,17 +1,19 @@
 /*
-The read_PPM function needed to read in the ppm images and extract relevant inforamtion (for us, colors)
+Various utility functions
 */
 
 #include "./headers/rgb_structs.h"
 
-typedef unsigned char uchar;
-typedef unsigned long ulong;
-
 //Maximum value for an r, g, or b value
-int const MAX_VAL = 256;
+#define MAX_VAL 256
 
+// Maximum value for an any (r * 65536 + g * 256 + b) value
+#define MAX_VAL_PACKED 16777216
+
+//Hash size for hash table
 #define HASH_SIZE 65537
 
+//Hash function
 #define HASH(R, G, B) ((((long)(R)*33023 +  \
                          (long)(G)*30013 +  \
                          (long)(B)*27011)) %       \
@@ -33,9 +35,6 @@ compare_ints (const void *pa, const void *pb, void *param)
     return 0;
 }
 
-//Define all implementation specific things here
-// Maximum value for an any (r * 65536 + g * 256 + b) value
-#define MAX_VAL_PACKED 16777216
 // Iterate through a one dimensional array representing the color histogram.
 // If at least a single color exists (> 0), than increment num_colors counter and return at end.
 int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
@@ -50,7 +49,8 @@ int count_colors_1d_histo(int histogram[MAX_VAL_PACKED])
     }
     return num_colors;
 }
-// TODO: Fix counting logic
+
+//BST traversal function; counts number of elements in a BST
 int traverse_bst(const struct BST_Node *root)
 {
     if (root == NULL)
@@ -64,7 +64,117 @@ int traverse_bst(const struct BST_Node *root)
     return 1 + traverse_bst(root->right) + traverse_bst(root->left);
 }
 
-//Define all implementation specific things here
+//Allocates bst node
+struct BST_Node *alloc_bst_node(const int new_key)
+{
+    struct BST_Node *here = (struct BST_Node *)malloc(sizeof(struct BST_Node));
+    here->key = new_key;
+    here->count = 1;
+    here->left = NULL;
+    here->right = NULL;
+    return here;
+}
+
+//Inserts bst node
+struct BST_Node *insert_bst_node(struct BST_Node *node, const int new_key)
+{
+    if (node == NULL)
+    {
+        return alloc_bst_node(new_key);
+    }
+    if (new_key == node->key)
+    {
+        node->count++;
+    }
+    else if (new_key > node->key)
+    {
+        node->right = insert_bst_node(node->right, new_key);
+    }
+    else
+    {
+        node->left = insert_bst_node(node->left, new_key);
+    }
+    return node;
+}
+
+//Count colors in 3d array
+int count_colors_3d_histo(int histogram[MAX_VAL][MAX_VAL][MAX_VAL])
+{
+    int num_colors = 0;
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+        for (int j = 0; j < MAX_VAL; j++)
+        {
+            for (int k = 0; k < MAX_VAL; k++)
+            {
+                if (histogram[i][j][k] != 0)
+                {
+                    num_colors++;
+                }
+            }
+        }
+    }
+    return num_colors;
+}
+
+//Allocate SLL node
+struct SLL_Node *alloc_sll_node(const int new_key)
+{
+    struct SLL_Node *here = (struct SLL_Node *)malloc(sizeof(struct SLL_Node));
+    here->key = new_key;
+    here->count = 1;
+    here->next = NULL;
+    return here;
+}
+
+//Inserts SLL node
+struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
+{
+    if (node == NULL)
+    {
+        return alloc_sll_node(new_key);
+    }
+    if (new_key == node->key)
+    {
+        node->count++;
+    }
+    else
+    {
+        node->next = insert_sll_node(node->next, new_key);
+    }
+    return node;
+}
+
+//Traverse 2dsll
+int traverse_2dsll(const struct SLL_Node *head)
+{
+    if (head == NULL)
+    {
+        return 0;
+    }
+    else if (head->count == 0)
+    {
+        return traverse_2dsll(head->next);
+    }
+
+    return 1 + traverse_2dsll(head->next);
+}
+
+//Count colors in 2dsll
+int count_colors_2dsll(struct SLL_Node sll2darray[MAX_VAL][MAX_VAL])
+{
+    int num_cols_2dsll = 0;
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+        for (int j = 0; j < MAX_VAL; j++)
+        {
+            num_cols_2dsll += traverse_2dsll(&sll2darray[i][j]);
+        }
+    }
+    return num_cols_2dsll;
+}
+
+//Count colors in 2dbst
 int count_colors_2dbst(struct BST_Node bst2darray[MAX_VAL][MAX_VAL])
 {
     int num_cols_2dbst = 0;
@@ -78,6 +188,7 @@ int count_colors_2dbst(struct BST_Node bst2darray[MAX_VAL][MAX_VAL])
     return num_cols_2dbst;
 }
 
+//Read in PPM image and return as RGB_Image struct
 RGB_Image * read_PPM(const char *filename)
 {
   uchar byte;
@@ -177,6 +288,7 @@ RGB_Image * read_PPM(const char *filename)
   return img;
 }
 
+//Usage info for standalone implementations
 static void print_usage(char *prog_name)
 {
   fprintf(stderr, "Color Histogram Testing Program\n\n");
@@ -185,115 +297,11 @@ static void print_usage(char *prog_name)
   exit(EXIT_FAILURE);
 }
 
+//Usage info for tester
 static void print_usage_test(char *prog_name)
 {
   fprintf(stderr, "Color Histogram Testing Program - Test Suite\n\n");
   fprintf(stderr, "Creates color histograms from input .ppm images. Prints a informative segment to the console describing time usage and image color count\n\n");
   fprintf(stderr, "Usage Instructions: %s required: N/A, optionally: -r <number of runs>, -d for debug output in console\n\n", prog_name);
   exit(EXIT_FAILURE);
-}
-
-struct BST_Node *alloc_bst_node(const int new_key)
-{
-    struct BST_Node *here = (struct BST_Node *)malloc(sizeof(struct BST_Node));
-    here->key = new_key;
-    here->count = 1;
-    here->left = NULL;
-    here->right = NULL;
-    return here;
-}
-
-struct BST_Node *insert_bst_node(struct BST_Node *node, const int new_key)
-{
-    if (node == NULL)
-    {
-        return alloc_bst_node(new_key);
-    }
-    if (new_key == node->key)
-    {
-        node->count++;
-    }
-    else if (new_key > node->key)
-    {
-        node->right = insert_bst_node(node->right, new_key);
-    }
-    else
-    {
-        node->left = insert_bst_node(node->left, new_key);
-    }
-    return node;
-}
-
-//Define all implementation specific things here
-int count_colors_3d_histo(int histogram[MAX_VAL][MAX_VAL][MAX_VAL])
-{
-    int num_colors = 0;
-    for (int i = 0; i < MAX_VAL; i++)
-    {
-        for (int j = 0; j < MAX_VAL; j++)
-        {
-            for (int k = 0; k < MAX_VAL; k++)
-            {
-                if (histogram[i][j][k] != 0)
-                {
-                    num_colors++;
-                }
-            }
-        }
-    }
-    return num_colors;
-}
-
-//Define all implementation specific things here
-struct SLL_Node *alloc_sll_node(const int new_key)
-{
-    struct SLL_Node *here = (struct SLL_Node *)malloc(sizeof(struct SLL_Node));
-    here->key = new_key;
-    here->count = 1;
-    here->next = NULL;
-    return here;
-}
-
-struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
-{
-    if (node == NULL)
-    {
-        return alloc_sll_node(new_key);
-    }
-    if (new_key == node->key)
-    {
-        node->count++;
-    }
-    else
-    {
-        node->next = insert_sll_node(node->next, new_key);
-    }
-    return node;
-}
-
-int traverse_2dsll(const struct SLL_Node *head)
-{
-    if (head == NULL)
-    {
-        return 0;
-    }
-    else if (head->count == 0)
-    {
-        return traverse_2dsll(head->next);
-    }
-
-    return 1 + traverse_2dsll(head->next);
-}
-
-int count_colors_2dsll(struct SLL_Node sll2darray[MAX_VAL][MAX_VAL])
-{
-    int num_cols_2dsll = 0;
-    for (int i = 0; i < MAX_VAL; i++)
-    {
-        for (int j = 0; j < MAX_VAL; j++)
-        {
-            num_cols_2dsll += traverse_2dsll(&sll2darray[i][j]);
-        }
-    }
-    return num_cols_2dsll;
 }
