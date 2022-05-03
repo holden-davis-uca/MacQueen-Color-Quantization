@@ -41,7 +41,7 @@ results dobst(RGB_Image *in_img)
     #ifdef MEM_USAGE
     res.total_mem = sizeof(struct BST_Node) * res.num_cols;
     #endif
-    free(root);
+    dealloc_bst(root);
     return res;
 }
 

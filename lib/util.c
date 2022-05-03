@@ -64,6 +64,18 @@ int traverse_bst(const struct BST_Node *root)
     return 1 + traverse_bst(root->right) + traverse_bst(root->left);
 }
 
+//Deallocate bst from the root node
+void dealloc_bst(struct BST_Node* root)
+{
+  if (root != NULL)
+  {
+    dealloc_bst(root->right);
+    dealloc_bst(root->left);
+    free(root);
+  }
+  else return;
+}
+
 //Allocates bst node
 struct BST_Node *alloc_bst_node(const int new_key)
 {
