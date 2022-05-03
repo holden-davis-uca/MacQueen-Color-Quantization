@@ -8,7 +8,9 @@ Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022
 
 # Current codebase:
 ## Folders:
-- **.vscode**: My personal VS Code settings (irrelevant to research).
+- **.vscode**: Contains settings for VS Code (the IDE used).
+    - **settings.json**: My personal workspace settings (irrelevant to research).
+    - **tasks.json**: Defines tasks that can be executed via Terminal > Run Tasks in VS Code. Currently includes 2 individual implementation builds and 2 tester builds for Linux and Windows (one for each platform).
 - **headers**: C header files required for various implementations.
     - **avl.h**: LibAVL header file (required for AVL)
     - **rb.h**: LibAVL header file (required for RB)
