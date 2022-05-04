@@ -12,7 +12,7 @@ TESTERFLAGS = -DMEM_USAGE -O3 -I. -lm -o
 #Leave cleaning directive empty, if windows use del, if linux use rm
 NUKE = 
 ifeq ($(OS),Windows_NT)
-	NUKE += del *.exe *.txt
+	NUKE += del *.exe
 else
 	NUKE += rm -f 1darray 2dbst 2dsll bst 3darray hashtable avl_base rb_base *.txt
 endif
