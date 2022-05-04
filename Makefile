@@ -14,7 +14,7 @@ NUKE =
 ifeq ($(OS),Windows_NT)
 	NUKE += del *.exe
 else
-	NUKE += rm -f 1darray 2dbst 2dsll bst 3darray hashtable avl_base rb_base *.txt
+	NUKE += rm -f 1darray 2dbst 2dsll bst 3darray hashtable avl_base rb_base
 endif
 
 #By default, this makefile's made command compiles and executes all implementations then the tester in sequence at 1 run each then cleans everything
