@@ -145,6 +145,9 @@ int main(int argc, char **argv)
         total_mem_rb;
     #endif
 
+    if (!debug)
+        printf("Executing tester...\n");
+
     // PER IMAGE:
     for (int y = 0; y < 16; y++)
     {

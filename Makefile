@@ -1,28 +1,70 @@
-#To use gcc instead of g++
+#gcc as the preferred compiler
 CC = gcc
-#CFLAGS copied directly from libavl with -g replaced by -O3
-CFLAGS = -O3 -W -Wall -ansi -pedantic
-#LDFLAGS copied directly from libavl with -g replaced by -O3
-LDFLAGS = -O3
-#All implementations: O3 for optimization, o for output .exe with same name as file
-tester:  
-	$(CC) -DMEM_USAGE -O3 -o tester tester.c -I. -lm
+#-DMEM_USAGE for memory usage information
+#-DALONE to compile each implementation as a standalone program
+#-O3 for compiler optimization
+#-I for the include directory
+#-lm for linker accuracy
+#-o for the output file name
+COREFLAGS = -DMEM_USAGE -DALONE -O3 -I. -lm -o
+#Same as above but without -DALONE in order to run all implementations inside of tester
+TESTERFLAGS = -DMEM_USAGE -O3 -I. -lm -o
+#Leave cleaning directive empty, if windows use del, if linux use rm
+NUKE = 
+ifeq ($(OS),Windows_NT)
+	NUKE += del *.exe *.txt
+else
+	NUKE += rm -f 1darray 2dbst 2dsll bst 3darray hashtable avl_base rb_base *.txt
+endif
+
+#By default, this makefile's made command compiles and executes all implementations then the tester in sequence at 1 run each then cleans everything
+all:
+	make 1darray
+	./1darray -i ./images/1931.ppm
+	make 2dbst
+	./2dbst -i ./images/1931.ppm
+	make 2dsll
+	./2dsll -i ./images/1931.ppm
+	make 3darray
+	./3darray -i ./images/1931.ppm
+	make avl_base
+	./avl_base -i ./images/1931.ppm
+	make rb_base
+	./rb_base -i ./images/1931.ppm
+	make bst
+	./bst -i ./images/1931.ppm
+	make hashtable
+	./hashtable -i ./images/1931.ppm
+	make tester
+	./tester -d
+	make clean
+tester:
+	make clean
+	$(CC) $(TESTERFLAGS) tester tester.c
 1darray: 
-	$(CC) -DMEM_USAGE -DALONE -O3 -o 1darray ./implementations/1darray.c -I. -lm
+	make clean
+	$(CC) $(COREFLAGS) 1darray ./implementations/1darray.c
 2dbst: 
-	$(CC) -DMEM_USAGE -DALONE -O3 -o 2dbst ./implementations/2dbst.c -I. -lm
+	make clean
+	$(CC) $(COREFLAGS) 2dbst ./implementations/2dbst.c
 2dsll: 
-	$(CC) -DMEM_USAGE -DALONE -O3 -o 2dsll ./implementations/2dsll.c -I. -lm
+	make clean
+	$(CC) $(COREFLAGS) 2dsll ./implementations/2dsll.c
 3darray: 
-	$(CC) -DMEM_USAGE -DALONE -O3 -o 3darray ./implementations/3darray.c -I. -lm
+	make clean
+	$(CC) $(COREFLAGS) 3darray ./implementations/3darray.c
 avl_base:
-	$(CC) -DMEM_USAGE -DALONE -O3 -o avl_base ./implementations/avl_base.c -I. -lm
+	make clean
+	$(CC) $(COREFLAGS) avl_base ./implementations/avl_base.c
 rb_base:
-	$(CC) -DMEM_USAGE -DALONE -O3 -o rb_base ./implementations/rb_base.c -I. -lm
+	make clean
+	$(CC) $(COREFLAGS) rb_base ./implementations/rb_base.c
 bst:
-	$(CC) -DMEM_USAGE -DALONE -O3 -o bst ./implementations/bst.c -I. -lm
+	make clean
+	$(CC) $(COREFLAGS) bst ./implementations/bst.c
 hashtable:
-	$(CC) -DMEM_USAGE -DALONE -O3 -o hashtable ./implementations/hashtable.c -I. -lm
+	make clean
+	$(CC) $(COREFLAGS) hashtable ./implementations/hashtable.c
 .PHONY: clean
 clean:
-	rm -f tester 1darray bst 2dbst 1dsll 3darray avl_base rb_base hashtable
+	$(NUKE)

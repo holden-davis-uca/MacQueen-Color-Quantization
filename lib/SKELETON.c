@@ -84,11 +84,14 @@ int main(int argc, char **argv)
     }
     averageadd = totaladd / num_runs;
     averagecount = totalcount / num_runs;
+    printf("\n<!---%IMPLEMENTATION%---!>\n\n");
     #ifdef MEM_USAGE
-    printf("%d bytes of memory used\n", total_mem);
+    printf("Bytes of memory used: %d\n", total_mem);
+    printf("Bytes per color: %lu\n", (total_mem / num_cols));
     #endif
     printf("Average time to add colors over %d runs: %f", num_runs ,averageadd);
     printf("\nAverage time to count colors over %d runs: %f", num_runs, averagecount);
     printf("\nNumber of unique colors: %d",num_cols);
+    printf("\n\n");
     return 0;
 }
