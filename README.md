@@ -7,7 +7,7 @@ Research on memory and time requirements of data structures used for color histo
 Holden Davis under Dr. E. Celebi of UCA Computer Science Department, Spring 2022.
 
 # TODO:
-## Valgrind currently reports no errors in: 1darray, 3darray, avl_base and rb_base: fix remaining implementations
+## Fix memory leaks pertaining to deallocation indicated by Valgrind in: 2dbst, 2dsll
 
 # Current codebase:
 ## Folders:
