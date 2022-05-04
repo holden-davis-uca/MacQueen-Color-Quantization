@@ -6,15 +6,15 @@ CC = gcc
 #-I for the include directory
 #-lm for linker accuracy
 #-o for the output file name
-COREFLAGS = -DMEM_USAGE -DALONE -O3 -I. -lm -o
+COREFLAGS = -DMEM_USAGE -DALONE -O3 -I. -o
 #Same as above but without -DALONE in order to run all implementations inside of tester
-TESTERFLAGS = -DMEM_USAGE -O3 -I. -lm -o
+TESTERFLAGS = -DMEM_USAGE -O3 -I. -o
 #Leave cleaning directive empty, if windows use del, if linux use rm
 NUKE = 
 ifeq ($(OS),Windows_NT)
 	NUKE += del *.exe
 else
-	NUKE += rm -f 1darray 2dbst 2dsll bst 3darray hashtable avl_base rb_base
+	NUKE += rm -f 1darray 2dbst 2dsll bst 3darray hashtable avl_base rb_base tester
 endif
 
 #By default, this makefile's made command compiles and executes all implementations then the tester in sequence at 1 run each then cleans everything
@@ -40,7 +40,7 @@ all:
 	make clean
 tester:
 	make clean
-	$(CC) $(TESTERFLAGS) tester tester.c
+	$(CC) $(TESTERFLAGS) tester tester.c -lm
 1darray: 
 	make clean
 	$(CC) $(COREFLAGS) 1darray ./implementations/1darray.c
