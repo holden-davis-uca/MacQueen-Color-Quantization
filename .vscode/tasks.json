@@ -2,33 +2,17 @@
     "version": "2.0.0",
     "tasks": [
       {
-        "label": "Windows Individual Build",
+        "label": "Individual Build",
         "type": "shell",
-        "command": "make ${fileBasenameNoExtension}; ./${fileBasenameNoExtension} -i ./images/1931.ppm; rm ${fileBasenameNoExtension}.exe;",
+        "command": "make ${fileBasenameNoExtension}; ./${fileBasenameNoExtension} -i ./images/1931.ppm; make clean",
         "problemMatcher": [
           "$gcc"
         ]
       },
       {
-        "label": "Linux Individual Build",
+        "label": "Tester Build (Debug)",
         "type": "shell",
-        "command": "make ${fileBasenameNoExtension}; ./${fileBasenameNoExtension} -i ./images/1931.ppm; rm ${fileBasenameNoExtension};",
-        "problemMatcher": [
-          "$gcc"
-        ]
-      },
-      {
-        "label": "Windows Tester Build (Debug)",
-        "type": "shell",
-        "command": "make tester; ./tester -d -r 1; rm tester.exe;",
-        "problemMatcher": [
-          "$gcc"
-        ]
-      },
-      {
-        "label": "Linux Tester Build (Debug)",
-        "type": "shell",
-        "command": "make tester; ./tester -d -r 1; rm tester;",
+        "command": "make tester; ./tester -d -r 1; make clean",
         "problemMatcher": [
           "$gcc"
         ]
