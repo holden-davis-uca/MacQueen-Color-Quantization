@@ -154,6 +154,18 @@ struct SLL_Node *alloc_sll_node(const int new_key)
     return here;
 }
 
+void dealloc_sll(struct SLL_Node *head)
+{
+  if (head != NULL)
+  {
+    struct SLL_Node *temp = head;
+    head = head->next;
+    free(temp);
+    dealloc_sll(head);
+  }
+  else return;
+}
+
 //Inserts SLL node
 struct SLL_Node *insert_sll_node(struct SLL_Node *node, const int new_key)
 {
@@ -188,28 +200,28 @@ int traverse_2dsll(const struct SLL_Node *head)
 }
 
 //Count colors in 2dsll
-int count_colors_2dsll(struct SLL_Node sll2darray[MAX_VAL][MAX_VAL])
+int count_colors_2dsll(struct SLL_Node *sll2darray[MAX_VAL][MAX_VAL])
 {
     int num_cols_2dsll = 0;
     for (int i = 0; i < MAX_VAL; i++)
     {
         for (int j = 0; j < MAX_VAL; j++)
         {
-            num_cols_2dsll += traverse_2dsll(&sll2darray[i][j]);
+            num_cols_2dsll += traverse_2dsll(sll2darray[i][j]);
         }
     }
     return num_cols_2dsll;
 }
 
 //Count colors in 2dbst
-int count_colors_2dbst(struct BST_Node bst2darray[MAX_VAL][MAX_VAL])
+int count_colors_2dbst(struct BST_Node *bst2darray[MAX_VAL][MAX_VAL])
 {
     int num_cols_2dbst = 0;
     for (int i = 0; i < MAX_VAL; i++)
     {
         for (int j = 0; j < MAX_VAL; j++)
         {
-            num_cols_2dbst += traverse_bst(&bst2darray[i][j]);
+            num_cols_2dbst += traverse_bst(bst2darray[i][j]);
         }
     }
     return num_cols_2dbst;

@@ -22,12 +22,24 @@ results do2dbst(RGB_Image *in_img)
     clock_t start, stop;
     results res;
     start = clock();
-    struct BST_Node(*bst2darray)[MAX_VAL] = malloc(sizeof(struct BST_Node[MAX_VAL][MAX_VAL]));
+    struct BST_Node *bst2darray[MAX_VAL][MAX_VAL];
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+        for (int j = 0; j < MAX_VAL; j++)
+        {
+            bst2darray[i][j] = alloc_bst_node(-1);
+        }
+    }
     RGB_Pixel *pixel;
     for (int i = 0; i < in_img->size; i++)
     {
         pixel = &in_img->data[i];
-        struct BST_Node *root = insert_bst_node(&bst2darray[pixel->red][pixel->green], pixel->blue);
+        if (bst2darray[pixel->red][pixel->green]->key == -1)
+        {
+            dealloc_bst(bst2darray[pixel->red][pixel->green]);
+            bst2darray[pixel->red][pixel->green] = alloc_bst_node(pixel->blue);
+        }
+        else insert_bst_node(bst2darray[pixel->red][pixel->green], pixel->blue);
     }
     stop = clock();
     res.addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
@@ -38,7 +50,13 @@ results do2dbst(RGB_Image *in_img)
     #ifdef MEM_USAGE
     res.total_mem = sizeof(struct BST_Node[MAX_VAL][MAX_VAL]) + (sizeof(struct BST_Node) * res.num_cols);
     #endif
-    free(bst2darray);
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+        for (int j = 0; j < MAX_VAL; j++)
+        {
+            dealloc_bst(bst2darray[i][j]);
+        }
+    }
     return res;
 }
 

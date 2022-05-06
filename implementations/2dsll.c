@@ -22,12 +22,24 @@ results do2dsll(RGB_Image *in_img)
     clock_t start, stop;
     results res;
     start = clock();
-    struct SLL_Node(*sll2darray)[MAX_VAL] = malloc(sizeof(struct SLL_Node[MAX_VAL][MAX_VAL]));
+    struct SLL_Node *sll2darray[MAX_VAL][MAX_VAL];
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+        for (int j = 0; j < MAX_VAL; j++)
+        {
+            sll2darray[i][j] = alloc_sll_node(-1);
+        }
+    }
     RGB_Pixel *pixel;
     for (int i = 0; i < in_img->size; i++)
     {
         pixel = &in_img->data[i];
-        struct SLL_Node *head = insert_sll_node(&sll2darray[pixel->red][pixel->green], pixel->blue);
+        if (sll2darray[pixel->red][pixel->green]->key == -1)
+        {
+            dealloc_sll(sll2darray[pixel->red][pixel->green]);
+            sll2darray[pixel->red][pixel->green] = alloc_sll_node(pixel->blue);
+        }
+        else insert_sll_node(sll2darray[pixel->red][pixel->green], pixel->blue);
     }
     stop = clock();
     res.addtime = ((double)(stop - start)) / CLOCKS_PER_SEC;
@@ -38,7 +50,13 @@ results do2dsll(RGB_Image *in_img)
     #ifdef MEM_USAGE
     res.total_mem = sizeof(struct SLL_Node[MAX_VAL][MAX_VAL]) + (sizeof(struct SLL_Node) * res.num_cols);
     #endif
-    free(sll2darray);
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+        for (int j = 0; j < MAX_VAL; j++)
+        {
+            dealloc_sll(sll2darray[i][j]);
+        }
+    }
     return res;
 }
 
